@@ -1,0 +1,10 @@
+{
+  "collection_name": "rail_incidents",
+  "host": "localhost",
+  "port": 6333,
+  "vector_size": 384,
+  "train_points": 90,
+  "test_points": 23,
+  "total_points": 113,
+  "status": "green"
+}

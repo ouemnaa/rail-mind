@@ -1,0 +1,49 @@
+{
+  "total_incidents": 113,
+  "date_range": {
+    "start": "2024-09-20 00:00:00",
+    "end": "2024-09-30 00:00:00"
+  },
+  "incident_types": {
+    "technical": 44,
+    "other": 22,
+    "maintenance": 20,
+    "trespasser": 14,
+    "weather": 9,
+    "fire": 3,
+    "police_intervention": 1
+  },
+  "resolution_coverage": {
+    "with_resolution": 99,
+    "without_resolution": 14,
+    "coverage_percentage": 87.61
+  },
+  "resolution_types": {
+    "SPEED_REGULATE": 78,
+    "GRADUAL_RECOVERY": 7,
+    "REROUTE": 11,
+    "HOLD": 6,
+    "CANCEL": 46,
+    "SINGLE_TRACK": 4,
+    "BUS_BRIDGE": 11,
+    "SHORT_TURN": 1
+  },
+  "severity_stats": {
+    "mean": 22.21,
+    "median": 23.33,
+    "max": 73.2
+  },
+  "delay_stats": {
+    "mean_minutes": 43.1,
+    "median_minutes": 30.0,
+    "max_minutes": 225
+  },
+  "time_of_day_distribution": {
+    "morning_peak": 34,
+    "midday": 29,
+    "unknown": 21,
+    "night": 16,
+    "evening_peak": 13
+  },
+  "lines_affected": 90
+}

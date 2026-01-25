@@ -1,0 +1,32 @@
+{
+  "split_type": "time_based",
+  "train_size": 90,
+  "test_size": 23,
+  "train_ratio": 0.8,
+  "test_ratio": 0.2,
+  "split_date": "2024-09-28 10:35:00",
+  "train_date_range": {
+    "start": "2024-09-20 00:00:00",
+    "end": "2024-09-28 00:00:00"
+  },
+  "test_date_range": {
+    "start": "2024-09-28 00:00:00",
+    "end": "2024-09-30 00:00:00"
+  },
+  "train_incident_types": {
+    "technical": 40,
+    "other": 15,
+    "trespasser": 13,
+    "maintenance": 10,
+    "weather": 8,
+    "fire": 3,
+    "police_intervention": 1
+  },
+  "test_incident_types": {
+    "maintenance": 10,
+    "other": 7,
+    "technical": 4,
+    "trespasser": 1,
+    "weather": 1
+  }
+}

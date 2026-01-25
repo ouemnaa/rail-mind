@@ -1,0 +1,15 @@
+{
+  "embedding_library": "chonkie",
+  "embedding_class": "SentenceTransformerEmbeddings",
+  "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+  "vector_dimension": 384,
+  "train_count": 90,
+  "test_count": 23,
+  "total_count": 113,
+  "why_this_model": {
+    "free": "No API costs (Cohere charges per token)",
+    "local": "Works offline, no rate limits",
+    "multilingual": "Supports Italian station names + English",
+    "quality": "Excellent semantic similarity for incident matching"
+  }
+}

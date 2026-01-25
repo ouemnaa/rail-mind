@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.venv/
+venv/
+ENV/
+env/
+
+Qdrant/__pycache__/
+Qdrant/*.pyc
+
+
+# Data files (too large for GitHub)
+Data/raw_data/Train_operation_data.csv
+Data/Processed/operation_data_enriched.csv
+
+# Graph output (can be regenerated)
+
+
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# GitHub
+.github/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Model files
+*.bin
+*.pth
+*.onnx
+
+# Large data
+*.parquet
+*.h5
+*.hdf5
+*.pkl
+*.pickle
