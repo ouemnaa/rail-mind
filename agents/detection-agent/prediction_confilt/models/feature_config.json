@@ -1,0 +1,43 @@
+{
+  "feature_names": [
+    "current_delay_sec",
+    "delay_rate_per_km",
+    "distance_to_next_station_km",
+    "time_to_next_station_sec",
+    "train_type_encoded",
+    "priority_level",
+    "remaining_stops",
+    "current_occupancy",
+    "platform_utilization",
+    "expected_arrivals_15min",
+    "expected_departures_15min",
+    "is_hub",
+    "is_major_hub",
+    "historical_congestion_level",
+    "avg_delay_sec",
+    "segment_utilization",
+    "upstream_congestion",
+    "downstream_congestion",
+    "competing_trains_count",
+    "network_load_factor",
+    "hour_of_day",
+    "day_of_week",
+    "is_peak_hour",
+    "is_weekend",
+    "is_holiday",
+    "delay_congestion_interaction",
+    "hub_peak_interaction",
+    "train_priority_station_type_interaction"
+  ],
+  "n_features": 28,
+  "training_metrics": {
+    "roc_auc": 1.0,
+    "avg_precision": 1.0,
+    "train_samples": 67,
+    "val_samples": 17,
+    "n_features": 28
+  },
+  "trained_at": "2026-01-25T17:39:06.028390",
+  "model_type": "XGBoost + Heuristics Ensemble",
+  "ensemble_reason": "XGBoost learns patterns from historical data while heuristics encode domain knowledge. Combined, they provide robust predictions even with limited training data. When both agree, confidence is boosted."
+}

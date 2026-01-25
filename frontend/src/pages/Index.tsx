@@ -1,11 +1,14 @@
-import { useState } from 'react';
-import { Clock, AlertTriangle, TrendingUp, Users } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Clock, AlertTriangle, TrendingUp, Users, WifiOff, Play, Pause, RotateCcw, FastForward } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
-import { NetworkMap } from '@/components/dashboard/NetworkMap';
+import { LombardyNetworkMap } from '@/components/dashboard/LombardyNetworkMap';
+import { UnifiedAlertPanel } from '@/components/dashboard/UnifiedAlertPanel';
 import { KPICard } from '@/components/dashboard/KPICard';
 import { MemoryView } from '@/components/memory/MemoryView';
 import { ResolutionPanel } from '@/components/resolution/ResolutionPanel';
 import { ExplanationView } from '@/components/explanation/ExplanationView';
+import { useUnifiedSimulation } from '@/hooks/useUnifiedSimulation';
+import type { BatchPrediction, ConflictPrediction } from '@/types/prediction';
 
 type View = 'dashboard' | 'memory' | 'resolution' | 'explanation';
 
@@ -13,7 +16,77 @@ const Index = () => {
   const [currentView, setCurrentView] = useState<View>('dashboard');
   const [showConflictDetail, setShowConflictDetail] = useState(false);
 
-  const handleAlertClick = () => setShowConflictDetail(true);
+  // Use the unified simulation hook
+  const {
+    state,
+    trains,
+    predictions,
+    detections,
+    isRunning,
+    isLoading,
+    error,
+    start,
+    stop,
+    tick,
+    multiTick,
+    reset,
+  } = useUnifiedSimulation({
+    autoStart: true,
+    tickInterval: 2000, // 2 seconds per tick for visible updates
+  });
+
+  // Convert unified predictions to BatchPrediction format for map compatibility
+  const batchPrediction: BatchPrediction | null = useMemo(() => {
+    if (!state) return null;
+
+    // Combine predictions and detections for display
+    const allConflicts = [...predictions, ...detections];
+    
+    // Calculate network risk from predictions
+    const avgProbability = predictions.length > 0
+      ? predictions.reduce((sum, p) => sum + p.probability, 0) / predictions.length
+      : 0;
+    
+    // Boost risk if there are active detections
+    const detectionBoost = detections.length > 0 ? 0.2 : 0;
+    const networkRisk = Math.min(avgProbability + detectionBoost, 1);
+
+    // Convert to prediction format
+    const convertedPredictions: ConflictPrediction[] = allConflicts.map(conflict => ({
+      train_id: conflict.involved_trains[0] || 'unknown',
+      probability: conflict.probability,
+      risk_level: conflict.source === 'detection' ? 'critical' : 
+                  conflict.probability >= 0.6 ? 'high_risk' :
+                  conflict.probability >= 0.3 ? 'low_risk' : 'safe',
+      color: conflict.source === 'detection' ? '#dc2626' : 
+             conflict.probability >= 0.6 ? '#f97316' : '#f59e0b',
+      emoji: conflict.source === 'detection' ? '🔴' : '🟠',
+      predicted_conflict_type: conflict.conflict_type as any,
+      predicted_time: conflict.timestamp,
+      predicted_location: conflict.location,
+      contributing_factors: [conflict.explanation],
+      confidence: conflict.probability,
+      model_used: 'xgboost_ensemble',
+    }));
+
+    return {
+      timestamp: state.simulation_time,
+      predictions: convertedPredictions,
+      network_risk_score: networkRisk,
+      high_risk_trains: predictions.filter(p => p.probability >= 0.6).flatMap(p => p.involved_trains),
+      critical_trains: detections.flatMap(d => d.involved_trains),
+      recommended_actions: [],
+      model_used: 'xgboost_ensemble',
+      strategy: 'continuous',
+    };
+  }, [state, predictions, detections]);
+
+  // Calculate KPI values
+  const criticalCount = detections.length;
+  const highRiskCount = predictions.filter(p => p.probability >= 0.5).length;
+  const networkRisk = batchPrediction?.network_risk_score || 0;
+  const totalTrains = trains.length;
+  const delayedTrains = trains.filter(t => t.delay_sec > 60).length;
 
   const handleViewResolution = () => {
     setCurrentView('memory');
@@ -43,46 +116,56 @@ const Index = () => {
         );
       default: // dashboard
         return (
-          <div className="flex flex-col gap-6">
-            {/* KPI Cards */}
-            <div className="flex flex-wrap gap-4">
-              <KPICard
-                title="Avg Delay"
-                value="4.2"
-                unit="min"
-                change={-12}
-                icon={Clock}
-                status="normal"
-              />
-              <KPICard
-                title="Active Conflicts"
-                value="2"
-                icon={AlertTriangle}
-                status="warning"
-              />
-              <KPICard
-                title="Network Flow"
-                value="94"
-                unit="%"
-                change={3}
-                icon={TrendingUp}
-                status="normal"
-              />
-              <KPICard
-                title="Passengers"
-                value="12.4K"
-                change={8}
-                icon={Users}
-                status="normal"
-              />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
+            {/* Main content - Network Map and KPIs */}
+            <div className="lg:col-span-2 flex flex-col gap-6">
+              {/* KPI Cards */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <KPICard
+                  title="Network Risk"
+                  value={(networkRisk * 100).toFixed(0)}
+                  unit="%"
+                  icon={TrendingUp}
+                  status={networkRisk > 0.5 ? 'critical' : networkRisk > 0.3 ? 'warning' : 'normal'}
+                />
+                <KPICard
+                  title="Active Conflicts"
+                  value={criticalCount.toString()}
+                  icon={AlertTriangle}
+                  status={criticalCount > 0 ? 'critical' : 'normal'}
+                />
+                <KPICard
+                  title="High Risk"
+                  value={highRiskCount.toString()}
+                  icon={Clock}
+                  status={highRiskCount > 3 ? 'warning' : 'normal'}
+                />
+                <KPICard
+                  title="Trains"
+                  value={`${totalTrains}`}
+                  icon={Users}
+                  status={delayedTrains > 5 ? 'warning' : 'normal'}
+                />
+              </div>
+
+              {/* Network Map with Predictions */}
+              <div className="flex-1 min-h-[500px]">
+                <LombardyNetworkMap
+                  predictions={batchPrediction}
+                  onStationClick={() => setShowConflictDetail(true)}
+                />
+              </div>
             </div>
 
-            {/* Network Map */}
-            <div className="flex-1">
-              <NetworkMap onStationClick={() => setShowConflictDetail(true)} />
+            {/* Right sidebar - Unified Alert Panel */}
+            <div className="h-full min-h-[600px]">
+              <UnifiedAlertPanel
+                predictions={predictions}
+                detections={detections}
+                tickNumber={state?.tick_number}
+                simulationTime={state?.simulation_time}
+              />
             </div>
-
-            
           </div>
         );
     }
@@ -92,139 +175,106 @@ const Index = () => {
     <div className="h-screen flex flex-col overflow-hidden bg-background">
       <Header />
 
+      {/* Connection Status Banner */}
+      {error && (
+        <div className="bg-red-500/20 border-b border-red-500/50 px-4 py-2 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-red-400 text-sm">
+            <WifiOff className="w-4 h-4" />
+            <span>API connection error: {error}</span>
+          </div>
+          <button
+            onClick={() => tick()}
+            className="text-xs bg-red-500/30 hover:bg-red-500/50 px-3 py-1 rounded"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
+      {/* Loading indicator */}
+      {isLoading && !state && (
+        <div className="bg-blue-500/20 border-b border-blue-500/50 px-4 py-2">
+          <div className="flex items-center gap-2 text-blue-400 text-sm">
+            <div className="animate-spin w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full" />
+            <span>Connecting to simulation...</span>
+          </div>
+        </div>
+      )}
+
       <main className="flex-1 overflow-auto p-6">
         {renderMainContent()}
       </main>
-    </div>
-  );
-};
 
-export default Index;
-
-
-{/*
-
-  --- WITH RIGHT BARE THAT SHOWS CONFLICTS ---
-
-import { useState } from 'react';
-import { Clock, AlertTriangle, TrendingUp, Users } from 'lucide-react';
-import { Sidebar } from '@/components/layout/Sidebar';
-import { Header } from '@/components/layout/Header';
-import { NetworkMap } from '@/components/dashboard/NetworkMap';
-import { KPICard } from '@/components/dashboard/KPICard';
-import { MemoryView } from '@/components/memory/MemoryView';
-import { ResolutionPanel } from '@/components/resolution/ResolutionPanel';
-import { ExplanationView } from '@/components/explanation/ExplanationView';
-
-type View = 'dashboard' | 'memory' | 'resolution' | 'explanation';
-
-const Index = () => {
-  const [currentView, setCurrentView] = useState<View>('dashboard');
-  const [showConflictDetail, setShowConflictDetail] = useState(false);
-
-  const handleAlertClick = () => {
-    setShowConflictDetail(true);
-  };
-
-  const handleViewResolution = () => {
-    setCurrentView('memory');
-    setShowConflictDetail(false);
-  };
-
-  const renderMainContent = () => {
-    switch (currentView) {
-      case 'memory':
-        return (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
-            <MemoryView />
-            <ResolutionPanel onViewExplanation={() => setCurrentView('explanation')} />
+      {/* Status bar with simulation controls */}
+      <div className="border-t border-slate-700 bg-slate-900/50 px-4 py-2 text-xs text-slate-400 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          {/* Simulation Controls */}
+          <div className="flex items-center gap-2 border-r border-slate-700 pr-4">
+            <button
+              onClick={isRunning ? stop : start}
+              className={`p-1.5 rounded transition-colors ${
+                isRunning 
+                  ? 'bg-orange-500/20 text-orange-400 hover:bg-orange-500/30' 
+                  : 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30'
+              }`}
+              title={isRunning ? 'Pause simulation' : 'Start simulation'}
+            >
+              {isRunning ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+            </button>
+            <button
+              onClick={() => tick()}
+              className="p-1.5 bg-slate-700/50 hover:bg-slate-600/50 rounded transition-colors"
+              title="Single tick"
+            >
+              <FastForward className="w-3 h-3" />
+            </button>
+            <button
+              onClick={() => multiTick(5)}
+              className="px-2 py-1 bg-slate-700/50 hover:bg-slate-600/50 rounded transition-colors text-xs"
+              title="5 ticks"
+            >
+              +5
+            </button>
+            <button
+              onClick={reset}
+              className="p-1.5 bg-slate-700/50 hover:bg-slate-600/50 rounded transition-colors"
+              title="Reset simulation"
+            >
+              <RotateCcw className="w-3 h-3" />
+            </button>
           </div>
-        );
-      case 'resolution':
-        return (
-          <div className="max-w-2xl mx-auto h-full">
-            <ResolutionPanel onViewExplanation={() => setCurrentView('explanation')} />
-          </div>
-        );
-      case 'explanation':
-        return (
-          <div className="max-w-3xl mx-auto h-full">
-            <ExplanationView onBack={() => setCurrentView('memory')} />
-          </div>
-        );
-      default:
-        return (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
-            <div className="lg:col-span-2 flex flex-col gap-6">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <KPICard
-                  title="Avg Delay"
-                  value="4.2"
-                  unit="min"
-                  change={-12}
-                  icon={Clock}
-                  status="normal"
-                />
-                <KPICard
-                  title="Active Conflicts"
-                  value="2"
-                  icon={AlertTriangle}
-                  status="warning"
-                />
-                <KPICard
-                  title="Network Flow"
-                  value="94"
-                  unit="%"
-                  change={3}
-                  icon={TrendingUp}
-                  status="normal"
-                />
-                <KPICard
-                  title="Passengers"
-                  value="12.4K"
-                  change={8}
-                  icon={Users}
-                  status="normal"
-                />
-              </div>
 
-              <div className="flex-1">
-                <NetworkMap onStationClick={() => setShowConflictDetail(true)} />
-              </div>
-            </div>
-
-             <div className="h-full">
-              {showConflictDetail ? (
-                <ConflictDetail 
-                  onClose={() => setShowConflictDetail(false)} 
-                  onResolve={handleViewResolution}
-                />
-              ) : (
-                <AlertFeed onAlertClick={handleAlertClick} />
-              )}
-            </div>
-            
-           
-          </div>
-        );
-    }
-  };
-
-  return (
-    <div className="h-screen flex overflow-hidden bg-background">
-      <Sidebar currentView={currentView} onViewChange={setCurrentView} />
-      
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Header />
-        
-        <main className="flex-1 overflow-auto p-6">
-          {renderMainContent()}
-        </main>
+          {/* Status info */}
+          <span>
+            Tick: <span className="text-slate-300 font-mono">{state?.tick_number || 0}</span>
+          </span>
+          <span>
+            ML: <span className="text-cyan-400">XGBoost + Heuristics</span>
+          </span>
+          <span>
+            Strategy: <span className="text-emerald-400">continuous</span>
+          </span>
+        </div>
+        <div className="flex items-center gap-4">
+          <span>
+            Predictions: <span className={predictions.length > 0 ? 'text-orange-400' : 'text-slate-300'}>
+              {predictions.length}
+            </span>
+          </span>
+          <span>
+            Detections: <span className={detections.length > 0 ? 'text-red-400 font-semibold' : 'text-slate-300'}>
+              {detections.length}
+            </span>
+          </span>
+          {state && (
+            <span className="text-slate-500">
+              {state.simulation_time}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
 export default Index;
-
-*/}
