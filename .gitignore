@@ -29,8 +29,10 @@ data-preprocessing/vector-database/__pycache__/
 data-preprocessing/vector-database/*.pyc
 
 # Data files (too large for GitHub)
-Data/raw_data/Train_operation_data.csv
-Data/Processed/operation_data_enriched.csv
+data-preprocessing/data/raw_data/Train_operation_data.csv
+data-preprocessing/data/processed_data/operation_data_enriched.csv
+data-preprocessing/data/processed_data/*.csv
+data-preprocessing/data/raw_data/*.csv
 
 
 # ML Models (can be large, regenerate or store separately)
