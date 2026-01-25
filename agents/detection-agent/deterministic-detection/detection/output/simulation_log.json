@@ -1,0 +1,3632 @@
+[
+  {
+    "tick": 1,
+    "time": "2026-01-25T14:37:31.895220",
+    "departures": [
+      {
+        "train": "REG_25821",
+        "from": "MILANO PORTA GARIBALDI",
+        "to": "MILANO GRECO PIRELLI"
+      },
+      {
+        "train": "REG_2815",
+        "from": "MORBEGNO",
+        "to": "COLICO"
+      },
+      {
+        "train": "REG_8866",
+        "from": "NOVATE M.SE",
+        "to": "MILANO BOVISA"
+      },
+      {
+        "train": "REG_3057",
+        "from": "MILANO CENTRALE",
+        "to": "MILANO LAMBRATE"
+      },
+      {
+        "train": "REG_2680",
+        "from": "DESENZANO",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "REG_11283",
+        "from": "MORTARA",
+        "to": "OLEVANO"
+      },
+      {
+        "train": "FR_9600",
+        "from": "MILANO CENTRALE",
+        "to": "RHO FIERA MILANO"
+      },
+      {
+        "train": "REG_1705",
+        "from": "MILANO CENTRALE",
+        "to": "MILANO LAMBRATE"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [],
+    "speed_changes": [],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 1
+  },
+  {
+    "tick": 2,
+    "time": "2026-01-25T14:37:41.895220",
+    "departures": [
+      {
+        "train": "REG_812",
+        "from": "SARONNO",
+        "to": "SARONNO SUD"
+      },
+      {
+        "train": "REG_1246",
+        "from": "TURBIGO",
+        "to": "CASTANO PRIMO"
+      },
+      {
+        "train": "REG_10007",
+        "from": "CREMONA",
+        "to": "VILLETTA MALAGNINO"
+      },
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "DESENZANO"
+      },
+      {
+        "train": "FR_9762",
+        "from": "DESENZANO",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "REG_24873",
+        "from": "LECCO",
+        "to": "LECCO MAGGIANICO"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_25821",
+        "speed": 106.32453101071563
+      },
+      {
+        "train": "REG_2815",
+        "speed": 101.32266782174102
+      },
+      {
+        "train": "REG_8866",
+        "speed": 120
+      },
+      {
+        "train": "REG_3057",
+        "speed": 117.79880084023104
+      },
+      {
+        "train": "REG_2680",
+        "speed": 300
+      },
+      {
+        "train": "REG_11283",
+        "speed": 109.04021292492288
+      },
+      {
+        "train": "FR_9600",
+        "speed": 118.29609741248946
+      },
+      {
+        "train": "REG_1705",
+        "speed": 120
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 2
+  },
+  {
+    "tick": 3,
+    "time": "2026-01-25T14:37:51.895220",
+    "departures": [
+      {
+        "train": "REG_10844",
+        "from": "CASALMAGGIORE",
+        "to": "S. GIOVANNI IN CROCE"
+      },
+      {
+        "train": "REG_10207",
+        "from": "SESTO CALENDE",
+        "to": "VERGIATE"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [
+      {
+        "train": "REG_1246",
+        "delay_seconds": 389
+      }
+    ],
+    "speed_changes": [
+      {
+        "train": "REG_812",
+        "speed": 120
+      },
+      {
+        "train": "REG_25821",
+        "speed": 120
+      },
+      {
+        "train": "REG_1246",
+        "speed": 120
+      },
+      {
+        "train": "REG_10007",
+        "speed": 104.15862516388765
+      },
+      {
+        "train": "REG_2815",
+        "speed": 120
+      },
+      {
+        "train": "REG_3057",
+        "speed": 109.20196799893736
+      },
+      {
+        "train": "REG_2680",
+        "speed": 289.95897123461344
+      },
+      {
+        "train": "FR_9762",
+        "speed": 300
+      },
+      {
+        "train": "REG_11283",
+        "speed": 120
+      },
+      {
+        "train": "REG_24873",
+        "speed": 100.94846421340269
+      },
+      {
+        "train": "REG_1705",
+        "speed": 108.26276766337503
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 3
+  },
+  {
+    "tick": 4,
+    "time": "2026-01-25T14:38:01.895220",
+    "departures": [],
+    "arrivals": [],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 120
+      },
+      {
+        "train": "REG_10007",
+        "speed": 111.52750389345731
+      },
+      {
+        "train": "REG_8866",
+        "speed": 99.7676208240663
+      },
+      {
+        "train": "REG_2680",
+        "speed": 300
+      },
+      {
+        "train": "FR_9762",
+        "speed": 266.3269914746715
+      },
+      {
+        "train": "REG_24873",
+        "speed": 120
+      },
+      {
+        "train": "REG_10207",
+        "speed": 120
+      },
+      {
+        "train": "FR_9600",
+        "speed": 110.66997955264488
+      },
+      {
+        "train": "REG_1705",
+        "speed": 118.12003972514663
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 3
+  },
+  {
+    "tick": 5,
+    "time": "2026-01-25T14:38:11.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "REG_24223",
+        "from": "SEVESO",
+        "to": "CESANO MADERNO"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [
+      {
+        "train": "REG_812",
+        "delay_seconds": 349
+      }
+    ],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 100.86204757570505
+      },
+      {
+        "train": "REG_812",
+        "speed": 105.34090079242941
+      },
+      {
+        "train": "REG_1246",
+        "speed": 105.30241809598233
+      },
+      {
+        "train": "REG_8866",
+        "speed": 105.84385604203969
+      },
+      {
+        "train": "REG_3057",
+        "speed": 120
+      },
+      {
+        "train": "REG_11283",
+        "speed": 98.89491849405219
+      },
+      {
+        "train": "REG_24873",
+        "speed": 112.91931743657854
+      },
+      {
+        "train": "FR_9600",
+        "speed": 120
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 4
+  },
+  {
+    "tick": 6,
+    "time": "2026-01-25T14:38:21.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 120
+      },
+      {
+        "train": "REG_812",
+        "speed": 94.10664082810753
+      },
+      {
+        "train": "REG_1246",
+        "speed": 88.23077246154521
+      },
+      {
+        "train": "REG_10007",
+        "speed": 100.20578375741557
+      },
+      {
+        "train": "REG_8866",
+        "speed": 97.91574326733554
+      },
+      {
+        "train": "REG_3057",
+        "speed": 114.78917482020552
+      },
+      {
+        "train": "FR_9762",
+        "speed": 300
+      },
+      {
+        "train": "REG_11283",
+        "speed": 120
+      },
+      {
+        "train": "REG_24873",
+        "speed": 120
+      },
+      {
+        "train": "REG_24223",
+        "speed": 109.44228727966107
+      },
+      {
+        "train": "FR_9600",
+        "speed": 110.61764338804609
+      },
+      {
+        "train": "REG_1705",
+        "speed": 111.30976784894588
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 4
+  },
+  {
+    "tick": 7,
+    "time": "2026-01-25T14:38:31.895220",
+    "departures": [
+      {
+        "train": "REG_10774",
+        "from": "CODOGNO",
+        "to": "CASALPUSTERLENGO"
+      },
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 109.34497669109989
+      },
+      {
+        "train": "REG_812",
+        "speed": 104.03489940492183
+      },
+      {
+        "train": "REG_1246",
+        "speed": 108.13793957652803
+      },
+      {
+        "train": "REG_10007",
+        "speed": 120
+      },
+      {
+        "train": "REG_2815",
+        "speed": 109.16284783383101
+      },
+      {
+        "train": "REG_8866",
+        "speed": 120
+      },
+      {
+        "train": "FR_9762",
+        "speed": 267.8996513279263
+      },
+      {
+        "train": "REG_24873",
+        "speed": 114.26599978491681
+      },
+      {
+        "train": "REG_24223",
+        "speed": 96.11752190828071
+      },
+      {
+        "train": "REG_1705",
+        "speed": 120
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 4
+  },
+  {
+    "tick": 8,
+    "time": "2026-01-25T14:38:41.895220",
+    "departures": [],
+    "arrivals": [],
+    "delays_added": [
+      {
+        "train": "FR_9762",
+        "delay_seconds": 178
+      }
+    ],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 120
+      },
+      {
+        "train": "REG_812",
+        "speed": 115.09522333107442
+      },
+      {
+        "train": "REG_25821",
+        "speed": 112.63113076903866
+      },
+      {
+        "train": "REG_1246",
+        "speed": 92.86133290231956
+      },
+      {
+        "train": "REG_2815",
+        "speed": 120
+      },
+      {
+        "train": "REG_10774",
+        "speed": 120
+      },
+      {
+        "train": "REG_3057",
+        "speed": 97.35813074160046
+      },
+      {
+        "train": "FR_9762",
+        "speed": 300
+      },
+      {
+        "train": "REG_11283",
+        "speed": 97.29175378083005
+      },
+      {
+        "train": "REG_24873",
+        "speed": 120
+      },
+      {
+        "train": "REG_24223",
+        "speed": 118.83912851757744
+      },
+      {
+        "train": "FR_9600",
+        "speed": 120
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 4
+  },
+  {
+    "tick": 9,
+    "time": "2026-01-25T14:38:51.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [
+      {
+        "train": "REG_812",
+        "delay_seconds": 485
+      }
+    ],
+    "speed_changes": [
+      {
+        "train": "REG_812",
+        "speed": 99.42777469225578
+      },
+      {
+        "train": "REG_25821",
+        "speed": 105.33918375104479
+      },
+      {
+        "train": "REG_1246",
+        "speed": 120
+      },
+      {
+        "train": "REG_10007",
+        "speed": 109.39366367071314
+      },
+      {
+        "train": "REG_8866",
+        "speed": 112.30244368682082
+      },
+      {
+        "train": "REG_3057",
+        "speed": 112.04327341817532
+      },
+      {
+        "train": "REG_2680",
+        "speed": 272.10045583691266
+      },
+      {
+        "train": "REG_11283",
+        "speed": 120
+      },
+      {
+        "train": "REG_10207",
+        "speed": 108.34322918839707
+      },
+      {
+        "train": "FR_9600",
+        "speed": 102.57999868532657
+      },
+      {
+        "train": "REG_1705",
+        "speed": 97.36219539447129
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 5
+  },
+  {
+    "tick": 10,
+    "time": "2026-01-25T14:39:01.895220",
+    "departures": [],
+    "arrivals": [],
+    "delays_added": [
+      {
+        "train": "REG_10207",
+        "delay_seconds": 348
+      }
+    ],
+    "speed_changes": [
+      {
+        "train": "REG_812",
+        "speed": 104.46813844014852
+      },
+      {
+        "train": "REG_25821",
+        "speed": 99.31184858467535
+      },
+      {
+        "train": "REG_8866",
+        "speed": 106.5407564691593
+      },
+      {
+        "train": "REG_3057",
+        "speed": 120
+      },
+      {
+        "train": "REG_2680",
+        "speed": 300
+      },
+      {
+        "train": "REG_11283",
+        "speed": 111.8923859104724
+      },
+      {
+        "train": "REG_24223",
+        "speed": 103.80164604591656
+      },
+      {
+        "train": "REG_10207",
+        "speed": 119.97196937261067
+      },
+      {
+        "train": "FR_9600",
+        "speed": 120
+      },
+      {
+        "train": "REG_1705",
+        "speed": 120
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 5
+  },
+  {
+    "tick": 11,
+    "time": "2026-01-25T14:39:11.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [
+      {
+        "train": "REG_8866",
+        "delay_seconds": 349
+      }
+    ],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 107.67771530937885
+      },
+      {
+        "train": "REG_812",
+        "speed": 89.88852102678956
+      },
+      {
+        "train": "REG_25821",
+        "speed": 120
+      },
+      {
+        "train": "REG_1246",
+        "speed": 107.24755440472752
+      },
+      {
+        "train": "REG_10007",
+        "speed": 120
+      },
+      {
+        "train": "REG_10774",
+        "speed": 111.67215196928572
+      },
+      {
+        "train": "REG_8866",
+        "speed": 120
+      },
+      {
+        "train": "FR_9762",
+        "speed": 279.0455938011193
+      },
+      {
+        "train": "REG_24223",
+        "speed": 120
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 6
+  },
+  {
+    "tick": 12,
+    "time": "2026-01-25T14:39:21.895220",
+    "departures": [],
+    "arrivals": [],
+    "delays_added": [
+      {
+        "train": "REG_10774",
+        "delay_seconds": 339
+      }
+    ],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 120
+      },
+      {
+        "train": "REG_812",
+        "speed": 98.84047631295273
+      },
+      {
+        "train": "REG_1246",
+        "speed": 87.87212175476681
+      },
+      {
+        "train": "REG_2815",
+        "speed": 99.84854000628478
+      },
+      {
+        "train": "REG_3057",
+        "speed": 103.09891193609907
+      },
+      {
+        "train": "FR_9762",
+        "speed": 300
+      },
+      {
+        "train": "REG_11283",
+        "speed": 120
+      },
+      {
+        "train": "REG_24223",
+        "speed": 113.11721727541725
+      },
+      {
+        "train": "REG_10207",
+        "speed": 102.82440513785514
+      },
+      {
+        "train": "FR_9600",
+        "speed": 104.35437264728463
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 7
+  },
+  {
+    "tick": 13,
+    "time": "2026-01-25T14:39:31.895220",
+    "departures": [],
+    "arrivals": [],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 102.3600202826017
+      },
+      {
+        "train": "REG_812",
+        "speed": 120
+      },
+      {
+        "train": "REG_2815",
+        "speed": 118.466290841657
+      },
+      {
+        "train": "REG_8866",
+        "speed": 102.80929071333121
+      },
+      {
+        "train": "REG_3057",
+        "speed": 115.03940263087782
+      },
+      {
+        "train": "REG_2680",
+        "speed": 268.1004142331513
+      },
+      {
+        "train": "FR_9762",
+        "speed": 229.13085896899818
+      },
+      {
+        "train": "REG_11283",
+        "speed": 111.01196929801827
+      },
+      {
+        "train": "REG_24223",
+        "speed": 101.78272946270351
+      },
+      {
+        "train": "REG_10207",
+        "speed": 112.73190597247496
+      },
+      {
+        "train": "FR_9600",
+        "speed": 120
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 7
+  },
+  {
+    "tick": 14,
+    "time": "2026-01-25T14:39:41.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 120
+      },
+      {
+        "train": "REG_812",
+        "speed": 112.64434212093929
+      },
+      {
+        "train": "REG_1246",
+        "speed": 105.18670514260347
+      },
+      {
+        "train": "REG_10774",
+        "speed": 120
+      },
+      {
+        "train": "REG_8866",
+        "speed": 110.25477139846699
+      },
+      {
+        "train": "FR_9762",
+        "speed": 300
+      },
+      {
+        "train": "REG_11283",
+        "speed": 104.36383772630545
+      },
+      {
+        "train": "REG_24223",
+        "speed": 120
+      },
+      {
+        "train": "REG_10207",
+        "speed": 120
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 8
+  },
+  {
+    "tick": 15,
+    "time": "2026-01-25T14:39:51.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_812",
+        "speed": 98.55982698209806
+      },
+      {
+        "train": "REG_25821",
+        "speed": 100.92402352578056
+      },
+      {
+        "train": "REG_1246",
+        "speed": 114.52577292957528
+      },
+      {
+        "train": "REG_10774",
+        "speed": 92.4838093243018
+      },
+      {
+        "train": "REG_8866",
+        "speed": 120
+      },
+      {
+        "train": "REG_2680",
+        "speed": 255.82064045165035
+      },
+      {
+        "train": "REG_24223",
+        "speed": 112.09478058535433
+      },
+      {
+        "train": "REG_1705",
+        "speed": 113.03890028195882
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 8
+  },
+  {
+    "tick": 16,
+    "time": "2026-01-25T14:40:01.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_25821",
+        "speed": 117.19588527142062
+      },
+      {
+        "train": "REG_1246",
+        "speed": 108.09812205408689
+      },
+      {
+        "train": "REG_8866",
+        "speed": 95.25257052715114
+      },
+      {
+        "train": "REG_2680",
+        "speed": 285.3306433005569
+      },
+      {
+        "train": "REG_24873",
+        "speed": 97.41033273630907
+      },
+      {
+        "train": "REG_24223",
+        "speed": 120
+      },
+      {
+        "train": "REG_10207",
+        "speed": 100.42335188171344
+      },
+      {
+        "train": "FR_9600",
+        "speed": 100.78801776596673
+      },
+      {
+        "train": "REG_1705",
+        "speed": 98.67311625721852
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 7
+  },
+  {
+    "tick": 17,
+    "time": "2026-01-25T14:40:11.895220",
+    "departures": [],
+    "arrivals": [],
+    "delays_added": [
+      {
+        "train": "REG_3057",
+        "delay_seconds": 252
+      }
+    ],
+    "speed_changes": [
+      {
+        "train": "REG_812",
+        "speed": 112.7535046226335
+      },
+      {
+        "train": "REG_1246",
+        "speed": 92.74495976830808
+      },
+      {
+        "train": "REG_2815",
+        "speed": 96.42488525715842
+      },
+      {
+        "train": "REG_10774",
+        "speed": 112.90015020520589
+      },
+      {
+        "train": "REG_8866",
+        "speed": 120
+      },
+      {
+        "train": "REG_2680",
+        "speed": 300
+      },
+      {
+        "train": "REG_24873",
+        "speed": 120
+      },
+      {
+        "train": "REG_24223",
+        "speed": 105.32629988554406
+      },
+      {
+        "train": "REG_10207",
+        "speed": 106.3598376029057
+      },
+      {
+        "train": "FR_9600",
+        "speed": 117.36142316490584
+      },
+      {
+        "train": "REG_1705",
+        "speed": 120
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 8
+  },
+  {
+    "tick": 18,
+    "time": "2026-01-25T14:40:21.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 107.88917106377095
+      },
+      {
+        "train": "REG_812",
+        "speed": 94.95363799746427
+      },
+      {
+        "train": "REG_1246",
+        "speed": 120
+      },
+      {
+        "train": "REG_10007",
+        "speed": 103.56622232238364
+      },
+      {
+        "train": "REG_2815",
+        "speed": 107.16278192149615
+      },
+      {
+        "train": "REG_10774",
+        "speed": 120
+      },
+      {
+        "train": "REG_3057",
+        "speed": 105.07576042206396
+      },
+      {
+        "train": "REG_2680",
+        "speed": 291.6117113095349
+      },
+      {
+        "train": "FR_9762",
+        "speed": 278.80962935458433
+      },
+      {
+        "train": "REG_11283",
+        "speed": 120
+      },
+      {
+        "train": "REG_24223",
+        "speed": 120
+      },
+      {
+        "train": "REG_10207",
+        "speed": 117.8282679499336
+      },
+      {
+        "train": "FR_9600",
+        "speed": 99.39911692728887
+      },
+      {
+        "train": "REG_1705",
+        "speed": 107.73118072499066
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 8
+  },
+  {
+    "tick": 19,
+    "time": "2026-01-25T14:40:31.895220",
+    "departures": [],
+    "arrivals": [
+      {
+        "train": "REG_2680",
+        "station": "BRESCIA"
+      },
+      {
+        "train": "REG_11283",
+        "station": "OLEVANO"
+      }
+    ],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 120
+      },
+      {
+        "train": "REG_812",
+        "speed": 111.82821551342673
+      },
+      {
+        "train": "REG_1246",
+        "speed": 99.63839396441172
+      },
+      {
+        "train": "REG_10007",
+        "speed": 120
+      },
+      {
+        "train": "REG_2815",
+        "speed": 120
+      },
+      {
+        "train": "REG_2680",
+        "speed": 300
+      },
+      {
+        "train": "FR_9762",
+        "speed": 285.28815727034447
+      },
+      {
+        "train": "REG_11283",
+        "speed": 102.85456650741119
+      },
+      {
+        "train": "REG_24873",
+        "speed": 114.0215010982514
+      },
+      {
+        "train": "REG_24223",
+        "speed": 104.49906654150601
+      },
+      {
+        "train": "REG_10207",
+        "speed": 92.65806447609829
+      },
+      {
+        "train": "FR_9600",
+        "speed": 110.4662840701756
+      },
+      {
+        "train": "REG_1705",
+        "speed": 119.44770868086182
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 8
+  },
+  {
+    "tick": 20,
+    "time": "2026-01-25T14:40:41.895220",
+    "departures": [],
+    "arrivals": [
+      {
+        "train": "REG_812",
+        "station": "SARONNO SUD"
+      },
+      {
+        "train": "FR_9762",
+        "station": "BRESCIA"
+      }
+    ],
+    "delays_added": [
+      {
+        "train": "REG_1705",
+        "delay_seconds": 241
+      }
+    ],
+    "speed_changes": [
+      {
+        "train": "REG_812",
+        "speed": 118.77776816722928
+      },
+      {
+        "train": "REG_1246",
+        "speed": 120
+      },
+      {
+        "train": "REG_10007",
+        "speed": 104.04040183994636
+      },
+      {
+        "train": "REG_10774",
+        "speed": 96.97279437537881
+      },
+      {
+        "train": "REG_8866",
+        "speed": 97.51918987592991
+      },
+      {
+        "train": "REG_3057",
+        "speed": 92.26267806457915
+      },
+      {
+        "train": "FR_9762",
+        "speed": 300
+      },
+      {
+        "train": "REG_24873",
+        "speed": 102.95381926739832
+      },
+      {
+        "train": "REG_24223",
+        "speed": 114.91517686229096
+      },
+      {
+        "train": "FR_9600",
+        "speed": 120
+      },
+      {
+        "train": "REG_1705",
+        "speed": 103.01647707976
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 9
+  },
+  {
+    "tick": 21,
+    "time": "2026-01-25T14:40:51.895220",
+    "departures": [
+      {
+        "train": "REG_812",
+        "from": "SARONNO SUD",
+        "to": "CARONNO - PERTUSELLA"
+      },
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      }
+    ],
+    "arrivals": [
+      {
+        "train": "REG_3057",
+        "station": "MILANO LAMBRATE"
+      },
+      {
+        "train": "REG_1705",
+        "station": "MILANO LAMBRATE"
+      }
+    ],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 105.1827981380691
+      },
+      {
+        "train": "REG_1246",
+        "speed": 86.38258898275596
+      },
+      {
+        "train": "REG_10007",
+        "speed": 113.43220847248784
+      },
+      {
+        "train": "REG_10774",
+        "speed": 116.63505348165329
+      },
+      {
+        "train": "REG_8866",
+        "speed": 87.17320585450226
+      },
+      {
+        "train": "REG_3057",
+        "speed": 108.13368939114169
+      },
+      {
+        "train": "REG_24873",
+        "speed": 120
+      },
+      {
+        "train": "REG_24223",
+        "speed": 120
+      },
+      {
+        "train": "REG_10207",
+        "speed": 120
+      }
+    ],
+    "trains_spawned": [
+      "FR_9706"
+    ],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 11
+  },
+  {
+    "tick": 22,
+    "time": "2026-01-25T14:41:01.895220",
+    "departures": [
+      {
+        "train": "REG_3057",
+        "from": "MILANO LAMBRATE",
+        "to": "MILANO ROGOREDO"
+      },
+      {
+        "train": "REG_2680",
+        "from": "BRESCIA",
+        "to": "TREVIGLIO"
+      },
+      {
+        "train": "FR_9762",
+        "from": "BRESCIA",
+        "to": "MILANO CENTRALE"
+      },
+      {
+        "train": "FR_9706",
+        "from": "DESENZANO",
+        "to": "MILANO CENTRALE"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [
+      {
+        "train": "REG_3057",
+        "delay_seconds": 547
+      }
+    ],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 120
+      },
+      {
+        "train": "REG_812",
+        "speed": 93.23732277116419
+      },
+      {
+        "train": "REG_10774",
+        "speed": 94.69894055553597
+      },
+      {
+        "train": "REG_8866",
+        "speed": 94.24018311974764
+      },
+      {
+        "train": "REG_10207",
+        "speed": 88.15224688818444
+      },
+      {
+        "train": "FR_9600",
+        "speed": 108.87524867350177
+      }
+    ],
+    "trains_spawned": [
+      "FR_9717"
+    ],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 14
+  },
+  {
+    "tick": 23,
+    "time": "2026-01-25T14:41:11.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "REG_1705",
+        "from": "MILANO LAMBRATE",
+        "to": "MILANO ROGOREDO"
+      },
+      {
+        "train": "FR_9706",
+        "from": "DESENZANO",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9717",
+        "from": "MILANO CENTRALE",
+        "to": "MILANO CENTRALE"
+      }
+    ],
+    "arrivals": [
+      {
+        "train": "REG_24223",
+        "station": "CESANO MADERNO"
+      }
+    ],
+    "delays_added": [
+      {
+        "train": "REG_1705",
+        "delay_seconds": 526
+      }
+    ],
+    "speed_changes": [
+      {
+        "train": "REG_25821",
+        "speed": 104.76419278289069
+      },
+      {
+        "train": "REG_1246",
+        "speed": 120
+      },
+      {
+        "train": "REG_10007",
+        "speed": 119.51888379195819
+      },
+      {
+        "train": "REG_2815",
+        "speed": 98.96565731513465
+      },
+      {
+        "train": "REG_10774",
+        "speed": 99.76934554146831
+      },
+      {
+        "train": "REG_8866",
+        "speed": 106.01026343734256
+      },
+      {
+        "train": "REG_3057",
+        "speed": 88.53968860934198
+      },
+      {
+        "train": "REG_2680",
+        "speed": 120
+      },
+      {
+        "train": "FR_9762",
+        "speed": 105.47601951510666
+      },
+      {
+        "train": "REG_10207",
+        "speed": 100.85847931947795
+      },
+      {
+        "train": "FR_9600",
+        "speed": 120
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 15
+  },
+  {
+    "tick": 24,
+    "time": "2026-01-25T14:41:21.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "REG_11283",
+        "from": "OLEVANO",
+        "to": "VALLE LOMELLINA"
+      },
+      {
+        "train": "REG_24223",
+        "from": "CESANO MADERNO",
+        "to": "BOVISO MASCIAGO - MOMBELLO"
+      },
+      {
+        "train": "FR_9717",
+        "from": "MILANO CENTRALE",
+        "to": "MILANO CENTRALE"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 112.27459309803979
+      },
+      {
+        "train": "REG_2815",
+        "speed": 120
+      },
+      {
+        "train": "REG_10774",
+        "speed": 111.73718120947436
+      },
+      {
+        "train": "REG_3057",
+        "speed": 102.88493179051943
+      },
+      {
+        "train": "REG_24873",
+        "speed": 104.76858165473371
+      },
+      {
+        "train": "REG_10207",
+        "speed": 120
+      },
+      {
+        "train": "FR_9600",
+        "speed": 111.89824628297468
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 17
+  },
+  {
+    "tick": 25,
+    "time": "2026-01-25T14:41:31.895220",
+    "departures": [
+      {
+        "train": "FR_9706",
+        "from": "DESENZANO",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9717",
+        "from": "MILANO CENTRALE",
+        "to": "MILANO CENTRALE"
+      }
+    ],
+    "arrivals": [
+      {
+        "train": "REG_25821",
+        "station": "MILANO GRECO PIRELLI"
+      },
+      {
+        "train": "REG_8866",
+        "station": "MILANO BOVISA"
+      }
+    ],
+    "delays_added": [
+      {
+        "train": "FR_9717",
+        "delay_seconds": 326
+      }
+    ],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 120
+      },
+      {
+        "train": "REG_812",
+        "speed": 120
+      },
+      {
+        "train": "REG_25821",
+        "speed": 120
+      },
+      {
+        "train": "REG_1246",
+        "speed": 99.77009073323892
+      },
+      {
+        "train": "REG_10774",
+        "speed": 98.35530535872189
+      },
+      {
+        "train": "REG_8866",
+        "speed": 120
+      },
+      {
+        "train": "REG_3057",
+        "speed": 84.52117588426552
+      },
+      {
+        "train": "FR_9762",
+        "speed": 119.14296907733964
+      },
+      {
+        "train": "REG_11283",
+        "speed": 96.50454223857594
+      },
+      {
+        "train": "REG_24873",
+        "speed": 97.74432620740349
+      },
+      {
+        "train": "REG_10207",
+        "speed": 91.39927538685572
+      },
+      {
+        "train": "FR_9600",
+        "speed": 120
+      },
+      {
+        "train": "REG_1705",
+        "speed": 110.70226187859063
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 18
+  },
+  {
+    "tick": 26,
+    "time": "2026-01-25T14:41:41.895220",
+    "departures": [
+      {
+        "train": "REG_25821",
+        "from": "MILANO GRECO PIRELLI",
+        "to": "SESTO S. GIOVANNI"
+      },
+      {
+        "train": "REG_8866",
+        "from": "MILANO BOVISA",
+        "to": "M N CADORNA"
+      },
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9706",
+        "from": "DESENZANO",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9717",
+        "from": "MILANO CENTRALE",
+        "to": "MILANO CENTRALE"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [
+      {
+        "train": "FR_9638",
+        "delay_seconds": 213
+      }
+    ],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 106.20088330073938
+      },
+      {
+        "train": "REG_812",
+        "speed": 104.60576329333374
+      },
+      {
+        "train": "REG_1246",
+        "speed": 89.8404123460871
+      },
+      {
+        "train": "REG_10007",
+        "speed": 110.38882899885891
+      },
+      {
+        "train": "REG_2815",
+        "speed": 99.27859893469672
+      },
+      {
+        "train": "REG_10774",
+        "speed": 88.17400011022117
+      },
+      {
+        "train": "REG_3057",
+        "speed": 106.28074069128941
+      },
+      {
+        "train": "FR_9762",
+        "speed": 110.92653634452348
+      },
+      {
+        "train": "REG_11283",
+        "speed": 120
+      },
+      {
+        "train": "REG_24873",
+        "speed": 114.7620482882425
+      },
+      {
+        "train": "REG_24223",
+        "speed": 100.20344217470853
+      },
+      {
+        "train": "REG_1705",
+        "speed": 96.43253151709813
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [
+      {
+        "id": "INC_26_450",
+        "location": "CASLINO AL PIANO--ROVELLASCA - MANERA"
+      }
+    ],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 17
+  },
+  {
+    "tick": 27,
+    "time": "2026-01-25T14:41:51.895220",
+    "departures": [
+      {
+        "train": "FR_9706",
+        "from": "DESENZANO",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9717",
+        "from": "MILANO CENTRALE",
+        "to": "MILANO CENTRALE"
+      }
+    ],
+    "arrivals": [
+      {
+        "train": "REG_1246",
+        "station": "CASTANO PRIMO"
+      }
+    ],
+    "delays_added": [
+      {
+        "train": "FR_9717",
+        "delay_seconds": 489
+      }
+    ],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 120
+      },
+      {
+        "train": "REG_812",
+        "speed": 114.2567034215978
+      },
+      {
+        "train": "REG_1246",
+        "speed": 120
+      },
+      {
+        "train": "REG_10007",
+        "speed": 116.18276628776816
+      },
+      {
+        "train": "REG_2815",
+        "speed": 111.11387664984902
+      },
+      {
+        "train": "REG_10774",
+        "speed": 110.51364498269213
+      },
+      {
+        "train": "REG_8866",
+        "speed": 113.76340537888844
+      },
+      {
+        "train": "REG_2680",
+        "speed": 104.21896313131415
+      },
+      {
+        "train": "REG_24873",
+        "speed": 102.70329465127675
+      },
+      {
+        "train": "REG_24223",
+        "speed": 120
+      },
+      {
+        "train": "REG_10207",
+        "speed": 107.36231764934257
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [
+      {
+        "id": "INC_27_184",
+        "location": "ROVATO--BRESCIA"
+      }
+    ],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 17
+  },
+  {
+    "tick": 28,
+    "time": "2026-01-25T14:42:01.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9706",
+        "from": "DESENZANO",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9717",
+        "from": "MILANO CENTRALE",
+        "to": "MILANO CENTRALE"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 98.8106808405145
+      },
+      {
+        "train": "REG_812",
+        "speed": 100.49134836033068
+      },
+      {
+        "train": "REG_2815",
+        "speed": 120
+      },
+      {
+        "train": "REG_10774",
+        "speed": 120
+      },
+      {
+        "train": "REG_8866",
+        "speed": 108.66513171322555
+      },
+      {
+        "train": "REG_3057",
+        "speed": 89.44390790642043
+      },
+      {
+        "train": "REG_2680",
+        "speed": 118.84286778868416
+      },
+      {
+        "train": "FR_9762",
+        "speed": 120
+      },
+      {
+        "train": "REG_11283",
+        "speed": 114.6162381120396
+      },
+      {
+        "train": "REG_24873",
+        "speed": 120
+      },
+      {
+        "train": "REG_10207",
+        "speed": 98.9586628946034
+      },
+      {
+        "train": "REG_1705",
+        "speed": 104.97061417259995
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 16
+  },
+  {
+    "tick": 29,
+    "time": "2026-01-25T14:42:11.895220",
+    "departures": [
+      {
+        "train": "FR_9706",
+        "from": "DESENZANO",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9717",
+        "from": "MILANO CENTRALE",
+        "to": "MILANO CENTRALE"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 120
+      },
+      {
+        "train": "REG_812",
+        "speed": 120
+      },
+      {
+        "train": "REG_25821",
+        "speed": 100.54994573699783
+      },
+      {
+        "train": "REG_2815",
+        "speed": 110.23083664970254
+      },
+      {
+        "train": "FR_9762",
+        "speed": 98.98722043619453
+      },
+      {
+        "train": "REG_11283",
+        "speed": 120
+      },
+      {
+        "train": "REG_24873",
+        "speed": 105.6434875160791
+      },
+      {
+        "train": "REG_10207",
+        "speed": 120
+      },
+      {
+        "train": "FR_9600",
+        "speed": 98.98638166561247
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 14
+  },
+  {
+    "tick": 30,
+    "time": "2026-01-25T14:42:21.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9706",
+        "from": "DESENZANO",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9717",
+        "from": "MILANO CENTRALE",
+        "to": "MILANO CENTRALE"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_812",
+        "speed": 92.34337456296686
+      },
+      {
+        "train": "REG_25821",
+        "speed": 120
+      },
+      {
+        "train": "REG_2815",
+        "speed": 101.94561110451248
+      },
+      {
+        "train": "REG_8866",
+        "speed": 93.88010745514755
+      },
+      {
+        "train": "REG_3057",
+        "speed": 114.93870399475935
+      },
+      {
+        "train": "REG_11283",
+        "speed": 109.28221086883138
+      },
+      {
+        "train": "REG_24873",
+        "speed": 100.36288446095841
+      },
+      {
+        "train": "FR_9600",
+        "speed": 120
+      },
+      {
+        "train": "REG_1705",
+        "speed": 110.30587644817386
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 14
+  },
+  {
+    "tick": 31,
+    "time": "2026-01-25T14:42:31.895220",
+    "departures": [
+      {
+        "train": "REG_1246",
+        "from": "CASTANO PRIMO",
+        "to": "VANZAGHELLO - MAGNAGO"
+      },
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9706",
+        "from": "DESENZANO",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9717",
+        "from": "MILANO CENTRALE",
+        "to": "MILANO CENTRALE"
+      }
+    ],
+    "arrivals": [
+      {
+        "train": "REG_10774",
+        "station": "CASALPUSTERLENGO"
+      }
+    ],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_2815",
+        "speed": 120
+      },
+      {
+        "train": "REG_10774",
+        "speed": 89.2354879460282
+      },
+      {
+        "train": "REG_3057",
+        "speed": 104.97053293288695
+      },
+      {
+        "train": "FR_9762",
+        "speed": 120
+      },
+      {
+        "train": "REG_11283",
+        "speed": 103.62869738555833
+      },
+      {
+        "train": "REG_24873",
+        "speed": 120
+      },
+      {
+        "train": "REG_24223",
+        "speed": 98.59779528911687
+      },
+      {
+        "train": "REG_10207",
+        "speed": 90.9457271298424
+      },
+      {
+        "train": "REG_1705",
+        "speed": 87.05808213635504
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [
+      "INC_27_184"
+    ],
+    "weather": "clear",
+    "conflicts_detected": 15
+  },
+  {
+    "tick": 32,
+    "time": "2026-01-25T14:42:41.895220",
+    "departures": [
+      {
+        "train": "REG_10774",
+        "from": "CASALPUSTERLENGO",
+        "to": "OSPEDALETTO LODIGIANO"
+      },
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9706",
+        "from": "DESENZANO",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9717",
+        "from": "MILANO CENTRALE",
+        "to": "MILANO CENTRALE"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_812",
+        "speed": 113.35283496480294
+      },
+      {
+        "train": "REG_8866",
+        "speed": 88.77462869909324
+      },
+      {
+        "train": "FR_9762",
+        "speed": 108.36064810122511
+      },
+      {
+        "train": "REG_11283",
+        "speed": 120
+      },
+      {
+        "train": "REG_24223",
+        "speed": 110.64500829819623
+      },
+      {
+        "train": "REG_10207",
+        "speed": 120
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 16
+  },
+  {
+    "tick": 33,
+    "time": "2026-01-25T14:42:51.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9706",
+        "from": "DESENZANO",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9717",
+        "from": "MILANO CENTRALE",
+        "to": "MILANO CENTRALE"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_25821",
+        "speed": 110.1512262708795
+      },
+      {
+        "train": "REG_1246",
+        "speed": 103.49853698531737
+      },
+      {
+        "train": "REG_8866",
+        "speed": 103.74238855366885
+      },
+      {
+        "train": "REG_2680",
+        "speed": 96.32158806555371
+      },
+      {
+        "train": "FR_9762",
+        "speed": 120
+      },
+      {
+        "train": "REG_24223",
+        "speed": 120
+      },
+      {
+        "train": "REG_10207",
+        "speed": 110.80585743006122
+      },
+      {
+        "train": "REG_1705",
+        "speed": 105.8509141318349
+      }
+    ],
+    "trains_spawned": [
+      "EC_51"
+    ],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 16
+  },
+  {
+    "tick": 34,
+    "time": "2026-01-25T14:43:01.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "EC_51",
+        "from": "RHO FIERA MILANO",
+        "to": "MILANO CENTRALE"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_25821",
+        "speed": 101.77799369748321
+      },
+      {
+        "train": "REG_1246",
+        "speed": 97.52402497368224
+      },
+      {
+        "train": "REG_10774",
+        "speed": 98.05096487414338
+      },
+      {
+        "train": "REG_3057",
+        "speed": 113.55265676914911
+      },
+      {
+        "train": "REG_2680",
+        "speed": 120
+      },
+      {
+        "train": "FR_9762",
+        "speed": 104.53658916703868
+      },
+      {
+        "train": "REG_24873",
+        "speed": 112.41165176301296
+      },
+      {
+        "train": "FR_9600",
+        "speed": 97.79767815696886
+      },
+      {
+        "train": "REG_1705",
+        "speed": 99.056882446355
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "clear",
+    "conflicts_detected": 16
+  },
+  {
+    "tick": 35,
+    "time": "2026-01-25T14:43:11.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9717",
+        "from": "MILANO CENTRALE",
+        "to": "MILANO CENTRALE"
+      }
+    ],
+    "arrivals": [
+      {
+        "train": "REG_10207",
+        "station": "VERGIATE"
+      }
+    ],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 94.79967413169696
+      },
+      {
+        "train": "REG_812",
+        "speed": 75.50645567650378
+      },
+      {
+        "train": "REG_1246",
+        "speed": 102.75108639773791
+      },
+      {
+        "train": "REG_10007",
+        "speed": 99.27368255732178
+      },
+      {
+        "train": "REG_2815",
+        "speed": 78.88128965277375
+      },
+      {
+        "train": "REG_10774",
+        "speed": 90.55679137913522
+      },
+      {
+        "train": "REG_8866",
+        "speed": 83.99360405464911
+      },
+      {
+        "train": "REG_3057",
+        "speed": 96.09078093637568
+      },
+      {
+        "train": "REG_2680",
+        "speed": 114.78454234178544
+      },
+      {
+        "train": "REG_11283",
+        "speed": 78.29008347318664
+      },
+      {
+        "train": "REG_24873",
+        "speed": 100.89564001902498
+      },
+      {
+        "train": "REG_24223",
+        "speed": 86.87741689926006
+      },
+      {
+        "train": "REG_10207",
+        "speed": 76.65276326434973
+      },
+      {
+        "train": "EC_51",
+        "speed": 101.66940826689003
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "fog",
+    "conflicts_detected": 34
+  },
+  {
+    "tick": 36,
+    "time": "2026-01-25T14:43:21.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 101.55847618019337
+      },
+      {
+        "train": "REG_812",
+        "speed": 91.52251344764336
+      },
+      {
+        "train": "REG_25821",
+        "speed": 111.96581261246058
+      },
+      {
+        "train": "REG_1246",
+        "speed": 75.36994379640183
+      },
+      {
+        "train": "REG_10007",
+        "speed": 89.43641929500421
+      },
+      {
+        "train": "REG_2815",
+        "speed": 99.37814364120406
+      },
+      {
+        "train": "REG_10774",
+        "speed": 101.64902061891831
+      },
+      {
+        "train": "REG_8866",
+        "speed": 71.36001754323922
+      },
+      {
+        "train": "REG_2680",
+        "speed": 93.83327283732781
+      },
+      {
+        "train": "FR_9762",
+        "speed": 81.19200409916824
+      },
+      {
+        "train": "REG_11283",
+        "speed": 99.01187237825668
+      },
+      {
+        "train": "REG_24873",
+        "speed": 112.20980062636391
+      },
+      {
+        "train": "REG_24223",
+        "speed": 94.1624449285098
+      },
+      {
+        "train": "FR_9600",
+        "speed": 109.75289254359015
+      },
+      {
+        "train": "REG_1705",
+        "speed": 86.33610052737039
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [
+      {
+        "id": "INC_36_306",
+        "location": "ORIO LITTA--OSPEDALETTO LODIGIANO"
+      }
+    ],
+    "incidents_resolved": [],
+    "weather": "fog",
+    "conflicts_detected": 33
+  },
+  {
+    "tick": 37,
+    "time": "2026-01-25T14:43:31.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9717",
+        "from": "MILANO CENTRALE",
+        "to": "MILANO CENTRALE"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [
+      {
+        "train": "REG_11283",
+        "delay_seconds": 233
+      }
+    ],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 89.26724480768941
+      },
+      {
+        "train": "REG_812",
+        "speed": 69.95716497944464
+      },
+      {
+        "train": "REG_25821",
+        "speed": 83.92222393798377
+      },
+      {
+        "train": "REG_1246",
+        "speed": 95.56208533691148
+      },
+      {
+        "train": "REG_10007",
+        "speed": 80.88919008470786
+      },
+      {
+        "train": "REG_2815",
+        "speed": 92.56110330256655
+      },
+      {
+        "train": "REG_10774",
+        "speed": 79.69777527032602
+      },
+      {
+        "train": "REG_8866",
+        "speed": 98.98802333880252
+      },
+      {
+        "train": "REG_2680",
+        "speed": 99.41391571100932
+      },
+      {
+        "train": "REG_24873",
+        "speed": 97.97519297687572
+      },
+      {
+        "train": "REG_24223",
+        "speed": 78.58967270233933
+      },
+      {
+        "train": "FR_9600",
+        "speed": 93.86093316960515
+      },
+      {
+        "train": "EC_51",
+        "speed": 78.00124174368139
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "fog",
+    "conflicts_detected": 34
+  },
+  {
+    "tick": 38,
+    "time": "2026-01-25T14:43:41.895220",
+    "departures": [
+      {
+        "train": "FR_9706",
+        "from": "DESENZANO",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9717",
+        "from": "MILANO CENTRALE",
+        "to": "MILANO CENTRALE"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [
+      {
+        "train": "REG_24223",
+        "delay_seconds": 65
+      }
+    ],
+    "speed_changes": [
+      {
+        "train": "REG_812",
+        "speed": 94.19205768376652
+      },
+      {
+        "train": "REG_25821",
+        "speed": 114.70788131993156
+      },
+      {
+        "train": "REG_10007",
+        "speed": 106.12791134439738
+      },
+      {
+        "train": "REG_2815",
+        "speed": 101.77983683343128
+      },
+      {
+        "train": "REG_8866",
+        "speed": 79.02710080109138
+      },
+      {
+        "train": "REG_3057",
+        "speed": 81.86753907784518
+      },
+      {
+        "train": "REG_2680",
+        "speed": 78.3638198453709
+      },
+      {
+        "train": "FR_9762",
+        "speed": 90.0208006853835
+      },
+      {
+        "train": "REG_11283",
+        "speed": 73.31253528244443
+      },
+      {
+        "train": "REG_24873",
+        "speed": 77.84488798027881
+      },
+      {
+        "train": "FR_9600",
+        "speed": 83.70219591055336
+      },
+      {
+        "train": "EC_51",
+        "speed": 108.21617769601335
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "fog",
+    "conflicts_detected": 32
+  },
+  {
+    "tick": 39,
+    "time": "2026-01-25T14:43:51.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9706",
+        "from": "DESENZANO",
+        "to": "BRESCIA"
+      }
+    ],
+    "arrivals": [
+      {
+        "train": "REG_812",
+        "station": "CARONNO - PERTUSELLA"
+      }
+    ],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 112.20552972829711
+      },
+      {
+        "train": "REG_812",
+        "speed": 75.80073546024943
+      },
+      {
+        "train": "REG_25821",
+        "speed": 79.61560661875343
+      },
+      {
+        "train": "REG_1246",
+        "speed": 101.40626776752649
+      },
+      {
+        "train": "REG_10007",
+        "speed": 78.12226682265688
+      },
+      {
+        "train": "REG_8866",
+        "speed": 99.70414381191438
+      },
+      {
+        "train": "REG_3057",
+        "speed": 70.07859874627444
+      },
+      {
+        "train": "REG_2680",
+        "speed": 103.27268541219502
+      },
+      {
+        "train": "REG_11283",
+        "speed": 83.48988495569745
+      },
+      {
+        "train": "REG_24873",
+        "speed": 86.09741084513831
+      },
+      {
+        "train": "REG_24223",
+        "speed": 92.23744166844753
+      },
+      {
+        "train": "FR_9600",
+        "speed": 112.6889142330744
+      },
+      {
+        "train": "REG_1705",
+        "speed": 78.66483062204225
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [
+      {
+        "id": "INC_39_500",
+        "location": "LOCATE V. - CARBONATE--ABBIATE GUAZZONE"
+      }
+    ],
+    "incidents_resolved": [],
+    "weather": "fog",
+    "conflicts_detected": 32
+  },
+  {
+    "tick": 40,
+    "time": "2026-01-25T14:44:01.895220",
+    "departures": [
+      {
+        "train": "REG_812",
+        "from": "CARONNO - PERTUSELLA",
+        "to": "CESATE"
+      },
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9706",
+        "from": "DESENZANO",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9717",
+        "from": "MILANO CENTRALE",
+        "to": "MILANO CENTRALE"
+      }
+    ],
+    "arrivals": [
+      {
+        "train": "FR_9600",
+        "station": "RHO FIERA MILANO"
+      }
+    ],
+    "delays_added": [
+      {
+        "train": "REG_2815",
+        "delay_seconds": 146
+      }
+    ],
+    "speed_changes": [
+      {
+        "train": "REG_10007",
+        "speed": 103.35818878366182
+      },
+      {
+        "train": "REG_2815",
+        "speed": 77.33608210408408
+      },
+      {
+        "train": "REG_8866",
+        "speed": 87.47614597030805
+      },
+      {
+        "train": "REG_2680",
+        "speed": 88.15437652276937
+      },
+      {
+        "train": "FR_9762",
+        "speed": 84.51760715234708
+      },
+      {
+        "train": "REG_24223",
+        "speed": 104.09988903018689
+      },
+      {
+        "train": "FR_9600",
+        "speed": 93.52029232788246
+      },
+      {
+        "train": "REG_1705",
+        "speed": 69.96955706049467
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "fog",
+    "conflicts_detected": 32
+  },
+  {
+    "tick": 41,
+    "time": "2026-01-25T14:44:11.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "REG_10207",
+        "from": "VERGIATE",
+        "to": "SOMMA LOMBARDO"
+      },
+      {
+        "train": "FR_9706",
+        "from": "DESENZANO",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9717",
+        "from": "MILANO CENTRALE",
+        "to": "MILANO CENTRALE"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [
+      {
+        "train": "REG_812",
+        "delay_seconds": 563
+      }
+    ],
+    "speed_changes": [
+      {
+        "train": "REG_812",
+        "speed": 84.19217193790594
+      },
+      {
+        "train": "REG_1246",
+        "speed": 82.04763257284463
+      },
+      {
+        "train": "REG_10007",
+        "speed": 92.06410543117794
+      },
+      {
+        "train": "REG_10774",
+        "speed": 98.77518087293846
+      },
+      {
+        "train": "REG_8866",
+        "speed": 81.79422469525333
+      },
+      {
+        "train": "REG_2680",
+        "speed": 82.0521982484463
+      },
+      {
+        "train": "FR_9762",
+        "speed": 108.24412986440622
+      },
+      {
+        "train": "REG_11283",
+        "speed": 102.6952349003994
+      },
+      {
+        "train": "REG_24873",
+        "speed": 94.34798534576966
+      },
+      {
+        "train": "REG_24223",
+        "speed": 91.8374777016203
+      },
+      {
+        "train": "REG_1705",
+        "speed": 78.42728233103476
+      },
+      {
+        "train": "EC_51",
+        "speed": 99.95766467642571
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "fog",
+    "conflicts_detected": 32
+  },
+  {
+    "tick": 42,
+    "time": "2026-01-25T14:44:21.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9706",
+        "from": "DESENZANO",
+        "to": "BRESCIA"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [
+      {
+        "train": "REG_10844",
+        "delay_seconds": 95
+      }
+    ],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 79.73873294191007
+      },
+      {
+        "train": "REG_25821",
+        "speed": 105.73642397135939
+      },
+      {
+        "train": "REG_1246",
+        "speed": 88.48388028790289
+      },
+      {
+        "train": "REG_10774",
+        "speed": 85.09495607758677
+      },
+      {
+        "train": "REG_8866",
+        "speed": 72.76766411387298
+      },
+      {
+        "train": "REG_3057",
+        "speed": 90.09523667611141
+      },
+      {
+        "train": "REG_2680",
+        "speed": 95.12011675780995
+      },
+      {
+        "train": "FR_9762",
+        "speed": 89.30808058976531
+      },
+      {
+        "train": "REG_11283",
+        "speed": 90.41211067728054
+      },
+      {
+        "train": "REG_24873",
+        "speed": 82.1300412225983
+      },
+      {
+        "train": "REG_10207",
+        "speed": 103.16046568793733
+      },
+      {
+        "train": "REG_1705",
+        "speed": 91.87125892638007
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "fog",
+    "conflicts_detected": 31
+  },
+  {
+    "tick": 43,
+    "time": "2026-01-25T14:44:31.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9717",
+        "from": "MILANO CENTRALE",
+        "to": "MILANO CENTRALE"
+      }
+    ],
+    "arrivals": [
+      {
+        "train": "REG_24223",
+        "station": "BOVISO MASCIAGO - MOMBELLO"
+      }
+    ],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 107.70125447945968
+      },
+      {
+        "train": "REG_1246",
+        "speed": 95.38913999096431
+      },
+      {
+        "train": "REG_10007",
+        "speed": 79.91139287343624
+      },
+      {
+        "train": "REG_2815",
+        "speed": 105.02911238482515
+      },
+      {
+        "train": "REG_10774",
+        "speed": 95.16802022511509
+      },
+      {
+        "train": "REG_8866",
+        "speed": 98.2232624203822
+      },
+      {
+        "train": "REG_3057",
+        "speed": 76.87284956935157
+      },
+      {
+        "train": "REG_2680",
+        "speed": 103.127810561902
+      },
+      {
+        "train": "FR_9762",
+        "speed": 104.88797034589548
+      },
+      {
+        "train": "REG_11283",
+        "speed": 84.66155360387349
+      },
+      {
+        "train": "REG_24873",
+        "speed": 107.75500635087229
+      },
+      {
+        "train": "REG_24223",
+        "speed": 78.52730636337216
+      },
+      {
+        "train": "REG_10207",
+        "speed": 77.88625944424216
+      },
+      {
+        "train": "REG_1705",
+        "speed": 73.76939720135928
+      },
+      {
+        "train": "EC_51",
+        "speed": 80.47843220545019
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "fog",
+    "conflicts_detected": 31
+  },
+  {
+    "tick": 44,
+    "time": "2026-01-25T14:44:41.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "REG_24223",
+        "from": "BOVISO MASCIAGO - MOMBELLO",
+        "to": "VAREDO"
+      }
+    ],
+    "arrivals": [
+      {
+        "train": "REG_11283",
+        "station": "VALLE LOMELLINA"
+      }
+    ],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 76.63994215598647
+      },
+      {
+        "train": "REG_812",
+        "speed": 96.37063157548923
+      },
+      {
+        "train": "REG_25821",
+        "speed": 114.84373607049046
+      },
+      {
+        "train": "REG_10007",
+        "speed": 113.92559215535069
+      },
+      {
+        "train": "REG_10774",
+        "speed": 89.81076814574577
+      },
+      {
+        "train": "REG_8866",
+        "speed": 72.1406010717032
+      },
+      {
+        "train": "REG_3057",
+        "speed": 89.11010190955761
+      },
+      {
+        "train": "REG_2680",
+        "speed": 80.37088650225786
+      },
+      {
+        "train": "REG_10207",
+        "speed": 101.50911799772095
+      },
+      {
+        "train": "REG_1705",
+        "speed": 83.06709665583098
+      },
+      {
+        "train": "EC_51",
+        "speed": 107.58346324657816
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "fog",
+    "conflicts_detected": 32
+  },
+  {
+    "tick": 45,
+    "time": "2026-01-25T14:44:51.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "REG_11283",
+        "from": "VALLE LOMELLINA",
+        "to": "SARTIRANA"
+      },
+      {
+        "train": "FR_9706",
+        "from": "DESENZANO",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9717",
+        "from": "MILANO CENTRALE",
+        "to": "MILANO CENTRALE"
+      }
+    ],
+    "arrivals": [
+      {
+        "train": "REG_10844",
+        "station": "S. GIOVANNI IN CROCE"
+      }
+    ],
+    "delays_added": [
+      {
+        "train": "REG_812",
+        "delay_seconds": 773
+      }
+    ],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 107.71410187584873
+      },
+      {
+        "train": "REG_812",
+        "speed": 78.10311827045635
+      },
+      {
+        "train": "REG_1246",
+        "speed": 77.16366517906172
+      },
+      {
+        "train": "REG_10007",
+        "speed": 94.2041056743521
+      },
+      {
+        "train": "REG_10774",
+        "speed": 98.80968188216612
+      },
+      {
+        "train": "REG_2680",
+        "speed": 100.07431916428845
+      },
+      {
+        "train": "FR_9762",
+        "speed": 97.69541743007176
+      },
+      {
+        "train": "REG_24873",
+        "speed": 83.31864130763526
+      },
+      {
+        "train": "REG_24223",
+        "speed": 106.33748713863079
+      },
+      {
+        "train": "REG_10207",
+        "speed": 75.93831258015895
+      },
+      {
+        "train": "EC_51",
+        "speed": 90.42173791236176
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "fog",
+    "conflicts_detected": 33
+  },
+  {
+    "tick": 46,
+    "time": "2026-01-25T14:45:01.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9706",
+        "from": "DESENZANO",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9717",
+        "from": "MILANO CENTRALE",
+        "to": "MILANO CENTRALE"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_812",
+        "speed": 84.11618065169633
+      },
+      {
+        "train": "REG_25821",
+        "speed": 95.96815627202098
+      },
+      {
+        "train": "REG_1246",
+        "speed": 98.71837726617441
+      },
+      {
+        "train": "REG_10007",
+        "speed": 99.45407704932573
+      },
+      {
+        "train": "REG_2815",
+        "speed": 78.13852756167353
+      },
+      {
+        "train": "REG_10774",
+        "speed": 76.91550454941189
+      },
+      {
+        "train": "REG_8866",
+        "speed": 81.2904716327753
+      },
+      {
+        "train": "REG_3057",
+        "speed": 79.08897600061724
+      },
+      {
+        "train": "REG_11283",
+        "speed": 99.83923115136987
+      },
+      {
+        "train": "REG_24873",
+        "speed": 90.98594556490981
+      },
+      {
+        "train": "REG_24223",
+        "speed": 90.4324750940716
+      },
+      {
+        "train": "REG_10207",
+        "speed": 98.86794722574602
+      },
+      {
+        "train": "REG_1705",
+        "speed": 76.04097124829227
+      },
+      {
+        "train": "EC_51",
+        "speed": 77.37361057265029
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "fog",
+    "conflicts_detected": 32
+  },
+  {
+    "tick": 47,
+    "time": "2026-01-25T14:45:11.895220",
+    "departures": [
+      {
+        "train": "REG_10844",
+        "from": "S. GIOVANNI IN CROCE",
+        "to": "PIADENA"
+      },
+      {
+        "train": "FR_9706",
+        "from": "DESENZANO",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9717",
+        "from": "MILANO CENTRALE",
+        "to": "MILANO CENTRALE"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [],
+    "speed_changes": [
+      {
+        "train": "REG_25821",
+        "speed": 83.84758013450684
+      },
+      {
+        "train": "REG_10007",
+        "speed": 112.93476407630538
+      },
+      {
+        "train": "REG_2815",
+        "speed": 99.08999434949438
+      },
+      {
+        "train": "REG_8866",
+        "speed": 93.60335311825082
+      },
+      {
+        "train": "REG_3057",
+        "speed": 96.42847281830464
+      },
+      {
+        "train": "REG_2680",
+        "speed": 112.78667472009288
+      },
+      {
+        "train": "FR_9762",
+        "speed": 103.06707074709402
+      },
+      {
+        "train": "REG_11283",
+        "speed": 84.17261429543909
+      },
+      {
+        "train": "REG_24873",
+        "speed": 99.53505664391446
+      },
+      {
+        "train": "REG_10207",
+        "speed": 73.01576999631382
+      },
+      {
+        "train": "REG_1705",
+        "speed": 95.58570507576064
+      },
+      {
+        "train": "EC_51",
+        "speed": 108.32649206485127
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "fog",
+    "conflicts_detected": 32
+  },
+  {
+    "tick": 48,
+    "time": "2026-01-25T14:45:21.895220",
+    "departures": [
+      {
+        "train": "FR_9706",
+        "from": "DESENZANO",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9717",
+        "from": "MILANO CENTRALE",
+        "to": "MILANO CENTRALE"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [
+      {
+        "train": "REG_24223",
+        "delay_seconds": 237
+      }
+    ],
+    "speed_changes": [
+      {
+        "train": "REG_10844",
+        "speed": 90.2539012078452
+      },
+      {
+        "train": "REG_25821",
+        "speed": 113.05677735409907
+      },
+      {
+        "train": "REG_1246",
+        "speed": 91.10114730308422
+      },
+      {
+        "train": "REG_10007",
+        "speed": 99.9521698436049
+      },
+      {
+        "train": "REG_2815",
+        "speed": 85.80862867596736
+      },
+      {
+        "train": "REG_10774",
+        "speed": 87.97645479258236
+      },
+      {
+        "train": "REG_8866",
+        "speed": 73.22649120387523
+      },
+      {
+        "train": "REG_3057",
+        "speed": 71.1550806626791
+      },
+      {
+        "train": "REG_2680",
+        "speed": 87.80782596721424
+      },
+      {
+        "train": "REG_11283",
+        "speed": 102.23162478083161
+      },
+      {
+        "train": "REG_24223",
+        "speed": 105.62111989453938
+      },
+      {
+        "train": "REG_10207",
+        "speed": 94.4210583680185
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "fog",
+    "conflicts_detected": 34
+  },
+  {
+    "tick": 49,
+    "time": "2026-01-25T14:45:31.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9706",
+        "from": "DESENZANO",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9717",
+        "from": "MILANO CENTRALE",
+        "to": "MILANO CENTRALE"
+      }
+    ],
+    "arrivals": [],
+    "delays_added": [
+      {
+        "train": "FR_9638",
+        "delay_seconds": 317
+      }
+    ],
+    "speed_changes": [
+      {
+        "train": "REG_25821",
+        "speed": 79.18046008487404
+      },
+      {
+        "train": "REG_10007",
+        "speed": 109.21095352400833
+      },
+      {
+        "train": "REG_10774",
+        "speed": 79.86805980608518
+      },
+      {
+        "train": "REG_8866",
+        "speed": 81.60004678153261
+      },
+      {
+        "train": "REG_2680",
+        "speed": 100.62977775785782
+      },
+      {
+        "train": "FR_9762",
+        "speed": 94.72858816468583
+      },
+      {
+        "train": "REG_11283",
+        "speed": 94.88274930930226
+      },
+      {
+        "train": "REG_24873",
+        "speed": 93.03419111625882
+      },
+      {
+        "train": "REG_24223",
+        "speed": 89.20294758089588
+      },
+      {
+        "train": "REG_10207",
+        "speed": 70.8329233648524
+      },
+      {
+        "train": "REG_1705",
+        "speed": 80.61409347508364
+      }
+    ],
+    "trains_spawned": [],
+    "incidents_started": [],
+    "incidents_resolved": [
+      "INC_26_450",
+      "INC_36_306"
+    ],
+    "weather": "fog",
+    "conflicts_detected": 33
+  },
+  {
+    "tick": 50,
+    "time": "2026-01-25T14:45:41.895220",
+    "departures": [
+      {
+        "train": "FR_9700",
+        "from": "MILANO CENTRALE",
+        "to": "BRESCIA"
+      },
+      {
+        "train": "FR_9706",
+        "from": "DESENZANO",
+        "to": "BRESCIA"
+      }
+    ],
+    "arrivals": [
+      {
+        "train": "REG_25821",
+        "station": "SESTO S. GIOVANNI"
+      },
+      {
+        "train": "REG_8866",
+        "station": "M N CADORNA"
+      }
+    ],
+    "delays_added": [
+      {
+        "train": "REG_3057",
+        "delay_seconds": 647
+      }
+    ],
+    "speed_changes": [
+      {
+        "train": "REG_812",
+        "speed": 61.21777657427491
+      },
+      {
+        "train": "REG_25821",
+        "speed": 97.51412264141328
+      },
+      {
+        "train": "REG_10007",
+        "speed": 84.47109870940467
+      },
+      {
+        "train": "REG_2815",
+        "speed": 105.1629956075977
+      },
+      {
+        "train": "REG_8866",
+        "speed": 98.20740750443805
+      },
+      {
+        "train": "REG_3057",
+        "speed": 86.74082777989848
+      },
+      {
+        "train": "REG_11283",
+        "speed": 77.47108003777883
+      },
+      {
+        "train": "REG_24873",
+        "speed": 103.19326865867896
+      },
+      {
+        "train": "REG_24223",
+        "speed": 73.50003189454307
+      },
+      {
+        "train": "REG_10207",
+        "speed": 97.03108829357815
+      },
+      {
+        "train": "REG_1705",
+        "speed": 68.79558124978226
+      },
+      {
+        "train": "EC_51",
+        "speed": 80.63976088432045
+      }
+    ],
+    "trains_spawned": [
+      "REG_10564"
+    ],
+    "incidents_started": [],
+    "incidents_resolved": [],
+    "weather": "fog",
+    "conflicts_detected": 32
+  }
+]
