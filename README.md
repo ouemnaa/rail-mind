@@ -81,9 +81,5 @@ Supports synthetic timetable generation, load/stress tests, failure injection, a
 
 ## authors 
 
--Emna Ouertani 
--Ela Sarhani 
--Nour Mustapha 
--Farah Baraket 
--Asma Raies
+Emna Ouertani - Ela Sarhani - Nour Mustapha - Farah Baraket - Asma Raies
 
