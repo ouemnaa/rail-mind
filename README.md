@@ -42,8 +42,8 @@ RailMind is a memory-driven system for real-time rail conflict detection and res
 - **Sensor Simulation** — synthesizes train positions, station occupancy and rail utilization for testing
 - **Network Context** — graph model of stations (nodes) and rails (edges), enriched with constraints and historical metrics
 - **Deterministic Detection** — rule-based checks for headways, capacity, directional conflicts
-- **Predictive Detection** — uses Qdrant to find similar past states and forecast emerging conflicts
-- **Resolution Agent** — proposes actions that respect infrastructure, train capabilities and policies
+- **Predictive Detection** — finds similar past states and forecasts emerging conflicts
+- **Resolution Agent** — proposes actions that respect infrastructure, train capabilities and policies and updates the new Qdrant database
 - **Explainability** — each action links to triggers, constraints, and historical analogues for operator trust
 
 ## Train & Data model
