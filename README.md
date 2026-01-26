@@ -1,6 +1,6 @@
 # RailMind
 
-RailMind is a memory-driven system for real-time rail conflict detection and resolution. It combines deterministic safety rules, graph-based network models, and a vector memory store (Qdrant) to predict, detect, and resolve operational conflicts with explainable actions.
+RailMind is a memory-driven system for real-time rail conflict detection and resolution built on Italy's real rail network data. It combines deterministic algorithms and safety rules, graph-based network models, and a vector memory store (Qdrant) to predict, detect, and resolve operational conflicts with explainable actions.
 
 <img width="1871" height="869" alt="rail_img_front" src="https://github.com/user-attachments/assets/8d64dbec-9495-41e2-bf0e-4f6f45ab420a" />
 
