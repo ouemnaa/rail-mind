@@ -2,6 +2,9 @@
 
 RailMind is a memory-driven system for real-time rail conflict detection and resolution. It combines deterministic safety rules, graph-based network models, and a vector memory store (Qdrant) to predict, detect, and resolve operational conflicts with explainable actions.
 
+<img width="1871" height="869" alt="rail_img_front" src="https://github.com/user-attachments/assets/8d64dbec-9495-41e2-bf0e-4f6f45ab420a" />
+
+
 ## What this project does
 
 - Detects platform and routing conflicts in real time
@@ -10,9 +13,29 @@ RailMind is a memory-driven system for real-time rail conflict detection and res
 - Suggests constraint-aware resolution actions (holds, reroutes, priority changes)
 - Provides explainability by linking decisions to triggers and similar historical events
 
-## High-level architecture
+## Tech Stack
+- Python (simulation & data processing)
+- NetworkX (railway network graph)
+- Qdrant (vector database for semantic search)
+- Other dependencies: pandas, datetime, etc.
 
-Sensor Simulation → Network State Builder → Conflict Detection (deterministic + predictive) → Conflict Aggregator → Resolution Agent → API / Operator UI
+## Setup & Run
+   ```bash
+   git clone <repo_url>
+   cd <repo_folder>
+   cd frontend
+   npm install
+   npm run
+  ```
+## Data Pipeline
+<div align="center">
+  <img width="240" height="664" alt="image" src="https://github.com/user-attachments/assets/e2160f09-0b7a-48e8-8c52-7dbe5841e7a0" />
+</div>
+
+## High-level architecture
+<div align="center">
+  <img width="276" height="333" alt="image" src="https://github.com/user-attachments/assets/99047d2f-00e4-439c-82ac-e85f2a9a6219" />
+</div>
 
 ## Key components
 
@@ -56,5 +79,11 @@ Supports synthetic timetable generation, load/stress tests, failure injection, a
 - Develop learning-based resolution policies with human-in-the-loop validation
 - Integrate real sensor feeds for near real-time operation
 
----
+## authors 
+
+-Emna Ouertani 
+-Ela Sarhani 
+-Nour Mustapha 
+-Farah Baraket 
+-Asma Raies
 
