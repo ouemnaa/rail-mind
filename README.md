@@ -58,8 +58,3 @@ Supports synthetic timetable generation, load/stress tests, failure injection, a
 
 ---
 
-If you'd like, I can:
-
-- Add a short developer quick-start (install/build/run) for each major module
-- Create CI steps for linting and tests
-- Commit and push this README update for you

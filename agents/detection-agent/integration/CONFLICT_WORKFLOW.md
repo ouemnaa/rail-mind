@@ -100,69 +100,6 @@ Each auto-saved file contains everything your resolution agent needs:
 }
 ```
 
-## Resolution Agent Workflow
-
-Your resolution agent should:
-
-```python
-# 1. Monitor detected_conflicts/ directory
-import json
-from pathlib import Path
-import time
-
-conflicts_dir = Path("agents/detection-agent/integration/detected_conflicts")
-
-while True:
-    # 2. Find unresolved conflicts
-    for conflict_file in conflicts_dir.glob("conflict_*.json"):
-        with open(conflict_file) as f:
-            conflict_data = json.load(f)
-        
-        # Skip if already resolved
-        if conflict_data["status"] != "unresolved":
-            continue
-        
-        # 3. Load network context
-        with open("creating-context/lombardy_simulation_data.json") as f:
-            network_data = json.load(f)
-        
-        # 4. Analyze conflict
-        conflict_type = conflict_data["conflict"]["type"]
-        affected_trains = conflict_data["affected_trains"]
-        location = conflict_data["conflict"]["location"]
-        suggestions = conflict_data["conflict"]["resolution_suggestions"]
-        
-        # 5. Generate resolution strategy
-        if conflict_type == "edge_capacity_overflow":
-            resolution = resolve_edge_overflow(
-                affected_trains, 
-                location, 
-                network_data
-            )
-        elif conflict_type == "platform_overflow":
-            resolution = resolve_platform_overflow(
-                affected_trains,
-                location,
-                network_data
-            )
-        # ... handle other types
-        
-        # 6. Apply resolution via API
-        apply_resolution_api(resolution)
-        
-        # 7. Update conflict status
-        conflict_data["status"] = "resolved"
-        conflict_data["resolution_applied"] = resolution
-        conflict_data["resolved_at"] = datetime.now().isoformat()
-        
-        with open(conflict_file, 'w') as f:
-            json.dump(conflict_data, f, indent=2)
-        
-        print(f"✅ Resolved: {conflict_file.name}")
-    
-    time.sleep(5)  # Check every 5 seconds
-```
-
 ## Conflict Types and Resolutions
 
 ### 1. Edge Capacity Overflow
