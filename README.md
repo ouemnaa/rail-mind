@@ -46,10 +46,6 @@ RailMind is a memory-driven system for real-time rail conflict detection and res
 - **Resolution Agent** — proposes actions that respect infrastructure, train capabilities and policies and updates the new Qdrant database
 - **Explainability** — each action links to triggers, constraints, and historical analogues for operator trust
 
-## Train & Data model
-
-Trains are first-class agents with planned routes, schedule info and real-time state. Train CSVs are transformed into simulation-ready JSON (routes, station order, coordinates, distances). The network graph JSON contains station metadata and rail attributes.
-
 ## Project layout
 
 ```
