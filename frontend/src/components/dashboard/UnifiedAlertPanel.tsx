@@ -8,19 +8,7 @@
  */
 
 import { useState } from 'react';
-import {
-  AlertTriangle,
-  Clock,
-  MapPin,
-  Train,
-  Zap,
-  ChevronDown,
-  ChevronUp,
-  AlertCircle,
-  CheckCircle2,
-  XCircle,
-  ArrowRight,
-} from 'lucide-react';
+import { AlertTriangle, MapPin, ChevronDown, ChevronUp, CheckCircle2, XCircle } from 'lucide-react';
 import type { UnifiedConflict } from '../../hooks/useUnifiedSimulation';
 
 interface UnifiedAlertPanelProps {
@@ -258,25 +246,7 @@ function DetectionCard({ conflict, isExpanded, onToggle }: {
             )}
 
             {/* Resolution Suggestions */}
-            {conflict.resolution_suggestions && conflict.resolution_suggestions.length > 0 && (
-              <div className="space-y-2">
-                <div className="text-xs font-semibold text-emerald-400 uppercase tracking-wide flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3" />
-                  Suggested Resolutions
-                </div>
-                <div className="space-y-1">
-                  {conflict.resolution_suggestions.map((resolution, idx) => (
-                    <div 
-                      key={idx}
-                      className="flex items-start gap-2 text-xs bg-emerald-900/20 border border-emerald-500/30 p-2 rounded"
-                    >
-                      <ArrowRight className="w-3 h-3 text-emerald-400 mt-0.5 flex-shrink-0" />
-                      <span className="text-emerald-200">{resolution}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            
           </div>
         </div>
       )}
@@ -296,7 +266,7 @@ export function UnifiedAlertPanel({
 
   // Sort predictions by probability (highest first)
   const sortedPredictions = [...predictions]
-    .filter(p => p.probability >= 0.3) // Only show meaningful predictions
+    .filter(p => p.probability >= 0.3) 
     .sort((a, b) => b.probability - a.probability);
 
   // High risk predictions (>=50%)
