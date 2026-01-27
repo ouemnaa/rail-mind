@@ -8,11 +8,13 @@ import { KPICard } from '@/components/dashboard/KPICard';
 import { MemoryView } from '@/components/memory/MemoryView';
 import { ResolutionPanel } from '@/components/resolution/ResolutionPanel';
 import { ExplanationView } from '@/components/explanation/ExplanationView';
+import { MaintenanceView } from '@/components/maintanace/MaintenanceView';
+import { DocumentationView } from '@/components/documentation/DocumentationView';
 import { useUnifiedSimulation } from '@/hooks/useUnifiedSimulation';
 import type { BatchPrediction, ConflictPrediction } from '@/types/prediction';
 import { Sidebar } from '@/components/layout/Sidebar';
 
-type View = 'dashboard' | 'memory' | 'resolution' | 'explanation';
+type View = 'dashboard' | 'memory' | 'resolution' | 'explanation' | 'maintenance' | 'documentation';
 type MapMode = 'lombardy' | 'full-network';
 
 const Index = () => {
@@ -20,7 +22,6 @@ const Index = () => {
   const [showConflictDetail, setShowConflictDetail] = useState(false);
   const [mapMode, setMapMode] = useState<MapMode>('lombardy');
 
-  // Use the unified simulation hook
   const {
     state,
     trains,
@@ -34,35 +35,27 @@ const Index = () => {
     tick,
     multiTick,
     reset,
-  } = useUnifiedSimulation({
-    autoStart: true,
-    tickInterval: 2000, // 2 seconds per tick for visible updates
-  });
+  } = useUnifiedSimulation({ autoStart: true, tickInterval: 2000 });
 
-  // Convert unified predictions to BatchPrediction format for map compatibility
   const batchPrediction: BatchPrediction | null = useMemo(() => {
     if (!state) return null;
 
-    // Combine predictions and detections for display
     const allConflicts = [...predictions, ...detections];
-    
-    // Calculate network risk from predictions
+
     const avgProbability = predictions.length > 0
       ? predictions.reduce((sum, p) => sum + p.probability, 0) / predictions.length
       : 0;
-    
-    // Boost risk if there are active detections
+
     const detectionBoost = detections.length > 0 ? 0.2 : 0;
     const networkRisk = Math.min(avgProbability + detectionBoost, 1);
 
-    // Convert to prediction format
     const convertedPredictions: ConflictPrediction[] = allConflicts.map(conflict => ({
       train_id: conflict.involved_trains[0] || 'unknown',
       probability: conflict.probability,
-      risk_level: conflict.source === 'detection' ? 'critical' : 
+      risk_level: conflict.source === 'detection' ? 'critical' :
                   conflict.probability >= 0.6 ? 'high_risk' :
                   conflict.probability >= 0.3 ? 'low_risk' : 'safe',
-      color: conflict.source === 'detection' ? '#dc2626' : 
+      color: conflict.source === 'detection' ? '#dc2626' :
              conflict.probability >= 0.6 ? '#f97316' : '#f59e0b',
       emoji: conflict.source === 'detection' ? '🔴' : '🟠',
       predicted_conflict_type: conflict.conflict_type as any,
@@ -85,17 +78,11 @@ const Index = () => {
     };
   }, [state, predictions, detections]);
 
-  // Calculate KPI values
   const criticalCount = detections.length;
   const highRiskCount = predictions.filter(p => p.probability >= 0.5).length;
   const networkRisk = batchPrediction?.network_risk_score || 0;
   const totalTrains = trains.length;
   const delayedTrains = trains.filter(t => t.delay_sec > 60).length;
-
-  const handleViewResolution = () => {
-    setCurrentView('memory');
-    setShowConflictDetail(false);
-  };
 
   const renderMainContent = () => {
     switch (currentView) {
@@ -118,74 +105,45 @@ const Index = () => {
             <ExplanationView onBack={() => setCurrentView('memory')} />
           </div>
         );
+      case 'maintenance':
+        return <MaintenanceView onBack={() => setCurrentView('dashboard')} />;
+      case 'documentation':
+        return <DocumentationView onBack={() => setCurrentView('dashboard')} />;
       default: // dashboard
         return (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
-            {/* Main content - Network Map and KPIs */}
             <div className="lg:col-span-2 flex flex-col gap-6">
               {/* KPI Cards */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <KPICard
-                  title="Network Risk"
-                  value={(networkRisk * 100).toFixed(0)}
-                  unit="%"
-                  icon={TrendingUp}
-                  status={networkRisk > 0.5 ? 'critical' : networkRisk > 0.3 ? 'warning' : 'normal'}
-                />
-                <KPICard
-                  title="Active Conflicts"
-                  value={criticalCount.toString()}
-                  icon={AlertTriangle}
-                  status={criticalCount > 0 ? 'critical' : 'normal'}
-                />
-                <KPICard
-                  title="High Risk"
-                  value={highRiskCount.toString()}
-                  icon={Clock}
-                  status={highRiskCount > 3 ? 'warning' : 'normal'}
-                />
-                <KPICard
-                  title="Trains"
-                  value={`${totalTrains}`}
-                  icon={Users}
-                  status={delayedTrains > 5 ? 'warning' : 'normal'}
-                />
+                <KPICard title="Network Risk" value={(networkRisk*100).toFixed(0)} unit="%" icon={TrendingUp} status={networkRisk>0.5?'critical':networkRisk>0.3?'warning':'normal'} />
+                <KPICard title="Active Conflicts" value={criticalCount.toString()} icon={AlertTriangle} status={criticalCount>0?'critical':'normal'} />
+                <KPICard title="High Risk" value={highRiskCount.toString()} icon={Clock} status={highRiskCount>3?'warning':'normal'} />
+                <KPICard title="Trains" value={`${totalTrains}`} icon={Users} status={delayedTrains>5?'warning':'normal'} />
               </div>
 
-              {/* Network Map with Predictions */}
+              {/* Map Toggle */}
               <div className="flex-1 min-h-[500px] flex flex-col">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-semibold">Rail Network</h2>
                   <button
                     onClick={() => setMapMode(mapMode === 'lombardy' ? 'full-network' : 'lombardy')}
                     className="flex items-center gap-2 px-3 py-2 bg-slate-700 hover:bg-slate-600 rounded text-sm transition-colors"
-                    title={mapMode === 'lombardy' ? 'Show full network' : 'Show Lombardy only'}
+                    title={mapMode==='lombardy'?'Show full network':'Show Lombardy only'}
                   >
                     <Map className="w-4 h-4" />
-                    {mapMode === 'lombardy' ? 'Full Network' : 'Lombardy Only'}
+                    {mapMode==='lombardy'?'Full Network':'Lombardy Only'}
                   </button>
                 </div>
-                {mapMode === 'lombardy' ? (
-                  <LombardyNetworkMap
-                    predictions={batchPrediction}
-                    onStationClick={() => setShowConflictDetail(true)}
-                  />
+                {mapMode==='lombardy' ? (
+                  <LombardyNetworkMap predictions={batchPrediction} onStationClick={()=>setShowConflictDetail(true)} />
                 ) : (
-                  <NetworkMap
-                    onStationClick={() => setShowConflictDetail(true)}
-                  />
+                  <NetworkMap  onStationClick={()=>setShowConflictDetail(true)} />
                 )}
               </div>
             </div>
 
-            {/* Right sidebar - Unified Alert Panel */}
             <div className="h-full min-h-[600px]">
-              <UnifiedAlertPanel
-                predictions={predictions}
-                detections={detections}
-                tickNumber={state?.tick_number}
-                simulationTime={state?.simulation_time}
-              />
+              <UnifiedAlertPanel predictions={predictions} detections={detections} tickNumber={state?.tick_number} simulationTime={state?.simulation_time} />
             </div>
           </div>
         );
@@ -194,46 +152,50 @@ const Index = () => {
 
   return (
     <div className="h-screen flex overflow-hidden bg-background">
-  {/* Left Sidebar */}
-  <Sidebar
-    currentView={currentView}
-    onViewChange={setCurrentView}
-  />
+      <Sidebar  />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <Header />
+        {error && (
+          <div className="bg-red-500/20 border-b border-red-500/50 px-4 py-2 flex items-center justify-between">
+            <div className="flex items-center gap-2 text-red-400 text-sm">
+              <WifiOff className="w-4 h-4" />
+              <span>API connection error: {error}</span>
+            </div>
+            <button onClick={()=>tick()} className="text-xs bg-red-500/30 hover:bg-red-500/50 px-3 py-1 rounded">Retry</button>
+          </div>
+        )}
+        {isLoading && !state && (
+          <div className="bg-blue-500/20 border-b border-blue-500/50 px-4 py-2">
+            <div className="flex items-center gap-2 text-blue-400 text-sm">
+              <div className="animate-spin w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full" />
+              <span>Connecting to simulation...</span>
+            </div>
+          </div>
+        )}
+        <main className="flex-1 overflow-auto p-6">{renderMainContent()}</main>
 
-  {/* Right Content Area */}
-  <div className="flex-1 flex flex-col overflow-hidden">
-    <Header />
 
-    {/* Connection Status Banner */}
-    {error && (
-      <div className="bg-red-500/20 border-b border-red-500/50 px-4 py-2 flex items-center justify-between">
-        <div className="flex items-center gap-2 text-red-400 text-sm">
-          <WifiOff className="w-4 h-4" />
-          <span>API connection error: {error}</span>
-        </div>
-        <button
-          onClick={() => tick()}
-          className="text-xs bg-red-500/30 hover:bg-red-500/50 px-3 py-1 rounded"
-        >
-          Retry
-        </button>
-      </div>
-    )}
 
-    {/* Loading indicator */}
-    {isLoading && !state && (
-      <div className="bg-blue-500/20 border-b border-blue-500/50 px-4 py-2">
-        <div className="flex items-center gap-2 text-blue-400 text-sm">
-          <div className="animate-spin w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full" />
-          <span>Connecting to simulation...</span>
-        </div>
-      </div>
-    )}
 
-    {/* Main Content */}
-    <main className="flex-1 overflow-auto p-6">
-      {renderMainContent()}
-    </main>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     {/* Status bar with simulation controls */}
     <div className="border-t border-slate-700 bg-slate-900/50 px-4 py-2 text-xs text-slate-400 flex items-center justify-between">
@@ -283,6 +245,8 @@ const Index = () => {
           </span>
         </span>
       </div>
+
+
 
       <div className="flex items-center gap-4">
         <span>
