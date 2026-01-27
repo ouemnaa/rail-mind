@@ -29,9 +29,12 @@ from typing import Optional, List
 import json
 
 # Add paths
-BASE_DIR = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(BASE_DIR / "prediction_confilt"))
-sys.path.insert(0, str(BASE_DIR / "deterministic-detection"))
+# BASE_DIR is backend folder, detection modules are in agents/detection-agent/
+BASE_DIR = Path(__file__).resolve().parent.parent  # backend folder
+PROJECT_ROOT = BASE_DIR.parent  # rail-mind folder
+DETECTION_AGENT_DIR = PROJECT_ROOT / "agents" / "detection-agent"
+sys.path.insert(0, str(DETECTION_AGENT_DIR / "prediction_confilt"))
+sys.path.insert(0, str(DETECTION_AGENT_DIR / "deterministic-detection"))
 sys.path.insert(0, str(BASE_DIR / "integration"))
 
 from fastapi import FastAPI, HTTPException

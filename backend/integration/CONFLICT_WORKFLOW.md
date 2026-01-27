@@ -173,7 +173,7 @@ def resolve_headway_violation(train1, train2, edge):
 ```powershell
 # Start API server
 cd c:\Users\dongm\OneDrive\Desktop\rail-mind
-Start-Job { .venv\Scripts\python.exe agents\detection-agent\integration\unified_api.py }
+Start-Job { .venv\Scripts\python.exe backend\integration\unified_api.py }
 Start-Sleep -Seconds 8
 
 # Run simulation
@@ -190,13 +190,13 @@ for ($i = 1; $i -le 30; $i++) {
 }
 
 # Check auto-saved files
-Get-ChildItem "agents\detection-agent\integration\detected_conflicts\*.json"
+Get-ChildItem "backend\integration\detected_conflicts\*.json"
 ```
 
 ### View Latest Conflict:
 
 ```powershell
-$latest = Get-ChildItem "agents\detection-agent\integration\detected_conflicts\*.json" | 
+$latest = Get-ChildItem "backend\integration\detected_conflicts\*.json" | 
     Sort-Object LastWriteTime -Descending | 
     Select-Object -First 1
 
@@ -212,17 +212,20 @@ rail-mind/
 │
 ├── agents/
 │   ├── detection-agent/
-│   │   └── integration/
-│   │       ├── unified_api.py         ← API server
-│   │       ├── integration_engine.py  ← Core logic
-│   │       ├── detected_conflicts/    ← Auto-saved files
-│   │       │   ├── README.md
-│   │       │   ├── conflict_edge-capacity-overflow_tick20_<uuid>.json
-│   │       │   └── conflict_platform-overflow_tick35_<uuid>.json
-│   │       └── conflict_results/      ← Manual snapshots
+│   │   ├── prediction_confilt/        ← ML models
+│   │   └── deterministic-detection/   ← Rule engine
 │   │
 │   └── resolution-agent/              ← Your resolution agent
 │       └── resolve_conflicts.py       ← Processes detected_conflicts/
+│
+├── backend/
+│   └── integration/
+│       ├── unified_api.py             ← API server (PORT 8002)
+│       ├── integration_engine.py      ← Core logic
+│       ├── detected_conflicts/        ← Auto-saved files
+│       │   ├── README.md
+│       │   └── detected_conflicts.json
+│       └── conflict_results/          ← Manual snapshots
 │
 └── frontend/                          ← Visualization
     └── src/

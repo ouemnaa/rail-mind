@@ -49,9 +49,12 @@ import json
 import random
 
 # Add paths for imports
-BASE_DIR = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(BASE_DIR / "prediction_confilt"))
-sys.path.insert(0, str(BASE_DIR / "deterministic-detection"))
+# BASE_DIR is backend folder, detection modules are in agents/detection-agent/
+BASE_DIR = Path(__file__).resolve().parent.parent  # backend folder
+PROJECT_ROOT = BASE_DIR.parent  # rail-mind folder
+DETECTION_AGENT_DIR = PROJECT_ROOT / "agents" / "detection-agent"
+sys.path.insert(0, str(DETECTION_AGENT_DIR / "prediction_confilt"))
+sys.path.insert(0, str(DETECTION_AGENT_DIR / "deterministic-detection"))
 
 # Prediction imports
 from predictor import ConflictPredictor
@@ -238,12 +241,12 @@ class IntegrationEngine:
         """
         print("\n[Integration] Initializing unified engine...")
         
-        # Default data path - BASE_DIR is detection-agent folder, so we go up 2 levels
+        # Default data path - PROJECT_ROOT is rail-mind folder
         if simulation_data_path is None:
             # Try multiple possible locations
             possible_paths = [
-                BASE_DIR.parent.parent / "creating-context" / "lombardy_simulation_data.json",
-                Path(__file__).resolve().parent.parent.parent.parent / "creating-context" / "lombardy_simulation_data.json",
+                PROJECT_ROOT / "creating-context" / "lombardy_simulation_data.json",
+                Path(__file__).resolve().parent.parent.parent / "creating-context" / "lombardy_simulation_data.json",
             ]
             simulation_data_path = None
             for p in possible_paths:

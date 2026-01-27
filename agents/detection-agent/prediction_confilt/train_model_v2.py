@@ -9,7 +9,7 @@ Key Improvements:
 1. Uses FeatureEngine.compute_features() for BOTH training and prediction
 2. Generates realistic training data from historical incidents
 3. Creates synthetic conflict scenarios from normal operations
-4. Properly handles all 28 features
+4. Properly handles all  features
 
 Why XGBoost + Heuristics Ensemble?
 ----------------------------------
@@ -23,7 +23,7 @@ The ensemble approach is especially valuable because:
 - Historical incident data is sparse (only 113 records, 7 in Lombardy)
 - XGBoost alone may overfit or miss edge cases
 - Heuristics provide baseline safety rules
-- Combined, they catch both learned patterns AND known risk factors
+- Combined, they catch both learned patterns AND known risk factorsp
 """
 
 import json
@@ -163,6 +163,9 @@ class TrainingDataGenerator:
         - Create train state at various points BEFORE the incident
         - Extract features using the SAME FeatureEngine as predictor
         - Label as conflict=1
+        
+        NOTE: We add variability to delays to prevent overfitting.
+        Real-world conflicts can occur even with moderate delays.
         """
         samples = []
         labels = []
@@ -209,21 +212,24 @@ class TrainingDataGenerator:
                     if minutes_before > lookback_minutes:
                         continue
                     
-                    # Simulate increasing delay as incident approaches
-                    delay_progression = [60, 180, 300][min(2, minutes_before // 5)]
+                    # REALISTIC delays: conflicts can occur with various delay levels
+                    # Add randomness to prevent model from just learning "high delay = conflict"
+                    base_delays = [30, 60, 120, 180, 240, 300, 360]
+                    delay_progression = random.choice(base_delays) + random.randint(-30, 60)
+                    delay_progression = max(0, delay_progression)  # Ensure non-negative
                     
                     # Create train state
-                    train_id = f"TRAIN_{inc.get('id', 'UNK')}"
+                    train_id = f"TRAIN_{inc.get('id', 'UNK')}_{minutes_before}"
                     train = self._create_train_state(
                         train_id=train_id,
                         station=station,
                         next_station=route[1]['station_name'] if len(route) > 1 else "NEXT",
                         delay_sec=delay_progression,
-                        train_type="regional",
+                        train_type=random.choice(["regional", "intercity", "high_speed"]),
                         route=route
                     )
                     
-                    # Create network state
+                    # Create network state with some congestion (realistic scenario)
                     network = self._create_network_state(
                         trains={train_id: train},
                         simulation_time=inc_time - timedelta(minutes=minutes_before)
@@ -248,10 +254,14 @@ class TrainingDataGenerator:
         Generate negative samples (conflict=0) from normal operations.
         
         For each sample:
-        - Create train state with normal/low delay
+        - Create train state with REALISTIC delays (including moderate delays)
         - Ensure time is NOT near any incident
         - Extract features using SAME FeatureEngine
         - Label as conflict=0
+        
+        NOTE: Normal operations can ALSO have delays! The key difference is:
+        - Conflicts: Delays + congestion + cascading effects
+        - Normal: Delays may occur but no cascading/conflict situation
         """
         samples = []
         labels = []
@@ -312,8 +322,18 @@ class TrainingDataGenerator:
                 if too_close:
                     continue
                 
-                # Create train state with LOW delay (normal operation)
-                delay = random.choice([0, 0, 0, 30, 60, 90])  # Mostly on time
+                # REALISTIC delays for normal operations:
+                # - Normal ops can have delays too, just no cascading conflicts
+                # - This prevents model from learning "delay = conflict"
+                delay_options = [
+                    0, 0, 0,           # 30% on time
+                    30, 45, 60,        # 30% minor delays (30-60 sec)
+                    90, 120, 150,      # 25% moderate delays (1.5-2.5 min)
+                    180, 240           # 15% significant delays (3-4 min) but still normal
+                ]
+                delay = random.choice(delay_options) + random.randint(-15, 30)
+                delay = max(0, delay)  # Ensure non-negative
+                
                 train_id = f"NORMAL_{len(samples)}"
                 
                 train = self._create_train_state(
@@ -397,6 +417,7 @@ class TrainingDataGenerator:
 def train_model(X: np.ndarray, y: np.ndarray) -> Tuple[xgb.XGBClassifier, StandardScaler, Dict]:
     """
     Train XGBoost model with proper validation.
+
     
     Returns trained model, scaler, and metrics.
     """
@@ -456,9 +477,20 @@ def train_model(X: np.ndarray, y: np.ndarray) -> Tuple[xgb.XGBClassifier, Standa
     except:
         avg_precision = 0.0
     
+    # Additional metrics for better evaluation
+    from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+    accuracy = accuracy_score(y_val, y_pred)
+    precision = precision_score(y_val, y_pred, zero_division=0)
+    recall = recall_score(y_val, y_pred, zero_division=0)
+    f1 = f1_score(y_val, y_pred, zero_division=0)
+    
     metrics = {
         'roc_auc': roc_auc,
         'avg_precision': avg_precision,
+        'accuracy': accuracy,
+        'precision': precision,
+        'recall': recall,
+        'f1_score': f1,
         'train_samples': len(y_train),
         'val_samples': len(y_val),
         'n_features': X.shape[1]
@@ -467,8 +499,24 @@ def train_model(X: np.ndarray, y: np.ndarray) -> Tuple[xgb.XGBClassifier, Standa
     print(f"\n{'='*60}")
     print("TRAINING RESULTS")
     print("="*60)
-    print(f"  ROC-AUC Score: {roc_auc:.4f}")
-    print(f"  Avg Precision: {avg_precision:.4f}")
+    print(f"\n  Classification Metrics:")
+    print(f"  ├── Accuracy:    {accuracy:.4f}")
+    print(f"  ├── Precision:   {precision:.4f}  (of predicted conflicts, how many are real)")
+    print(f"  ├── Recall:      {recall:.4f}  (of real conflicts, how many detected)")
+    print(f"  └── F1 Score:    {f1:.4f}")
+    print(f"\n  Ranking Metrics:")
+    print(f"  ├── ROC-AUC:     {roc_auc:.4f}  (discrimination ability)")
+    print(f"  └── Avg Prec:    {avg_precision:.4f}  (precision at various thresholds)")
+    
+    # Warning for suspicious metrics
+    if roc_auc > 0.95:
+        print(f"\n  ⚠️  WARNING: ROC-AUC > 0.95 is suspicious!")
+        print(f"      Possible causes: overfitting, data leakage, or synthetic data too easy")
+        print(f"      The model might not generalize well to real-world data.")
+    elif roc_auc > 0.85:
+        print(f"\n  ✓ Good: ROC-AUC in expected range (0.70-0.90)")
+    elif roc_auc < 0.6:
+        print(f"\n  ⚠️  WARNING: ROC-AUC < 0.6 indicates poor model performance")
     
     # Feature importance
     importance = model.feature_importances_
@@ -479,9 +527,9 @@ def train_model(X: np.ndarray, y: np.ndarray) -> Tuple[xgb.XGBClassifier, Standa
         'importance': importance
     }).sort_values('importance', ascending=False)
     
-    print(f"\n  Top 10 Most Important Features:")
-    for i, row in importance_df.head(10).iterrows():
-        print(f"    {i+1:2d}. {row['feature']:<35} {row['importance']:.4f}")
+    print(f"\n  Top 5 Important Features:")
+    for i, row in importance_df.head(5).iterrows():
+        print(f"    {row['feature']}: {row['importance']:.4f}")
     
     return model, scaler, metrics
 
@@ -527,7 +575,7 @@ def main():
     """Main training pipeline."""
     print("\n" + "="*70)
     print("RAIL-MIND CONFLICT PREDICTOR - MODEL TRAINING v2")
-    print("Using FeatureEngine for consistent 28-feature extraction")
+    print("Using FeatureEngine for consistent features extraction")
     print("="*70)
     
     # Generate training data

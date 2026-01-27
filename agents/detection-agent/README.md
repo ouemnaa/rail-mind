@@ -14,6 +14,13 @@ ML-based conflict prediction system that:
 
 See [prediction_confilt/README.md](prediction_confilt/README.md) for detailed documentation.
 
+### 2. Deterministic Detection (`deterministic-detection/`)
+
+Rule-based conflict detection system that:
+- **Detects conflicts in real-time** using deterministic rules
+- **Checks platform and edge capacity** overflow
+- **Monitors headway violations** between trains
+
 ## Architecture Overview
 
 ```
@@ -22,11 +29,15 @@ Detection Agent
 │   ├── predictor.py           # XGBoost classifier
 │   ├── feature_engine.py      # Feature engineering
 │   ├── qdrant_memory.py       # Similarity search
-│   └── prediction_api.py      # REST/WebSocket API
+│   └── train_model_v2.py      # Model training
 │
-└── [Future modules]
-    ├── anomaly_detection/     # Anomaly detection
-    └── pattern_recognition/   # Historical patterns
+├── deterministic-detection/   # Rule-based Detection
+│   ├── engine.py              # Detection engine
+│   ├── rules.py               # Conflict rules
+│   ├── models.py              # Data models
+│   └── state_tracker.py       # Network state
+│
+└── [Integration moved to backend/]
 ```
 
 ## Quick Start
@@ -36,10 +47,8 @@ Detection Agent
 cd rail-mind
 pip install -r requirements.txt
 
-# Start Unified API Server (Prediction + Detection + Simulation)
-python .venv/Scripts/python.exe agents/detection-agent/integration/unified_api.py
-# Or from Windows PowerShell:
-.venv\Scripts\python.exe agents\detection-agent\integration\unified_api.py
+# Start Unified API Server (from backend folder)
+.venv\Scripts\python.exe backend\integration\unified_api.py
 
 # Server runs on: http://localhost:8002
 
@@ -50,6 +59,7 @@ curl http://localhost:8002/api/simulation/state
 
 ## Integration Points
 
+- **Backend Integration**: API server is in `backend/integration/`
 - **Simulator Agent**: Receives network state updates
 - **Resolution Agent**: Sends conflict predictions for resolution
 - **Frontend**: Real-time visualization via WebSocket

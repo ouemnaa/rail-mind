@@ -3,12 +3,6 @@ XGBoost Conflict Predictor
 ==========================
 
 Main ML model for predicting railway conflicts.
-Uses XGBoost with graph-aware features for:
-- Platform conflicts
-- Track conflicts  
-- Headway violations
-- Capacity issues
-- Cascading delays
 """
 
 import json

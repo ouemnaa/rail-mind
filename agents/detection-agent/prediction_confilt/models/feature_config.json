@@ -31,13 +31,17 @@
   ],
   "n_features": 28,
   "training_metrics": {
-    "roc_auc": 1.0,
-    "avg_precision": 1.0,
+    "roc_auc": 0.9423076923076924,
+    "avg_precision": 0.8041666666666667,
+    "accuracy": 0.8235294117647058,
+    "precision": 0.6666666666666666,
+    "recall": 0.5,
+    "f1_score": 0.5714285714285714,
     "train_samples": 67,
     "val_samples": 17,
     "n_features": 28
   },
-  "trained_at": "2026-01-25T17:39:06.028390",
+  "trained_at": "2026-01-27T15:17:21.108457",
   "model_type": "XGBoost + Heuristics Ensemble",
   "ensemble_reason": "XGBoost learns patterns from historical data while heuristics encode domain knowledge. Combined, they provide robust predictions even with limited training data. When both agree, confidence is boosted."
 }
