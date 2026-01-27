@@ -229,8 +229,17 @@ class ConflictPredictor:
         
         if use_ml:
             try:
+                # SAFETY CHECK: Replace NaN/inf values before scaling
+                feature_array_clean = feature_array.copy()
+                feature_array_clean = np.nan_to_num(
+                    feature_array_clean, 
+                    nan=0.0, 
+                    posinf=3600.0,  # Replace +inf with 1 hour
+                    neginf=0.0     # Replace -inf with 0
+                )
+                
                 # Try to use ML model with ensemble
-                feature_array_scaled = self.scaler.transform(feature_array.reshape(1, -1))
+                feature_array_scaled = self.scaler.transform(feature_array_clean.reshape(1, -1))
                 ml_probability = float(self.model.predict_proba(feature_array_scaled)[0, 1])
                 heuristic_probability = self._heuristic_probability(features)
                 

@@ -223,7 +223,8 @@ class FeatureEngine:
                     features["distance_to_next_station_km"] / train.speed_kmh * 3600
                 )
             else:
-                features["time_to_next_station_sec"] = float('inf')
+                # Use a large but finite value instead of infinity (1 hour max)
+                features["time_to_next_station_sec"] = 3600.0
         else:
             features["distance_to_next_station_km"] = 0.0
             features["time_to_next_station_sec"] = 0.0

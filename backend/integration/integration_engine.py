@@ -232,6 +232,11 @@ class IntegrationEngine:
         self.scenario_active = False
         self.scenario_tick = 0
         
+        # CONFLICT PERSISTENCE: Keep conflicts visible for multiple ticks
+        self.active_detections: Dict[str, UnifiedConflict] = {}  # conflict_id -> conflict
+        self.detection_ttl: Dict[str, int] = {}  # conflict_id -> ticks remaining
+        self.CONFLICT_PERSISTENCE_TICKS = 10  # Keep conflicts visible for 10 ticks (10 minutes)
+        
     def initialize(self, simulation_data_path: Optional[Path] = None) -> None:
         """
         Initialize the engine with network data.
@@ -435,11 +440,34 @@ class IntegrationEngine:
         self._sync_detection_state()
         
         # 3. Run detection (every tick)
-        detections = self._run_detection()
+        new_detections = self._run_detection()
         
         # 3.1. Auto-save detected conflicts for resolution agent
-        if detections:
-            self._save_detected_conflicts(detections)
+        if new_detections:
+            self._save_detected_conflicts(new_detections)
+        
+        # 3.2. CONFLICT PERSISTENCE with DEDUPLICATION
+        # Create unique key based on conflict content (not ID)
+        for detection in new_detections:
+            # Unique key: type + location + sorted trains
+            unique_key = f"{detection.conflict_type}_{detection.location}_{'_'.join(sorted(detection.involved_trains))}"
+            
+            # Update or add conflict with this unique key
+            self.active_detections[unique_key] = detection
+            self.detection_ttl[unique_key] = self.CONFLICT_PERSISTENCE_TICKS
+        
+        # 3.3. Decrement TTL and remove expired conflicts
+        expired_keys = []
+        for unique_key in self.detection_ttl:
+            self.detection_ttl[unique_key] -= 1
+            if self.detection_ttl[unique_key] <= 0:
+                expired_keys.append(unique_key)
+        for unique_key in expired_keys:
+            del self.active_detections[unique_key]
+            del self.detection_ttl[unique_key]
+        
+        # Get all active detections (persistent and deduplicated)
+        all_detections = list(self.active_detections.values())
         
         # 4. Run prediction (EVERY tick for continuous mode)
         self.last_predictions = self._run_prediction()
@@ -450,7 +478,7 @@ class IntegrationEngine:
             tick_number=self.tick_number,
             trains=list(self.trains.values()),
             predictions=self.last_predictions,
-            detections=detections,
+            detections=all_detections,  # Use persistent detections
             statistics=self._get_statistics()
         )
     
