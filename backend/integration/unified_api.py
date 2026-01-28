@@ -39,12 +39,17 @@ sys.path.insert(0, str(BASE_DIR / "integration"))
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import uvicorn
 
 # Create output directory for conflict results
 CONFLICTS_OUTPUT_DIR = Path(__file__).parent / "conflict_results"
 CONFLICTS_OUTPUT_DIR.mkdir(exist_ok=True)
+
+# Track images directory
+TRACK_IMAGES_DIR = PROJECT_ROOT / "agents" / "detection-agent" / "Vision-Based Track Fault Detection" / "images"
 
 # Import integration engine
 try:
@@ -90,6 +95,7 @@ class ConflictResponse(BaseModel):
     resolution_suggestions: List[str]
     lat: Optional[float]
     lon: Optional[float]
+    image_url: Optional[str] = None  # Track fault images
 
 
 class StateResponse(BaseModel):
@@ -163,6 +169,7 @@ def root():
             "/api/simulation/start": "Reset simulation",
             "/api/prediction/{station_id}": "Get predictions for a station",
             "/api/region/{region}": "Get all data for a region",
+            "/api/track-images/{filename}": "Get track fault images",
             "/health": "Health check"
         },
         "color_coding": {
@@ -182,6 +189,24 @@ def health():
         "engine_initialized": engine is not None,
         "timestamp": datetime.now().isoformat()
     }
+
+
+@app.get("/api/track-images/{filename}")
+def get_track_image(filename: str):
+    """
+    Serve track fault images for display in frontend.
+    
+    Used to show detected defective track images in alert panel.
+    """
+    image_path = TRACK_IMAGES_DIR / filename
+    print(f"[API] Serving track image: {image_path}")
+    if not image_path.exists():
+        raise HTTPException(status_code=404, detail=f"Image not found: {filename}")
+    return FileResponse(
+        path=str(image_path),
+        media_type="image/jpeg",
+        filename=filename
+    )
 
 
 @app.get("/api/simulation/state")

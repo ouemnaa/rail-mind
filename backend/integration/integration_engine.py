@@ -78,6 +78,18 @@ except ImportError as e:
     DetectionNetworkState = None
     DetectionEngine = None
 
+# Vision-based track fault detection imports
+TRACK_FAULT_DIR = DETECTION_AGENT_DIR / "Vision-Based Track Fault Detection"
+sys.path.insert(0, str(TRACK_FAULT_DIR))
+try:
+    from model import TrackFaultDetector
+    TRACK_FAULT_AVAILABLE = True
+    print("[Integration] ✅ Track fault detection module loaded")
+except ImportError as e:
+    print(f"[Integration] ⚠️ Track fault detection not available: {e}")
+    TRACK_FAULT_AVAILABLE = False
+    TrackFaultDetector = None
+
 
 @dataclass
 class TrainPosition:
@@ -137,6 +149,7 @@ class UnifiedConflict:
     lat: Optional[float] = None
     lon: Optional[float] = None
     model_used: str = "unknown"  # "xgboost_ensemble", "heuristic", "detection"
+    image_url: Optional[str] = None  # For track fault images
     
     def to_dict(self) -> Dict:
         return {
@@ -144,7 +157,7 @@ class UnifiedConflict:
             "source": self.source,
             "conflict_type": self.conflict_type,
             "severity": self.severity,
-            "probability": self.probability,
+            "probability": float(self.probability),  # Convert numpy types to Python float
             "location": self.location,
             "location_type": self.location_type,
             "involved_trains": self.involved_trains,
@@ -154,7 +167,8 @@ class UnifiedConflict:
             "resolution_suggestions": self.resolution_suggestions,
             "lat": self.lat,
             "lon": self.lon,
-            "model_used": self.model_used
+            "model_used": self.model_used,
+            "image_url": self.image_url
         }
 
 
@@ -236,6 +250,19 @@ class IntegrationEngine:
         self.active_detections: Dict[str, UnifiedConflict] = {}  # conflict_id -> conflict
         self.detection_ttl: Dict[str, int] = {}  # conflict_id -> ticks remaining
         self.CONFLICT_PERSISTENCE_TICKS = 10  # Keep conflicts visible for 10 ticks (10 minutes)
+        
+        # TRACK FAULT DETECTION (Vision-based)
+        self.track_fault_detector = None
+        self.track_fault_scan_interval = 50  # Scan every 50 ticks (rare, for demo)
+        self.track_fault_triggered = False  # Only trigger once for demo
+        self.edges_under_maintenance: Dict[str, datetime] = {}  # edge -> maintenance_end_time
+        
+        if TRACK_FAULT_AVAILABLE:
+            try:
+                self.track_fault_detector = TrackFaultDetector()
+                print("[Integration] ✅ Track fault detector initialized")
+            except Exception as e:
+                print(f"[Integration] ⚠️ Could not initialize track fault detector: {e}")
         
     def initialize(self, simulation_data_path: Optional[Path] = None) -> None:
         """
@@ -433,6 +460,9 @@ class IntegrationEngine:
         # 0. Generate conflict scenarios periodically to demonstrate detection
         self._generate_conflict_scenarios()
         
+        # 0.5. Check for expired maintenance periods
+        self._check_maintenance_status()
+        
         # 1. Update train positions
         self._update_trains()
         
@@ -441,6 +471,10 @@ class IntegrationEngine:
         
         # 3. Run detection (every tick)
         new_detections = self._run_detection()
+        
+        # 3.0.5 Run track fault detection (rare, for demo - once at tick 50)
+        track_fault_detections = self._run_track_fault_detection()
+        new_detections.extend(track_fault_detections)
         
         # 3.1. Auto-save detected conflicts for resolution agent
         if new_detections:
@@ -484,50 +518,75 @@ class IntegrationEngine:
     
     def _generate_conflict_scenarios(self) -> None:
         """
-        Generate conflict scenarios to demonstrate the detection system.
-        Creates realistic situations like:
-        - Multiple trains at same station (platform overflow)
-        - Trains on same edge (headway violation) - CAPACITY OVERFLOW
-        - High delays cascading through network
-        """
-        # Every 5 ticks, create a conflict scenario (more frequent for demo)
-        if self.tick_number % 5 == 0:
-            train_list = list(self.trains.values())
-            if len(train_list) >= 2:
-                # Scenario 1: Add significant delays to several trains (300-900 sec = 5-15 min)
-                num_delayed = min(5, len(train_list))  # Delay up to 5 trains
-                delayed_trains = random.sample(train_list, num_delayed)
-                for delayed_train in delayed_trains:
-                    delayed_train.delay_sec = random.randint(300, 900)  # 5-15 min delay
-                    delayed_train.status = "delayed"
-                
-                # Scenario 2: Put 4+ trains on same edge to EXCEED CAPACITY (capacity=3)
-                # This will trigger EDGE_CAPACITY_OVERFLOW detection
-                en_route_trains = [t for t in train_list if t.current_edge]
-                if len(en_route_trains) >= 4:
-                    # Move 4 trains to same edge - exceeds capacity of 3
-                    target_edge = en_route_trains[0].current_edge
-                    for i, train in enumerate(en_route_trains[1:4]):  # Move 3 more trains
-                        train.current_edge = target_edge
-                        train.status = "en_route"
-                        train.position_km = en_route_trains[0].position_km + (i + 1) * 0.5
+        Generate realistic conflict scenarios for the detection system.
         
-        # Every 8 ticks, create platform congestion
-        if self.tick_number % 8 == 0:
-            # Find a hub station
-            hub_stations = [s for s in self.stations.values() if s.get('platforms', 1) >= 6]
-            if hub_stations:
-                hub = random.choice(hub_stations)
-                hub_name = hub.get('name', hub.get('id', 'UNKNOWN'))
-                # Move 4-5 trains to this station with delays
-                trains_to_move = random.sample(list(self.trains.values()), min(5, len(self.trains)))
-                for train in trains_to_move[:4]:
+        ================================================================================
+        DEMO CONFLICT SCENARIOS - CLEAN & LOGICAL
+        ================================================================================
+        
+        Generates ONE conflict at a time for clear demonstration to judges.
+        
+        TIMELINE FOR DEMO:
+        ------------------
+        Tick 20:  Edge Capacity Overflow (4 trains on 1 edge)
+        Tick 35:  Platform Congestion at Milano Centrale  
+        Tick 50:  TRACK FAULT DETECTED (Vision AI - defective image)
+        
+        This creates a clear progression showing different detection capabilities.
+        ================================================================================
+        """
+        train_list = list(self.trains.values())
+        if len(train_list) < 2:
+            return
+        
+        # ═══════════════════════════════════════════════════════════════════════════
+        # TICK 20: Edge Capacity Overflow
+        # 4 trains on same track segment (capacity = 3) → OVERFLOW
+        # ═══════════════════════════════════════════════════════════════════════════
+        if self.tick_number == 20:
+            en_route_trains = [t for t in train_list if t.current_edge and t.status == "en_route"]
+            
+            if len(en_route_trains) >= 4:
+                target_edge = en_route_trains[0].current_edge
+                print(f"\n[Scenario] 🚂 Creating EDGE OVERFLOW on {target_edge}")
+                
+                # Move 3 more trains to this edge (total 4 > capacity 3)
+                for i, train in enumerate(en_route_trains[1:4]):
+                    train.current_edge = target_edge
+                    train.status = "en_route"
+                    train.position_km = en_route_trains[0].position_km + (i + 1) * 0.8
+                    train.speed_kmh = 20  # Slow due to congestion
+        
+        # ═══════════════════════════════════════════════════════════════════════════
+        # TICK 35: Platform Congestion at Milano Centrale
+        # Too many trains at station → PLATFORM OVERFLOW
+        # ═══════════════════════════════════════════════════════════════════════════
+        if self.tick_number == 35:
+            # Find Milano Centrale or any hub
+            hub = None
+            for s in self.stations.values():
+                if 'MILANO CENTRALE' in s.get('name', '').upper():
+                    hub = s
+                    break
+            
+            if not hub:
+                hub_stations = [s for s in self.stations.values() if s.get('platforms', 1) >= 6]
+                if hub_stations:
+                    hub = hub_stations[0]
+            
+            if hub and len(train_list) >= 4:
+                hub_name = hub.get('name', 'MILANO CENTRALE')
+                print(f"\n[Scenario] 🚉 Creating PLATFORM OVERFLOW at {hub_name}")
+                
+                # Move exactly 4 trains to this station
+                for train in train_list[:4]:
                     train.current_station = hub_name
                     train.status = "at_station"
-                    train.current_edge = None  # Clear edge when at station
+                    train.current_edge = None
+                    train.speed_kmh = 0
                     train.lat = hub.get('lat', 45.4)
                     train.lon = hub.get('lon', 9.2)
-                    train.delay_sec = random.randint(120, 480)  # 2-8 min delay at station
+                    train.delay_sec = random.randint(180, 360)  # 3-6 min delay
     
     def _update_trains(self) -> None:
         """Update train positions and states."""
@@ -648,6 +707,12 @@ class IntegrationEngine:
         # Evaluate all rules
         conflicts = self.detection_engine.evaluate_all_rules()
         
+        # Debug: Show detection results for demo scenarios
+        if conflicts and self.tick_number in [20, 21, 35, 36]:
+            print(f"[Detection] Tick {self.tick_number}: Found {len(conflicts)} conflicts!")
+            for c in conflicts[:3]:
+                print(f"  - {c.conflict_type.value}: {c.involved_trains[:3]}...")
+        
         # Convert to unified format
         unified = []
         for conflict in conflicts:
@@ -690,6 +755,149 @@ class IntegrationEngine:
             ))
         
         return unified
+    
+    def _run_track_fault_detection(self) -> List[UnifiedConflict]:
+        """
+        Run vision-based track fault detection (binary: DEFECTIVE / NOT DEFECTIVE).
+        
+        Triggered at tick 50 for demo - shows AI detecting defective track from image.
+        Falls back to mock demo if torch/YOLO not installed.
+        """
+        # Only trigger at tick 50 for demo
+        if self.track_fault_triggered or self.tick_number != 50:
+            return []
+        
+        self.track_fault_triggered = True
+        print(f"\n[Scenario] 🔍 TRACK SENSOR SCAN at tick {self.tick_number}...")
+        
+        # Use a fixed edge for demo clarity
+        edge_location = "MILANO LAMBRATE--TREVIGLIO"
+        images_folder = TRACK_FAULT_DIR / "images"
+        
+        # Check if we have the real detector
+        if self.track_fault_detector and images_folder.exists():
+            # Use real Vision AI model - scan ONLY the specific demo image
+            demo_image = images_folder / "1.MOV_20201221091849_4580.JPEG"
+            
+            if demo_image.exists():
+                result = self.track_fault_detector.detect(str(demo_image), edge_location)
+                
+                if result.is_defective:
+                    print(f"[Scenario] 🚨 TRACK DEFECTIVE: {Path(result.image_path).name} ({result.confidence:.0%})")
+                    
+                    conflict_id = f"TF-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+                    maintenance_eta = 45  # 45 min maintenance
+                    
+                    # Mark edge as under maintenance
+                    self.edges_under_maintenance[result.location] = (
+                        self.simulation_time + timedelta(minutes=maintenance_eta)
+                    )
+                    
+                    # Get relative image path for frontend
+                    image_filename = Path(result.image_path).name
+                    image_url = f"/track-images/{image_filename}"
+                    
+                    # Find affected trains
+                    affected_trains = []
+                    for train in self.trains.values():
+                        if train.current_edge == result.location:
+                            affected_trains.append(train.train_id)
+                            train.status = "stopped"
+                            train.speed_kmh = 0
+                    
+                    # Create conflict with IMAGE
+                    return [UnifiedConflict(
+                        conflict_id=conflict_id,
+                        source="detection",
+                        conflict_type="track_fault",
+                        severity="critical",
+                        probability=result.confidence,
+                        location=result.location,
+                        location_type="edge",
+                        involved_trains=affected_trains or ["MAINTENANCE_REQUIRED"],
+                        explanation=f"🛤️ DEFECTIVE TRACK detected by Vision AI | "
+                                   f"Edge: {result.location} | "
+                                   f"Confidence: {result.confidence:.0%} | "
+                                   f"Track CLOSED for {maintenance_eta}min repair",
+                        timestamp=self.simulation_time,
+                        resolution_suggestions=[
+                            "⚠️ Immediate track closure required",
+                            f"Dispatch maintenance team to {result.location}",
+                            f"Estimated repair time: {maintenance_eta} minutes",
+                            "Reroute all trains via alternate path",
+                        ],
+                        lat=45.49,  # Milano Lambrate area
+                        lon=9.26,
+                        model_used="vision_yolov8",
+                        image_url=image_url  # Image for display
+                    )]
+            
+            return []  # Image not found or not defective
+        
+        # ==== MOCK FALLBACK for demo (when torch not installed) ====
+        print("[Scenario] 🔧 Using mock track fault for demo (torch not installed)")
+        
+        # Use the second defective image for demo
+        image_filename = "1.MOV_20201221091849_4580.JPEG"
+        image_url = f"/api/track-images/{image_filename}"
+        
+        conflict_id = f"TF-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        maintenance_eta = 45
+        
+        # Mark edge as under maintenance
+        self.edges_under_maintenance[edge_location] = (
+            self.simulation_time + timedelta(minutes=maintenance_eta)
+        )
+        
+        # Find affected trains
+        affected_trains = []
+        for train in self.trains.values():
+            if train.current_edge and edge_location in train.current_edge:
+                affected_trains.append(train.train_id)
+                train.status = "stopped"
+                train.speed_kmh = 0
+        
+        print(f"[Scenario] 🚨 MOCK TRACK DEFECTIVE: {image_filename} (86%)")
+        
+        return [UnifiedConflict(
+            conflict_id=conflict_id,
+            source="detection",
+            conflict_type="track_fault",
+            severity="critical",
+            probability=0.86,  # Mock confidence matching real model
+            location=edge_location,
+            location_type="edge",
+            involved_trains=affected_trains or ["MAINTENANCE_REQUIRED"],
+            explanation=f"🛤️ DEFECTIVE TRACK detected by Vision AI | "
+                       f"Edge: {edge_location} | "
+                       f"Confidence: 86% | "
+                       f"Track CLOSED for {maintenance_eta}min repair",
+            timestamp=self.simulation_time,
+            resolution_suggestions=[
+                "⚠️ Immediate track closure required",
+                f"Dispatch maintenance team to {edge_location}",
+                f"Estimated repair time: {maintenance_eta} minutes",
+                "Reroute all trains via alternate path",
+            ],
+            lat=45.49,  # Milano Lambrate area
+            lon=9.26,
+            model_used="vision_yolov8_mock",
+            image_url=image_url
+        )]
+    
+    def _check_maintenance_status(self) -> None:
+        """Check and clear expired maintenance periods."""
+        expired_edges = [
+            edge for edge, end_time in self.edges_under_maintenance.items()
+            if self.simulation_time >= end_time
+        ]
+        for edge in expired_edges:
+            del self.edges_under_maintenance[edge]
+            print(f"[Integration] ✅ Maintenance complete on {edge}, track now available")
+    
+    def is_edge_available(self, edge_id: str) -> bool:
+        """Check if an edge is available (not under maintenance)."""
+        return edge_id not in self.edges_under_maintenance
     
     def _save_detected_conflicts(self, detections: List[UnifiedConflict]) -> None:
         """

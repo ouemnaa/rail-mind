@@ -520,6 +520,8 @@ export function LombardyNetworkMap({
               const maxRisk = Math.max(from.maxRiskProbability, to.maxRiskProbability);
               const trackColor =
                 maxRisk > 0.8 ? '#ef444480' : maxRisk > 0.5 ? '#f9731680' : '#47556980';
+              // Track width scales inversely (thinner when zoomed in for clarity)
+              const trackInvScale = 1 / Math.max(0.5, zoom);
 
               return (
                 <line
@@ -529,7 +531,7 @@ export function LombardyNetworkMap({
                   x2={to.x}
                   y2={to.y}
                   stroke={trackColor}
-                  strokeWidth={2}
+                  strokeWidth={2 * trackInvScale}
                 />
               );
             })}
@@ -538,7 +540,10 @@ export function LombardyNetworkMap({
           {/* Stations */}
           {Array.from(stations.values()).map((station) => {
             const isHovered = hoveredStation === station.name;
-            const size = station.isHub ? 8 : 5;
+            // Inverse scale: elements shrink as zoom increases for better clarity
+            const invScale = 1 / Math.max(0.5, zoom);
+            const baseSize = station.isHub ? 8 : 5;
+            const size = baseSize * invScale;
             const color = RISK_COLORS[station.riskLevel];
 
             return (
@@ -554,10 +559,10 @@ export function LombardyNetworkMap({
                   <circle
                     cx={station.x}
                     cy={station.y}
-                    r={size + 6}
+                    r={size + 6 * invScale}
                     fill="none"
                     stroke={color}
-                    strokeWidth={2}
+                    strokeWidth={2 * invScale}
                     opacity={0.4}
                     className="animate-pulse"
                   />
@@ -568,10 +573,10 @@ export function LombardyNetworkMap({
                   <circle
                     cx={station.x}
                     cy={station.y}
-                    r={size + 3}
+                    r={size + 3 * invScale}
                     fill="none"
                     stroke="white"
-                    strokeWidth={1.5}
+                    strokeWidth={1.5 * invScale}
                     opacity={0.6}
                   />
                 )}
@@ -580,10 +585,10 @@ export function LombardyNetworkMap({
                 <circle
                   cx={station.x}
                   cy={station.y}
-                  r={isHovered ? size + 2 : size}
+                  r={isHovered ? size + 2 * invScale : size}
                   fill={color}
                   stroke="#1e293b"
-                  strokeWidth={1}
+                  strokeWidth={1 * invScale}
                   className="transition-all duration-150"
                 />
 
@@ -592,20 +597,20 @@ export function LombardyNetworkMap({
                   <g>
                     {/* Label background for readability */}
                     <rect
-                      x={station.x - 50}
-                      y={station.y - size - 22}
-                      width={100}
-                      height={14}
+                      x={station.x - 50 * invScale}
+                      y={station.y - size - 22 * invScale}
+                      width={100 * invScale}
+                      height={14 * invScale}
                       fill="#1e293b"
                       fillOpacity={0.8}
-                      rx={2}
+                      rx={2 * invScale}
                     />
                     <text
                       x={station.x}
-                      y={station.y - size - 10}
+                      y={station.y - size - 10 * invScale}
                       textAnchor="middle"
                       fill="white"
-                      fontSize={isHovered ? 10 : 8}
+                      fontSize={(isHovered ? 10 : 8) * invScale}
                       fontWeight={station.isHub ? 600 : 400}
                       className="pointer-events-none"
                     >
@@ -647,6 +652,8 @@ export function LombardyNetworkMap({
             const isHovered = hoveredTrain === train.id;
             const isSelected = selectedTrainId === train.id;
             const color = RISK_COLORS[train.riskLevel];
+            // Inverse scale for trains
+            const trainInvScale = 1 / Math.max(0.5, zoom);
 
             return (
               <g
@@ -661,10 +668,10 @@ export function LombardyNetworkMap({
                   <circle
                     cx={train.position.x}
                     cy={train.position.y}
-                    r={14}
+                    r={14 * trainInvScale}
                     fill="none"
                     stroke={color}
-                    strokeWidth={2}
+                    strokeWidth={2 * trainInvScale}
                     opacity={0.5}
                     className="animate-pulse"
                   />
@@ -675,11 +682,11 @@ export function LombardyNetworkMap({
                   <circle
                     cx={train.position.x}
                     cy={train.position.y}
-                    r={16}
+                    r={16 * trainInvScale}
                     fill="none"
                     stroke="white"
-                    strokeWidth={2}
-                    strokeDasharray="4 2"
+                    strokeWidth={2 * trainInvScale}
+                    strokeDasharray={`${4 * trainInvScale} ${2 * trainInvScale}`}
                   />
                 )}
 
@@ -687,7 +694,7 @@ export function LombardyNetworkMap({
                 <circle
                   cx={train.position.x}
                   cy={train.position.y}
-                  r={isHovered ? 10 : 8}
+                  r={(isHovered ? 10 : 8) * trainInvScale}
                   fill={color}
                   stroke="white"
                   strokeWidth={2}
@@ -699,10 +706,10 @@ export function LombardyNetworkMap({
                 {(isHovered || isSelected || train.riskLevel === 'critical') && (
                   <text
                     x={train.position.x}
-                    y={train.position.y - 14}
+                    y={train.position.y - 14 * trainInvScale}
                     textAnchor="middle"
                     fill="white"
-                    fontSize={9}
+                    fontSize={9 * trainInvScale}
                     fontWeight={600}
                     className="pointer-events-none"
                   >

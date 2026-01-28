@@ -41,7 +41,7 @@
     "val_samples": 17,
     "n_features": 28
   },
-  "trained_at": "2026-01-27T20:22:09.163560"
+  "trained_at": "2026-01-27T20:22:09.163560",
   "model_type": "XGBoost + Heuristics Ensemble",
   "ensemble_reason": "XGBoost learns patterns from historical data while heuristics encode domain knowledge. Combined, they provide robust predictions even with limited training data. When both agree, confidence is boosted."
 }

@@ -103,6 +103,9 @@ class ConflictType(Enum):
     CASCADING_CONGESTION = "cascading_congestion"
     HUB_SATURATION = "hub_saturation"
     HIGH_RISK_EDGE_STRESS = "high_risk_edge_stress"
+    
+    # Infrastructure-level (Vision-based detection)
+    TRACK_FAULT = "track_fault"  # Rail crack, wear, sleeper damage, etc.
 
 
 # =============================================================================

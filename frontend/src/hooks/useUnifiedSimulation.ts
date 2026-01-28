@@ -54,6 +54,7 @@ export interface UnifiedConflict {
   resolution_suggestions: string[];
   lat?: number;
   lon?: number;
+  image_url?: string;  // Track fault images
 }
 
 export interface SimulationState {

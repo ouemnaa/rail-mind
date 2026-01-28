@@ -32,6 +32,7 @@ const CONFLICT_TYPE_LABELS: Record<string, string> = {
   headway_violation: '⏱️ HEADWAY VIOLATION',
   platform_conflict: '🚉 PLATFORM CONFLICT',
   track_conflict: '🛤️ TRACK CONFLICT',
+  track_fault: '🛤️ TRACK FAULT DETECTED',
   station_congestion: '🏢 STATION CONGESTION',
   schedule_deviation: '📅 SCHEDULE DEVIATION',
   cascading_delay: '🔗 CASCADING DELAY',

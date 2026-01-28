@@ -142,7 +142,7 @@
 
   .network-node-delayed {
     fill: hsl(var(--warning));
-    //animation: pulse-warning 2s ease-in-out infinite;
+    animation: pulse-warning 2s ease-in-out infinite;
   }
 
   .network-node-conflict {
@@ -246,4 +246,17 @@
   100% {
     background-position: 100% 100%;
   }
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s ease-in-out infinite;
 }
