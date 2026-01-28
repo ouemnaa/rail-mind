@@ -3,12 +3,20 @@
     "rank": 1,
     "resolution_number": 1,
     "resolution_id": "Dynamic Speed Harmonization with MILP Optimization",
-    "overall_score": 82,
+    "bullet_resolution_actions": {
+      "actions": [
+        "Activate MILP model for speed adjustments",
+        "Implement ETCS-enforced speed restrictions",
+        "Extend dwell time at Pavia",
+        "Update TMS with real-time rescheduling"
+      ]
+    },
+    "overall_score": 85,
     "safety_rating": 7.5,
     "efficiency_rating": 9.0,
     "feasibility_rating": 8.5,
     "robustness_rating": 7.0,
-    "justification": "Highest efficiency (1.7min delay) and feasibility (0.85 score) with proven hybrid approach. Maintains safety via ETCS enforcement and limits cascading effects, making it the most balanced solution.",
+    "justification": "Optimal balance of low delay (1.7min), high feasibility (ETCS enforcement), and controlled side effects. MILP optimization ensures safety compliance while minimizing operational disruption through recoverable speed/dwell adjustments.",
     "full_resolution": {
       "resolution_id": "hybrid_1",
       "source_agent": "Agent 1 (Hybrid/Historical)",
@@ -72,12 +80,20 @@
     "rank": 2,
     "resolution_number": 2,
     "resolution_id": "Strategic Re-routing with Buffer Recovery",
-    "overall_score": 75,
+    "bullet_resolution_actions": {
+      "actions": [
+        "Divert via Milano Lambrate-Mezzana stub",
+        "Utilize 4-minute recovery buffer at Mezzana",
+        "Virtual coupling with FR_8821",
+        "Reinsert at Pavia with moving-block signaling"
+      ]
+    },
+    "overall_score": 78,
     "safety_rating": 7.5,
     "efficiency_rating": 8.0,
     "feasibility_rating": 7.5,
     "robustness_rating": 6.5,
-    "justification": "Achieves adequate headway (210s) with moderate delay (2.0min), but lower feasibility due to routing complexity. Safety maintained through physical separation, though freight conflicts introduce robustness risks.",
+    "justification": "Effective physical separation (210s headway) with recoverable delay (65s). Historical buffer utilization ensures feasibility, though signaling transitions and freight coordination add moderate complexity.",
     "full_resolution": {
       "resolution_id": "hybrid_2",
       "source_agent": "Agent 1 (Hybrid/Historical)",
@@ -143,12 +159,18 @@
     "rank": 3,
     "resolution_number": 4,
     "resolution_id": "Multi-Objective Evolutionary Optimization",
-    "overall_score": 68,
+    "bullet_resolution_actions": {
+      "actions": [
+        "Speed up REG_33003 by 12%",
+        "Slow REG_3053 by 4%"
+      ]
+    },
+    "overall_score": 70,
     "safety_rating": 9.5,
-    "efficiency_rating": 5.2,
+    "efficiency_rating": 6.0,
     "feasibility_rating": 7.0,
-    "robustness_rating": 8.0,
-    "justification": "Strongest safety (0.95 score) and robustness via evolutionary optimization, but high delay (4.2min) and dual-train impact reduce efficiency. Feasible implementation despite passenger disruption.",
+    "robustness_rating": 7.5,
+    "justification": "Highest safety rating (9.5) and robust evolutionary approach, but higher system delay (4.2min) and dual-train impact reduce efficiency. Simple implementation partially offsets longer passenger disruption.",
     "full_resolution": {
       "resolution_id": "agent2_genetic_algorithm",
       "source_agent": "Agent 2 (Mathematical Solver)",

@@ -610,7 +610,7 @@ def main():
     # Example data (replace with actual inputs)
     # ⚠️ IMPORTANT: Replace this with your actual OpenRouter API key!
     # Get one at: https://openrouter.ai/keys
-    OPENROUTER_API_KEY = "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"  # ← CHANGE THIS!
+    OPENROUTER_API_KEY = "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"  # ← CHANGE THIS!
     
     if OPENROUTER_API_KEY == "YOUR_API_KEY_HERE":
         print("❌ ERROR: Please set your OpenRouter API key in the script!")
