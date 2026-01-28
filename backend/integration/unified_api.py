@@ -20,6 +20,7 @@ Color Coding for Frontend:
 - Yellow: Low risk (prediction probability < 0.5)
 - Orange: High risk (prediction probability >= 0.5)
 - Red: Active conflict (detection confirmed)
+
 """
 
 import sys

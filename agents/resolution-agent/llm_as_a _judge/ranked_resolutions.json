@@ -1,0 +1,210 @@
+[
+  {
+    "rank": 1,
+    "resolution_number": 1,
+    "resolution_id": "Dynamic Speed Harmonization with MILP Optimization",
+    "bullet_resolution_actions": {
+      "actions": [
+        "Activate MILP model for speed adjustments",
+        "Implement ETCS-enforced speed restrictions",
+        "Extend dwell time at Pavia",
+        "Update TMS with real-time rescheduling"
+      ]
+    },
+    "overall_score": 85,
+    "safety_rating": 7.5,
+    "efficiency_rating": 9.0,
+    "feasibility_rating": 8.5,
+    "robustness_rating": 7.0,
+    "justification": "Optimal balance of low delay (1.7min), high feasibility (ETCS enforcement), and controlled side effects. MILP optimization ensures safety compliance while minimizing operational disruption through recoverable speed/dwell adjustments.",
+    "full_resolution": {
+      "resolution_id": "hybrid_1",
+      "source_agent": "Agent 1 (Hybrid/Historical)",
+      "strategy_name": "Dynamic Speed Harmonization with MILP Optimization",
+      "actions": [
+        "Activate MILP model to calculate optimal speed adjustments for REG_3053 (reduce speed by 15-20%) while slightly accelerating REG_33003 where track conditions permit",
+        "Implement temporary speed restriction zones using ETCS Level 2 enforcement",
+        "Apply calculated dwell time extensions at Pavia station for REG_3053 using built-in recovery time buffers",
+        "Update TMS with revised predicted times using real-time rolling horizon rescheduling"
+      ],
+      "expected_outcome": "Achieves 180s headway within 8km without full stoppage, limiting REG_3053 delay to \u00e2\u2030\u00a490s",
+      "reasoning": "Combines MILP's constraint-based safety with dynamic speed control historically effective in Lombardy region.",
+      "safety_score": 0.75,
+      "efficiency_score": 0.75,
+      "feasibility_score": 0.85,
+      "overall_fitness": 0.972,
+      "estimated_delay_min": 1.6666666666666667,
+      "affected_trains": [
+        "REG_3053"
+      ],
+      "side_effects": [
+        "Temporary capacity reduction on adjacent tracks",
+        "Potential knock-on delays \u00e2\u2030\u00a43min for following services"
+      ],
+      "algorithm_type": "hybrid",
+      "raw_data": {
+        "resolution_id": "hybrid_1",
+        "strategy_name": "Dynamic Speed Harmonization with MILP Optimization",
+        "action_steps": [
+          "Activate MILP model to calculate optimal speed adjustments for REG_3053 (reduce speed by 15-20%) while slightly accelerating REG_33003 where track conditions permit",
+          "Implement temporary speed restriction zones using ETCS Level 2 enforcement",
+          "Apply calculated dwell time extensions at Pavia station for REG_3053 using built-in recovery time buffers",
+          "Update TMS with revised predicted times using real-time rolling horizon rescheduling"
+        ],
+        "expected_outcome": "Achieves 180s headway within 8km without full stoppage, limiting REG_3053 delay to \u00e2\u2030\u00a490s",
+        "reasoning": "Combines MILP's constraint-based safety with dynamic speed control historically effective in Lombardy region. Speed harmonization prevents emergency braking while leveraging Milan's ETCS infrastructure for precise control.",
+        "source_type": "hybrid",
+        "source_references": [
+          "Combined algorithm and historical insights"
+        ],
+        "confidence_score": 0.972,
+        "algorithm_name": null,
+        "algorithm_reasoning": null,
+        "similar_cases": [],
+        "historical_success_rate": null,
+        "affected_trains": [
+          "REG_3053"
+        ],
+        "estimated_delay_reduction_sec": 100,
+        "side_effects": [
+          "Temporary capacity reduction on adjacent tracks",
+          "Potential knock-on delays \u00e2\u2030\u00a43min for following services"
+        ],
+        "feasibility_score": 0.85,
+        "safety_score": 0.75,
+        "efficiency_score": 0.75
+      }
+    }
+  },
+  {
+    "rank": 2,
+    "resolution_number": 2,
+    "resolution_id": "Strategic Re-routing with Buffer Recovery",
+    "bullet_resolution_actions": {
+      "actions": [
+        "Divert via Milano Lambrate-Mezzana stub",
+        "Utilize 4-minute recovery buffer at Mezzana",
+        "Virtual coupling with FR_8821",
+        "Reinsert at Pavia with moving-block signaling"
+      ]
+    },
+    "overall_score": 78,
+    "safety_rating": 7.5,
+    "efficiency_rating": 8.0,
+    "feasibility_rating": 7.5,
+    "robustness_rating": 6.5,
+    "justification": "Effective physical separation (210s headway) with recoverable delay (65s). Historical buffer utilization ensures feasibility, though signaling transitions and freight coordination add moderate complexity.",
+    "full_resolution": {
+      "resolution_id": "hybrid_2",
+      "source_agent": "Agent 1 (Hybrid/Historical)",
+      "strategy_name": "Strategic Re-routing with Buffer Recovery",
+      "actions": [
+        "Divert REG_3053 via Milano Lambrate-Mezzana stub track (Area 1 alternative routing)",
+        "Utilize 4-minute dwell time recovery buffer at Mezzana station per historical recovery patterns",
+        "Implement virtual coupling with freight service FR_8821 to maintain slot utilization",
+        "Reinsert into main line at Pavia with recalculated headway using moving-block signaling"
+      ],
+      "expected_outcome": "Creates physical separation achieving 210s headway, with net delay of 65s through recovered buffer time",
+      "reasoning": ".",
+      "safety_score": 0.75,
+      "efficiency_score": 0.75,
+      "feasibility_score": 0.75,
+      "overall_fitness": 0.8999999999999999,
+      "estimated_delay_min": 2.0,
+      "affected_trains": [
+        "REG_3053"
+      ],
+      "side_effects": [
+        "Increased dispatcher workload",
+        "Temporary freight priority conflict",
+        "Signaling mode transitions required"
+      ],
+      "algorithm_type": "hybrid",
+      "raw_data": {
+        "resolution_id": "hybrid_2",
+        "strategy_name": "Strategic Re-routing with Buffer Recovery",
+        "action_steps": [
+          "Divert REG_3053 via Milano Lambrate-Mezzana stub track (Area 1 alternative routing)",
+          "Utilize 4-minute dwell time recovery buffer at Mezzana station per historical recovery patterns",
+          "Implement virtual coupling with freight service FR_8821 to maintain slot utilization",
+          "Reinsert into main line at Pavia with recalculated headway using moving-block signaling"
+        ],
+        "expected_outcome": "Creates physical separation achieving 210s headway, with net delay of 65s through recovered buffer time",
+        "reasoning": "Hybridizes CRC Rule II re-routing with historical buffer recovery tactics from Milan's 2022 disruption data. Alternative routing exploits Milan's unique stub track infrastructure while virtual coupling maintains line capacity.",
+        "source_type": "hybrid",
+        "source_references": [
+          "Combined algorithm and historical insights"
+        ],
+        "confidence_score": 0.8999999999999999,
+        "algorithm_name": null,
+        "algorithm_reasoning": null,
+        "similar_cases": [],
+        "historical_success_rate": null,
+        "affected_trains": [
+          "REG_3053"
+        ],
+        "estimated_delay_reduction_sec": 120,
+        "side_effects": [
+          "Increased dispatcher workload",
+          "Temporary freight priority conflict",
+          "Signaling mode transitions required"
+        ],
+        "feasibility_score": 0.75,
+        "safety_score": 0.75,
+        "efficiency_score": 0.75
+      }
+    }
+  },
+  {
+    "rank": 3,
+    "resolution_number": 4,
+    "resolution_id": "Multi-Objective Evolutionary Optimization",
+    "bullet_resolution_actions": {
+      "actions": [
+        "Speed up REG_33003 by 12%",
+        "Slow REG_3053 by 4%"
+      ]
+    },
+    "overall_score": 70,
+    "safety_rating": 9.5,
+    "efficiency_rating": 6.0,
+    "feasibility_rating": 7.0,
+    "robustness_rating": 7.5,
+    "justification": "Highest safety rating (9.5) and robust evolutionary approach, but higher system delay (4.2min) and dual-train impact reduce efficiency. Simple implementation partially offsets longer passenger disruption.",
+    "full_resolution": {
+      "resolution_id": "agent2_genetic_algorithm",
+      "source_agent": "Agent 2 (Mathematical Solver)",
+      "strategy_name": "Multi-Objective Evolutionary Optimization",
+      "actions": [
+        "Speed up REG_33003 by 12% to increase gap ahead",
+        "Slow REG_3053 by 4% to let leading train pull away"
+      ],
+      "expected_outcome": "Reduces total system delay to 4.2 minutes (improvement of 3.0% from baseline). Resolves headway violation through coordinated speed adjustments while maintaining safety constraints and operational feasibility. Affects 1259 passengers with minimal service disruption.",
+      "reasoning": "Uses evolutionary optimization with population-based search to balance multiple objectives simultaneously. Proven effective for multi-constraint railway scheduling with mutation and crossover operators ensuring solution diversity while converging to optimal tradeoffs. Achieves 97.6% recovery smoothness, minimizing operational disruption and maintaining schedule integrity. Implements 2 coordinated action(s) with verified constraint satisfaction and operational feasibility.",
+      "safety_score": 0.9500000000000001,
+      "efficiency_score": 0.5150115473441108,
+      "feasibility_score": 0.7000000000000001,
+      "overall_fitness": 0.697,
+      "estimated_delay_min": 4.2,
+      "affected_trains": [
+        "REG_3053",
+        "REG_33003"
+      ],
+      "side_effects": [
+        "Minimal cascading effects (isolated resolution)",
+        "Moderate passenger impact (1259 affected)",
+        "Simple implementation with minimal coordination overhead"
+      ],
+      "algorithm_type": "optimization_genetic_algorithm",
+      "raw_data": {
+        "fitness": 0.697,
+        "total_delay_min": 4.2,
+        "original_delay_min": 4.33,
+        "num_actions": 2,
+        "passenger_impact": 1259,
+        "propagation_depth": 0,
+        "recovery_smoothness": 0.976
+      }
+    }
+  }
+]
