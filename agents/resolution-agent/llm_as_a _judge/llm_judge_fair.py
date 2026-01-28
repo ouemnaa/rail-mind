@@ -467,12 +467,14 @@ Return ONLY a JSON array with your top 3 ranked resolutions:
     "rank": 1,
     "resolution_number": <1-4>,
     "resolution_id": "<id>",
+    "bullet_resolution_actions":{},
     "overall_score": <0-100>,
     "safety_rating": <0-10>,
     "efficiency_rating": <0-10>,
     "feasibility_rating": <0-10>,
     "robustness_rating": <0-10>,
     "justification": "<2-3 sentence explanation focusing on objective strengths>"
+    
   },
   ...
 ]
