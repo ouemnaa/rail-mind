@@ -37,7 +37,7 @@ data-preprocessing/data/raw_data/*.csv
 data-preprocessing/railway-network-graph/output/rail_network_graph.json 
 
 # ML Models (can be large, regenerate or store separately)
-*.joblib
+
 *.pkl
 *.pickle
 *.bin

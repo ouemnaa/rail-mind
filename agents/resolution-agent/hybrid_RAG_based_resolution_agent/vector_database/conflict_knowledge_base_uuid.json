@@ -1,0 +1,276 @@
+{
+  "metadata": {
+    "total_conflicts": 26,
+    "sources": [
+      "A_real_time_conflict_solution_algorithm_for_the_train_rescheduling_problem.pdf",
+      "Conflict_detection_and_resolution_for_distance_to_go_railway_signalling.pdf",
+      "CR00076FU.pdf",
+      "ecp19069072.pdf",
+      "IJRAR1944291.pdf",
+      "mul.pdf"
+    ],
+    "last_updated": "2026-01-28T00:12:00.072775"
+  },
+  "conflicts": [
+    {
+      "id": "a3ab5eca-0bac-571a-96a6-fe19314e9d1c",
+      "source": "A_real_time_conflict_solution_algorithm_for_the_train_rescheduling_problem.pdf",
+      "conflict_description": "Illegal crossing or overtaking occurs when trains cross or overtake each other on a resource where such maneuvers are forbidden (\u03c9_v = 0).",
+      "conflict_type": "Safety violation",
+      "resolution_strategy": "Reschedule trains via retiming, respeeding, or rerouting to avoid simultaneous occupation of the resource in conflicting directions. This is enforced through shortest-path calculations in the time-space graph.",
+      "reasoning": "Safety regulations prohibit crossing/overtaking on certain resources to prevent collisions. The algorithm modifies train paths to ensure no conflicting movements occur, prioritizing conflict-free schedules.",
+      "context": "Railway resources (e.g., tracks, stations) where overtaking/crossing is prohibited due to infrastructure constraints or operational rules.",
+      "confidence": "high"
+    },
+    {
+      "id": "e2c6e12f-2f05-59c3-bcb1-7a0082af4cf2",
+      "source": "A_real_time_conflict_solution_algorithm_for_the_train_rescheduling_problem.pdf",
+      "conflict_description": "Capacity violation happens when the number of trains occupying a resource exceeds its hard capacity limit (Q_v).",
+      "conflict_type": "Resource congestion",
+      "resolution_strategy": "Reduce resource occupancy by delaying or rerouting trains. The algorithm enforces hard capacity constraints during rescheduling.",
+      "reasoning": "Exceeding hard capacity compromises safety and operational efficiency. The algorithm strictly limits resource occupancy to the maximum allowed, even if this increases delays.",
+      "context": "Any resource (e.g., track segment, station platform) with a finite capacity defined by physical or operational constraints.",
+      "confidence": "high"
+    },
+    {
+      "id": "4cd87e0e-6f73-5e3f-97f0-a9c95688bec6",
+      "source": "A_real_time_conflict_solution_algorithm_for_the_train_rescheduling_problem.pdf",
+      "conflict_description": "Headway violation occurs when trains fail to maintain the minimum time buffer (h_v) between consecutive occupancies of a resource.",
+      "conflict_type": "Safety violation",
+      "resolution_strategy": "Adjust train schedules to enforce the minimum headway time between trains, often by delaying subsequent trains.",
+      "reasoning": "Headway violations risk collisions or operational instability. The algorithm recalculates timings to ensure compliance with headway requirements, prioritizing safety over minimal delays.",
+      "context": "Resources where headway times must be respected (e.g., single-track sections, junctions) to ensure safe braking distances.",
+      "confidence": "high"
+    },
+    {
+      "id": "82b01bff-6eb9-5b71-9dea-217dbc014c33",
+      "source": "A_real_time_conflict_solution_algorithm_for_the_train_rescheduling_problem.pdf",
+      "conflict_description": "Time dependency violation involves unmet precedence relationships between train events (e.g., missed passenger connections or crew handovers).",
+      "conflict_type": "Operational dependency failure",
+      "resolution_strategy": "Modify schedules to satisfy mandatory dependencies; break logical dependencies if unavoidable (with penalties).",
+      "reasoning": "Mandatory dependencies (e.g., crew changes) are critical for operations, while logical ones (e.g., passenger connections) are prioritized but can be broken to minimize overall delays. The algorithm penalizes broken dependencies in the objective function.",
+      "context": "Events at specific resources (e.g., stations) where train arrivals/departures must synchronize (e.g., \u03d5_f \u2264 event separation \u2264 \u03a6_f).",
+      "confidence": "high"
+    },
+    {
+      "id": "c3082fa5-9dfb-57ec-84ec-867dc7ba10de",
+      "source": "A_real_time_conflict_solution_algorithm_for_the_train_rescheduling_problem.pdf",
+      "conflict_description": "Split/merge operation failure occurs when trains fail to synchronize at designated resources for coupling/decoupling or crew changes.",
+      "conflict_type": "Synchronization failure",
+      "resolution_strategy": "Fix schedules of input trains before scheduling output trains to ensure synchronization.",
+      "reasoning": "Split/merge operations are mandatory for service continuity. The algorithm enforces synchronization by sequentially scheduling input and output trains, ensuring all meet at the resource within the required time window.",
+      "context": "Nodes where trains must split or merge (e.g., stations for rolling stock adjustments).",
+      "confidence": "high"
+    },
+    {
+      "id": "1ed85690-97e1-580a-bfeb-dcecb574ddc3",
+      "source": "Conflict_detection_and_resolution_for_distance_to_go_railway_signalling.pdf",
+      "conflict_description": "Existing conflict detection and resolution (CDR) models for conventional fixed-block signalling systems cannot accurately represent train- and speed-dependent separation distances required by distance-to-go (DTG) systems like ETCS Level 2.",
+      "conflict_type": "Modelling limitation",
+      "resolution_strategy": "Enhance CDR models to incorporate train- and speed-dependent brake indication points and blocking times. Integrate these into the RECIFE-MILP framework to explicitly represent DTG signalling constraints.",
+      "reasoning": "DTG systems enable shorter, speed-dependent separations by calculating braking distances in real-time. By modelling these dynamics (e.g., via reference brake locations and reservation lags), rescheduling decisions better reflect operational realities, reducing delays through rerouting/reordering.",
+      "context": "Railway networks using DTG signalling rely on braking curve supervision, where train separation depends on dynamic factors like speed and braking performance. Conventional fixed-block models assume static separation based on fixed track blocks.",
+      "confidence": "high"
+    },
+    {
+      "id": "2186daff-b237-5c29-9529-28011c810212",
+      "source": "Conflict_detection_and_resolution_for_distance_to_go_railway_signalling.pdf",
+      "conflict_description": "Operational inefficiencies in high-density railway junctions due to mixed traffic and limited infrastructure capacity under conventional fixed-block signalling.",
+      "conflict_type": "Capacity constraint",
+      "resolution_strategy": "Implement DTG-enhanced CDR models to optimize rescheduling via dynamic separation, rerouting, and speed profile adjustments (maximum vs. scheduled speeds).",
+      "reasoning": "DTG's shorter train separations and speed-dependent blocking times increase network capacity. Case studies showed 4.23% lower delays in junctions by allowing rerouting (e.g., freeing parallel tracks) and reordering delayed trains without propagating delays.",
+      "context": "Complex junctions (e.g., Gonesse) with dense mixed traffic (high-speed, freight, passenger trains) face conflicts from overlapping routes and rigid separation rules in fixed-block systems.",
+      "confidence": "high"
+    },
+    {
+      "id": "a21877a5-394a-5dc9-8b29-0c7981267327",
+      "source": "Conflict_detection_and_resolution_for_distance_to_go_railway_signalling.pdf",
+      "conflict_description": "Suboptimal rescheduling decisions when applying fixed-block CDR solutions to DTG systems, leading to unnecessary delays.",
+      "conflict_type": "Solution incompatibility",
+      "resolution_strategy": "Cross-evaluate solutions in both signalling contexts and prioritize DTG-optimized models for networks using ETCS Level 2.",
+      "reasoning": "Fixed-block solutions evaluated under DTG constraints improved delays by 3.59% in case studies, but DTG-optimized solutions achieved up to 7% further reduction by leveraging dynamic separations and speed profiles.",
+      "context": "Rescheduling solutions optimized for fixed-block signalling may violate DTG separation rules or miss opportunities for delay recovery due to differences in braking dynamics.",
+      "confidence": "medium"
+    },
+    {
+      "id": "683dfb54-d487-577a-babc-66f99b3d3f17",
+      "source": "CR00076FU.pdf",
+      "conflict_description": "Internal conflicts within the same CRC due to trains competing for shared resources (block sections, tracks)",
+      "conflict_type": "Resource allocation conflict",
+      "resolution_strategy": "Dynamic priority-based delay or stopping of trains. The CRC delays the lower-priority train(s) using Rule III (delay rule), ensuring scheduled sequences are preserved unless overtaking is physically possible.",
+      "reasoning": "Internal conflicts are resolved locally by comparing dynamic priorities of trains, which factor in static priority, delay severity, and queue length. Lower-priority trains are delayed to avoid infrastructure overuse. This minimizes global delays by prioritizing high-impact trains (e.g., passenger trains over freight) and mimics human dispatcher logic.",
+      "context": "Conflict occurs within a single CRC's jurisdiction, where multiple trains (users) apply for the same block sections or station tracks under high traffic density. The CRC oversees fixed resources and must resolve conflicts while adhering to operational constraints like scheduled sequences and infrastructure limitations.",
+      "confidence": "high"
+    },
+    {
+      "id": "cde409ca-a61a-5fc1-a849-7938e7b845ab",
+      "source": "CR00076FU.pdf",
+      "conflict_description": "External conflicts across multiple CRCs due to trains competing for interconnected resources",
+      "conflict_type": "Inter-node resource conflict",
+      "resolution_strategy": "Dynamic CRC priority comparison and cooperative resolution. The CRC with higher dynamic priority (based on traffic load and train priorities) proposes solutions (e.g., re-routing via Rule II), validated through linked CRC agreements.",
+      "reasoning": "External conflicts require global coordination. CRC priorities reflect network-criticality and traffic load, ensuring high-priority areas (e.g., major junctions) influence solutions. Cooperative validation prevents local optimizations from causing cascading conflicts elsewhere.",
+      "context": "Trains from different CRCs require overlapping resources (e.g., shared block sections or junction paths). The conflict spans multiple nodes, requiring coordination between CRCs overseeing distinct parts of the network (e.g., stations or junctions like Milan Centrale).",
+      "confidence": "high"
+    },
+    {
+      "id": "03d1e0e7-6948-5b2b-bb76-12891c9b997e",
+      "source": "CR00076FU.pdf",
+      "conflict_description": "Headway conflicts in High Traffic Areas (HTA) due to delayed trains or blocked tracks",
+      "conflict_type": "Headway conflict",
+      "resolution_strategy": "Integrated application of Rule I (recovery time), Rule II (re-routing), and Rule III (delays). The CRC chain prioritizes recovery time (Rule I) to minimize delays; if infeasible, re-routes (Rule II) or delays lower-priority trains (Rule III).",
+      "reasoning": "Headway conflicts require rapid resolution to maintain throughput. Rule I leverages built-in recovery time to avoid delays. Rule II exploits Milan's re-routing capabilities (e.g., alternative tracks in Area 1). Rule III ensures FIFO or priority-based sequencing where infrastructure permits.",
+      "context": "Occurs in dense networks (e.g., Milan Junction) with short block sections (\u2265200m) and high train frequency (~40 trains/hour). Delays or track blockages reduce safe separation between trains, risking collisions.",
+      "confidence": "high"
+    },
+    {
+      "id": "8e35488b-7ef0-5e5a-a87e-2b2110344be5",
+      "source": "CR00076FU.pdf",
+      "conflict_description": "Overtaking conflicts in stations with limited track capacity",
+      "conflict_type": "Overtaking conflict",
+      "resolution_strategy": "Conditional overtaking based on station layout and dynamic priorities. CRC evaluates track availability and applies Rule III (delay) to lower-priority trains if overtaking is infeasible.",
+      "reasoning": "Overtaking is only resolved if station infrastructure (e.g., multiple parallel tracks) allows it. Otherwise, lower-priority trains are delayed to prioritize high-priority traffic, minimizing total weighted delay (e.g., passenger trains prioritized over freight).",
+      "context": "In stations with constrained layouts (e.g., Area 3 of Milan Junction), higher-priority trains may need to overtake delayed lower-priority trains, but physical tracks or operational rules limit overtaking opportunities.",
+      "confidence": "high"
+    },
+    {
+      "id": "4cea8762-cda8-5812-8c5a-8039e1cf6811",
+      "source": "CR00076FU.pdf",
+      "conflict_description": "Routing conflicts due to track blockages in Global Area Networks (GAN)",
+      "conflict_type": "Routing conflict",
+      "resolution_strategy": "Global re-routing optimization with propose-and-revise model. Combines Rule II (re-routing) with load-balancing checks to distribute traffic across alternative lines and shuttle services.",
+      "reasoning": "GAN conflicts require network-wide solutions. Re-routing considers passenger-weighted delays and line capacities to avoid secondary conflicts. Shuttle services (for localized disruptions) and single-track operations (for partial blockages) reduce system-wide impact.",
+      "context": "Double- or single-track blockages (e.g., Brussels-German border network) force re-routing, causing load peaks on alternative lines and conflicts with existing traffic.",
+      "confidence": "high"
+    },
+    {
+      "id": "431bd7b7-f8f6-558e-869d-69af8c7cb656",
+      "source": "ecp19069072.pdf",
+      "conflict_description": "Complete segment blockage preventing trains from proceeding, leading to delays and potential cancellations.",
+      "conflict_type": "Infrastructure blockage",
+      "resolution_strategy": "Coupling compatible trains at stations before the blockage to reduce the number of trains needing to traverse the blocked segment after recovery. A mixed integer linear programming (MILP) model optimizes rescheduled timetables and platform track assignments.",
+      "reasoning": "Coupling avoids cancellations, minimizes timetable deviations, and efficiently utilizes platform tracks. The MILP model ensures feasibility by incorporating acceleration/deceleration times, headway constraints, and penalizing unreasonable reordering/coupling decisions.",
+      "context": "Physical blockage of a railway segment (e.g., between stations s3 and s4) due to disruptions. Operational constraints include limited platform track capacity, coupling rules (same rolling stock type, route, and destination), and headway requirements.",
+      "confidence": "high"
+    },
+    {
+      "id": "24eeed11-7b18-5613-b686-ba556dc837de",
+      "source": "ecp19069072.pdf",
+      "conflict_description": "Limited platform track capacity at stations during disruptions, causing congestion and insufficient space for trains to dwell.",
+      "conflict_type": "Resource constraint",
+      "resolution_strategy": "Explicit optimization of platform track assignments in the MILP model, allowing two coupled trains to occupy one track. The rolling horizon algorithm decomposes the problem into stages to handle real-time decisions.",
+      "reasoning": "Efficient track utilization prevents overcrowding and ensures trains have space to wait. Coupling doubles track capacity for compatible trains, while the rolling horizon approach ensures scalability for large networks.",
+      "context": "Stations have finite platform tracks (e.g., 2-8 tracks per station). Trains affected by the blockage must dwell on platforms, exceeding capacity if not managed.",
+      "confidence": "high"
+    },
+    {
+      "id": "6e9bd5a8-91ff-5527-bbed-04bd63ac42ec",
+      "source": "ecp19069072.pdf",
+      "conflict_description": "Propagation of delays to subsequent trains due to the initial blockage.",
+      "conflict_type": "Delay propagation",
+      "resolution_strategy": "Minimizing total timetable deviation (weighted sum of arrival/departure delays) in the MILP objective. The rolling horizon algorithm updates schedules incrementally as the disruption evolves.",
+      "reasoning": "Reducing deviations stabilizes the timetable and limits delay spread. The rolling horizon method adapts to real-time changes (e.g., updated disruption duration) while maintaining computational tractability.",
+      "context": "Delays cascade through the network as disrupted trains block resources (tracks/platforms) for later trains. High-speed railways require tight scheduling to minimize passenger impact.",
+      "confidence": "high"
+    },
+    {
+      "id": "5abd25de-5244-5e22-a343-0faf4cd3b1ce",
+      "source": "ecp19069072.pdf",
+      "conflict_description": "Unattractive reordering or coupling of trains that disrupt operational logic or passenger expectations.",
+      "conflict_type": "Operational infeasibility",
+      "resolution_strategy": "Penalizing non-consecutive couplings and reordering in the MILP objective (terms U2 and U3). The \u03b2 parameter restricts couplings to consecutive trains where possible.",
+      "reasoning": "Prioritizing planned orders reduces operational complexity and passenger confusion. Penalties ensure solutions align with practical preferences without sacrificing optimality.",
+      "context": "Rescheduling may swap train orders or couple non-consecutive trains (e.g., coupling Train 42+44 instead of 42+43), complicating operations.",
+      "confidence": "medium"
+    },
+    {
+      "id": "6f92727e-db92-5165-8b41-9792b5bb0ce0",
+      "source": "IJRAR1944291.pdf",
+      "conflict_description": "Trains moving in opposite directions meeting outside designated stations or sidings (crossing conflict)",
+      "conflict_type": "Crossing conflict",
+      "resolution_strategy": "Rescheduling arrival/departure times via MILP optimization to force meets at designated meet points while minimizing propagated delay. Adjusts timetables to ensure opposing trains do not occupy the same track segment simultaneously.",
+      "reasoning": "MILP evaluates all possible combinations of arrival/departure events to find the schedule with minimal total delay. By constraining meets to occur only at stations/sidings, it eliminates unsafe crossings while prioritizing higher-priority trains (e.g., fast passenger trains) to reduce weighted delay costs.",
+      "context": "Single-track railway network where opposing trains share the same physical infrastructure. Meet points (stations/sidings) are the only authorized locations for crossing operations. Conflict occurs when trains occupy the same track segment between meet points.",
+      "confidence": "high"
+    },
+    {
+      "id": "2ab8043d-2efb-5779-9fc1-0b137d6d70b1",
+      "source": "IJRAR1944291.pdf",
+      "conflict_description": "Faster train catching up to a slower train on the same track segment (overtaking conflict)",
+      "conflict_type": "Overtaking conflict",
+      "resolution_strategy": "MILP-based rescheduling to delay the faster train's departure or adjust running times, ensuring overtaking occurs only at designated meet points. Introduces dwell time adjustments at stations to create safe headways.",
+      "reasoning": "The MILP model enforces minimum headway constraints between consecutive trains on the same segment. By optimizing departure times and station dwells, it ensures slower trains are held at meet points to allow faster trains to pass, minimizing total delay propagation across the network.",
+      "context": "Single-track network with trains traveling in the same direction. Overtaking is only permitted at stations/sidings. Conflict arises when a faster train's scheduled path overlaps with a slower train on a non-meet-point segment, violating minimum headway requirements.",
+      "confidence": "high"
+    },
+    {
+      "id": "871337d4-5493-5056-909c-c3e1c37a5f7a",
+      "source": "IJRAR1944291.pdf",
+      "conflict_description": "Exceeding station capacity due to overlapping train occupancy (capacity conflict)",
+      "conflict_type": "Capacity conflict",
+      "resolution_strategy": "MILP optimization to stagger arrival/departure times at stations, ensuring no overlap beyond track capacity. May involve holding trains at previous stations or rerouting.",
+      "reasoning": "The model incorporates station capacity constraints (e.g., maximum trains per track) into the scheduling algorithm. By delaying departures or arrivals, it redistributes station occupancy to avoid conflicts while prioritizing trains based on weight (e.g., passenger > freight).",
+      "context": "Stations/sidings have limited track capacity for simultaneous train meets or overtakes. Conflict occurs when multiple trains are scheduled to occupy the same station track simultaneously, violating infrastructure constraints.",
+      "confidence": "high"
+    },
+    {
+      "id": "348a21e1-a1bc-57fa-b21f-34547280b9b9",
+      "source": "IJRAR1944291.pdf",
+      "conflict_description": "Violation of minimum safety intervals between consecutive trains at stations (safety interval conflict)",
+      "conflict_type": "Safety interval conflict",
+      "resolution_strategy": "MILP rescheduling to enforce minimum headway and dwell-time constraints. Adjusts departure/arrival events to maintain safe separation.",
+      "reasoning": "The MILP model explicitly encodes safety intervals as linear constraints. By optimizing timetable adjustments, it ensures all station events comply with signaling requirements, preventing collisions and reducing the need for emergency stops.",
+      "context": "Fixed-block signaling system requiring minimum time gaps (e.g., 20-minute headway) between trains departing/arriving at the same station. Conflict arises when delays compress these intervals below safe thresholds.",
+      "confidence": "high"
+    },
+    {
+      "id": "b298dc32-faee-5252-b548-2a6d4ca6b594",
+      "source": "mul.pdf",
+      "conflict_description": "Delays and disruptions in railway traffic due to disturbances such as infrastructure malfunctions, accidents, and rolling-stock failures.",
+      "conflict_type": "Delay Propagation",
+      "resolution_strategy": "Parallelized multi-strategy greedy algorithm (Approach 3: Multiple Strategies with Partitioned List).",
+      "reasoning": "Parallelization enables exploration of diverse subspaces and strategies simultaneously. Combining multiple re-scheduling strategies (s0\u2013s3) mitigates the risk of suboptimal solutions from a single strategy. Partitioning the candidate list at disturbance time T\u2080 increases subspace diversity, improving solution quality within the 30-second execution limit.",
+      "context": "Dense Swedish railway network with heterogeneous traffic (freight, commuter, and long-distance passenger trains sharing tracks). Bi-directional double-tracked sections allow track swapping. High capacity utilization amplifies delay propagation.",
+      "confidence": "high"
+    },
+    {
+      "id": "bd4b5928-7b14-50b1-98af-52571f7ed9a6",
+      "source": "mul.pdf",
+      "conflict_description": "Complex re-scheduling decisions due to deregulation: Network manager (Trafikverket) must prioritize trains neutrally without favoring operators.",
+      "conflict_type": "Operational Fairness",
+      "resolution_strategy": "Multi-strategy parallelization with objective-driven sorting (e.g., s1 prioritizes early track release; s2 leverages buffer times).",
+      "reasoning": "Multiple strategies evaluate trade-offs (e.g., minimizing total delay vs. utilizing buffer times), ensuring solutions align with system-wide objectives rather than operator-specific biases. Parallelization aggregates diverse solutions to meet neutrality constraints.",
+      "context": "Deregulated Swedish network where Trafikverket manages infrastructure but does not operate trains. Quality fees incentivize delay reduction, requiring unbiased conflict resolution.",
+      "confidence": "high"
+    },
+    {
+      "id": "357b2a95-f287-51df-9ed1-80706b4e48af",
+      "source": "mul.pdf",
+      "conflict_description": "Deadlocks or infeasible solutions in high-complexity scenarios (e.g., permanent speed reductions or infrastructure failures).",
+      "conflict_type": "Solution Infeasibility",
+      "resolution_strategy": "Extended execution time limit (E\u209c\u2032) in Approach 3.",
+      "reasoning": "Approach 3\u2019s subspace/strategy diversity increases the likelihood of finding feasible solutions. E\u209c\u2032 compensates for resource contention when worker threads exceed available processors (e.g., 240 workers vs. 8 cores), reducing thrashing.",
+      "context": "Scenarios 16\u201320 involve infrastructure failures causing widespread delays. Single strategies (e.g., s3) may fail due to cyclic candidate lists.",
+      "confidence": "medium"
+    },
+    {
+      "id": "7d27b375-3943-5630-864b-a98066ff17f1",
+      "source": "mul.pdf",
+      "conflict_description": "Suboptimal sequential re-scheduling due to limited search space exploration.",
+      "conflict_type": "Local Optima Trapping",
+      "resolution_strategy": "Approach 1 (Single Strategy with Partitioned List).",
+      "reasoning": "Partitioning the candidate list at T\u2080 forces parallel workers to explore disjoint subspaces, reducing dependency on a single search path. This diversity improves solution quality for 7/20 scenarios vs. sequential.",
+      "context": "Sequential greedy DFS branch-and-bound [13] relies on a single sorting strategy (e.g., s0), which may miss better solutions.",
+      "confidence": "high"
+    },
+    {
+      "id": "0d432634-69cb-52c6-9414-960830c9de33",
+      "source": "mul.pdf",
+      "conflict_description": "Inconsistent performance of single strategies across disturbance types (e.g., s0 fails in Scenario 18; s2 succeeds).",
+      "conflict_type": "Strategy-Scenario Mismatch",
+      "resolution_strategy": "Approach 2 (Multiple Strategies with Non-Partitioned List).",
+      "reasoning": "Executing all strategies in parallel (one worker per strategy) leverages complementary strengths. For example, s2 resolves Scenario 18 by prioritizing low-buffer trains, while s0 fails. Approach 2 improves solutions for 10/20 scenarios.",
+      "context": "Strategies perform variably: s0 prioritizes earliest start times; s1 optimizes track release; s2 exploits buffer times. No single strategy dominates.",
+      "confidence": "high"
+    }
+  ]
+}

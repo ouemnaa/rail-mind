@@ -16,8 +16,7 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { ZoomIn, ZoomOut, Maximize2, Train as TrainIcon, AlertTriangle } from 'lucide-react';
-import type { ConflictPrediction, BatchPrediction, RiskLevel, IncidentType } from '../../types/prediction';
-import { INCIDENT_TYPE_ICONS } from '../../types/prediction';
+import type { BatchPrediction, RiskLevel, IncidentType } from '../../types/prediction';
 
 // ============================================================================
 // Types
@@ -372,14 +371,7 @@ export function LombardyNetworkMap({
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-bold text-white">Lombardy Rail Network</h2>
-            <p className="text-xs text-slate-400">
-              Real-time conflict prediction • Model: <span className="text-cyan-400 font-medium">
-                {predictions?.model_used === 'xgboost_ensemble' ? 'XGBoost + Heuristics' : 
-                 predictions?.model_used === 'heuristic_fallback' ? 'Heuristics (Fallback)' :
-                 predictions?.model_used === 'heuristic' ? 'Heuristics Only' :
-                 predictions?.model_used ?? 'XGBoost + Heuristics'}
-              </span> • Strategy: <span className="text-emerald-400 font-medium">{predictions?.strategy ?? 'continuous'}</span>
-            </p>
+            
           </div>
           <div className="flex gap-2">
             {/* Stats badges */}

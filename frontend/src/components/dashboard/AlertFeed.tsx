@@ -9,40 +9,7 @@ interface Alert {
   severity: 'high' | 'medium' | 'low';
 }
 
-const alerts: Alert[] = [
-  {
-    id: '1',
-    type: 'conflict',
-    title: 'Platform Conflict Detected',
-    location: 'West Gateway (STN-E)',
-    time: '2 min ago',
-    severity: 'high',
-  },
-  {
-    id: '2',
-    type: 'delay',
-    title: 'Headway Violation',
-    location: 'East Junction (STN-C)',
-    time: '8 min ago',
-    severity: 'medium',
-  },
-  {
-    id: '3',
-    type: 'delay',
-    title: 'Capacity Warning',
-    location: 'Harbor Port (STN-G)',
-    time: '15 min ago',
-    severity: 'medium',
-  },
-  {
-    id: '4',
-    type: 'warning',
-    title: 'Maintenance Window',
-    location: 'North Terminal (STN-B)',
-    time: '1 hour ago',
-    severity: 'low',
-  },
-];
+const alerts: Alert[] = [];
 
 interface AlertFeedProps {
   onAlertClick?: (alert: Alert) => void;

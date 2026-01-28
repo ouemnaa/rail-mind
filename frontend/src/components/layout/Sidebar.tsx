@@ -1,22 +1,24 @@
 import { useState } from 'react';
-import { LayoutDashboard, Brain, Lightbulb, FileSearch, Settings, Activity, Menu } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { LayoutDashboard, Lightbulb, Settings, Activity, Menu, Construction, Upload } from 'lucide-react';
 
-type View = 'dashboard' | 'memory' | 'resolution' | 'explanation';
-
-interface SidebarProps {
-  currentView: View;
-  onViewChange: (view: View) => void;
+interface NavItem {
+  path: string;
+  label: string;
+  icon: React.ComponentType<any>;
 }
 
-const navItems = [
-  { id: 'dashboard' as View, label: 'Network Overview', icon: LayoutDashboard },
-  { id: 'memory' as View, label: 'Memory Search', icon: Brain },
-  { id: 'resolution' as View, label: 'Resolution Options', icon: Lightbulb },
-  { id: 'explanation' as View, label: 'Explainability', icon: FileSearch },
+const navItems: NavItem[] = [
+  { path: '/', label: 'Network Overview', icon: LayoutDashboard },
+  { path: '/resolution', label: 'Resolution Options', icon: Lightbulb },
+  { path: '/maintenance', label: 'Maintenance', icon: Construction },
+  { path: '/documentation', label: 'Documentation', icon: Upload },
 ];
 
-export function Sidebar({ currentView, onViewChange }: SidebarProps) {
-  const [isOpen, setIsOpen] = useState(true); // track open/close state
+export function Sidebar() {
+  const [isOpen, setIsOpen] = useState(true);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <div className={`h-full bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 ${isOpen ? 'w-64' : 'w-16'}`}>
@@ -43,11 +45,11 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
         <ul className="space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = currentView === item.id;
+            const isActive = location.pathname === item.path;
             return (
-              <li key={item.id}>
+              <li key={item.path}>
                 <button
-                  onClick={() => onViewChange(item.id)}
+                  onClick={() => navigate(item.path)}
                   className={`flex items-center gap-3 w-full px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
                     isActive
                       ? 'bg-primary/10 text-primary border border-primary/20'

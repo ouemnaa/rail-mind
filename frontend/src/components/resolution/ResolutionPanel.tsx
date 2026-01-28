@@ -1,6 +1,5 @@
-import { Lightbulb, ArrowRight } from 'lucide-react';
+import { Lightbulb } from 'lucide-react';
 import { ResolutionCard } from './ResolutionCard';
-import { Button } from '@/components/ui/button';
 
 const resolutionOptions = [
   {
@@ -51,50 +50,38 @@ interface ResolutionPanelProps {
 
 export function ResolutionPanel({ onViewExplanation }: ResolutionPanelProps) {
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col w-full">
       {/* Header */}
-      <div className="glass-panel p-4 mb-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center">
-              <Lightbulb className="w-5 h-5 text-accent" />
-            </div>
-            <div>
-              <h2 className="font-semibold">Resolution Options</h2>
-              <p className="text-sm text-muted-foreground">AI-ranked by effectiveness</p>
-            </div>
+      <div className="glass-panel p-6 mb-6">
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-lg bg-accent/20 flex items-center justify-center">
+            <Lightbulb className="w-8 h-8 text-accent" />
+          </div>
+          <div>
+            <h2 className="font-semibold text-xl">Resolution Options</h2>
+            <p className="text-base text-muted-foreground">AI-ranked by effectiveness</p>
           </div>
         </div>
 
-        <div className="mt-4 p-3 bg-primary/10 border border-primary/20 rounded-lg">
-          <div className="flex items-center gap-2 text-sm text-primary">
-            <span className="font-medium">3 viable options identified</span>
-            <span className="text-xs text-muted-foreground">based on 25 similar historical cases</span>
+        <div className="mt-6 p-5 bg-primary/10 border border-primary/20 rounded-lg">
+          <div className="flex flex-col gap-2 text-base text-primary">
+            <span className="font-medium text-lg">3 viable options identified</span>
+            <span className="text-sm text-muted-foreground">
+              Based on 25 similar historical cases
+            </span>
           </div>
         </div>
       </div>
 
       {/* Resolution Cards */}
-      <div className="flex-1 overflow-y-auto space-y-4">
+      <div className="flex-1 overflow-y-auto space-y-6">
         {resolutionOptions.map((option) => (
           <ResolutionCard 
             key={option.rank} 
             {...option} 
-            onClick={onViewExplanation}
+            onClick={() => onViewExplanation?.()} 
           />
         ))}
-      </div>
-
-      {/* Footer */}
-      <div className="mt-4">
-        <Button 
-          onClick={onViewExplanation}
-          variant="outline" 
-          className="w-full border-primary/50 text-primary hover:bg-primary/10"
-        >
-          View Full Explanation
-          <ArrowRight className="w-4 h-4 ml-2" />
-        </Button>
       </div>
     </div>
   );
