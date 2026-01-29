@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AlertTriangle, MapPin, ChevronDown, ChevronUp, CheckCircle2, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -114,7 +114,8 @@ function ConflictCard({
           {/* Resolution Button */}
           <div className="mt-2 flex justify-end">
             <Button
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent card from collapsing
                 const severityMap = {
                   low: 0.25,
                   medium: 0.5,
@@ -172,6 +173,22 @@ export function UnifiedAlertPanel({
   const highRiskPredictions = sortedPredictions.filter(p => p.probability >= 0.5);
   const otherPredictions = sortedPredictions.filter(p => p.probability < 0.5);
   const displayPredictions = showAllPredictions ? sortedPredictions.slice(0, 15) : highRiskPredictions.slice(0, 5);
+
+  // Keep expanded state only if the conflict still exists in the current data
+  useEffect(() => {
+    if (expandedDetection && !detections.find(d => d.conflict_id === expandedDetection)) {
+      setExpandedDetection(null);
+    }
+  }, [detections, expandedDetection]);
+
+  useEffect(() => {
+    if (expandedPrediction && !displayPredictions.find(p => p.conflict_id === expandedPrediction)) {
+      // Only clear if the conflict doesn't exist in the full sorted list
+      if (!sortedPredictions.find(p => p.conflict_id === expandedPrediction)) {
+        setExpandedPrediction(null);
+      }
+    }
+  }, [displayPredictions, expandedPrediction, sortedPredictions]);
 
   return (
     <div className="glass-panel p-4 h-full flex flex-col">

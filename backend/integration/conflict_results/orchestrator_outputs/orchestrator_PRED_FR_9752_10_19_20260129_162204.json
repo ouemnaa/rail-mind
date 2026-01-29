@@ -1,0 +1,166 @@
+{
+  "status": "ok",
+  "conflict_id": "PRED_FR_9752_10_19",
+  "started_at": "2026-01-29T16:21:00.641602+00:00",
+  "finished_at": "2026-01-29T16:22:04.961288+00:00",
+  "total_execution_ms": 64319,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 61553,
+      "raw_result": {
+        "conflict_id": "PRED_FR_9752_10_19",
+        "conflict_summary": "",
+        "timestamp": "2026-01-29T17:22:02.193220",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [
+          {
+            "resolution_id": "algo_1",
+            "strategy_name": "Priority‑based FCFS with express override",
+            "action_steps": [
+              "Identify the platform request of FR_9752 at Milano Centrale.",
+              "Grant FR_9752 immediate access to the requested platform because it is a high‑speed (Frecciarossa) service.",
+              "If another train is already occupying the platform, issue a hold order to that train at the preceding signal and request a reduced dwell time (minimum safe dwell).",
+              "Release the platform to FR_9752 as soon as it becomes free, keeping the hold in place until FR_9752 has cleared the platform.",
+              "Update the real‑time timetable and dispatch messages to all affected crews."
+            ],
+            "expected_outcome": "FR_9752 proceeds without additional waiting, preventing a cascade of platform overload and keeping downstream traffic on schedule.",
+            "reasoning": "The conflict is a platform‑conflict (soft block) at a major hub. Algorithm *platform_congestion_resolution_1* explicitly recommends FCFS with priority overrides for express trains, holding upstream traffic and shortening dwell times. FR_9752, being a high‑speed service, qualifies for the priority rule, making this strategy directly applicable.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: platform_congestion_resolution_1"
+            ],
+            "confidence_score": 0.857,
+            "algorithm_name": "platform_congestion_resolution_1",
+            "algorithm_reasoning": "The conflict is a platform‑conflict (soft block) at a major hub. Algorithm *platform_congestion_resolution_1* explicitly recommends FCFS with priority overrides for express trains, holding upstream traffic and shortening dwell times. FR_9752, being a high‑speed service, qualifies for the priority rule, making this strategy directly applicable.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_9752"
+            ],
+            "estimated_delay_reduction_sec": 2,
+            "side_effects": [],
+            "feasibility_score": 0.92,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "algo_2",
+            "strategy_name": "Redirect & hold (Milano Centrale synthetic scenario)",
+            "action_steps": [
+              "Query the platform allocation table for all free platforms at Milano Centrale (e.g., platforms 5, 7, 9).",
+              "If the originally requested platform is occupied, assign FR_9752 to the next available high‑capacity platform.",
+              "Issue a hold order to any lower‑priority trains that were also targeting the original platform, keeping them at the preceding signal for up to 8 minutes.",
+              "Instruct any train already on the platform to truncate its dwell time to the minimum safe dwell (≈2 min).",
+              "Broadcast the new platform assignment and hold instructions to train crews and the signalling centre."
+            ],
+            "expected_outcome": "FR_9752 obtains a platform without waiting, while other trains are safely queued upstream, balancing platform usage and avoiding further congestion.",
+            "reasoning": "The synthetic dataset *synthetic_platform_milano_centrale* provides a concrete example of multiple trains contesting a single platform at Milano Centrale and resolves it by re‑assigning lower‑priority trains to alternative platforms and holding them. Even though only FR_9752 is listed, the same logic prevents a potential bottleneck if other services arrive shortly.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: synthetic_platform_milano_centrale"
+            ],
+            "confidence_score": 0.821,
+            "algorithm_name": "synthetic_platform_milano_centrale",
+            "algorithm_reasoning": "The synthetic dataset *synthetic_platform_milano_centrale* provides a concrete example of multiple trains contesting a single platform at Milano Centrale and resolves it by re‑assigning lower‑priority trains to alternative platforms and holding them. Even though only FR_9752 is listed, the same logic prevents a potential bottleneck if other services arrive shortly.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_9752"
+            ],
+            "estimated_delay_reduction_sec": 2,
+            "side_effects": [],
+            "feasibility_score": 0.86,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "algo_3",
+            "strategy_name": "MILP rolling‑horizon platform optimisation",
+            "action_steps": [
+              "Formulate a short‑term MILP that minimises total platform waiting time, including a binary variable that allows two compatible trains to share one platform track (coupling).",
+              "Run the rolling‑horizon solver for the next 15‑minute window, fixing decisions for already‑departed trains.",
+              "If the solver finds a feasible assignment where FR_9752 shares a platform with a compatible regional train, implement the coupling schedule; otherwise, allocate the next free platform.",
+              "Communicate the new platform‑track assignment and any coupling instructions to the train crews and dispatchers.",
+              "Re‑run the optimisation each subsequent horizon to adapt to new arrivals."
+            ],
+            "expected_outcome": "Optimal use of limited platform tracks at Milano Centrale, potentially allowing FR_9752 to depart on time even under tight capacity, while keeping overall station utilisation efficient.",
+            "reasoning": "Algorithm *24eeed11‑7b18‑5613‑b686‑ba556dc837de* addresses resource‑constraint platform congestion through MILP optimisation and rolling‑horizon updates. Although the current conflict involves a single train, the method is applicable for real‑time re‑allocation when platform capacity is near its limit.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: 24eeed11-7b18-5613-b686-ba556dc837de"
+            ],
+            "confidence_score": 0.671,
+            "algorithm_name": "24eeed11-7b18-5613-b686-ba556dc837de",
+            "algorithm_reasoning": "Algorithm *24eeed11‑7b18‑5613‑b686‑ba556dc837de* addresses resource‑constraint platform congestion through MILP optimisation and rolling‑horizon updates. Although the current conflict involves a single train, the method is applicable for real‑time re‑allocation when platform capacity is near its limit.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_9752"
+            ],
+            "estimated_delay_reduction_sec": 1,
+            "side_effects": [],
+            "feasibility_score": 0.61,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        ],
+        "layer1_count": 3,
+        "layer2_refinements": {
+          "historical_cases_found": 10,
+          "algorithm_resolutions": 3,
+          "hybrid_resolutions_generated": 0,
+          "total_candidates_evaluated": 3,
+          "historical_success_rates": {
+            "total_cases": 10,
+            "average_similarity": 0.194564562,
+            "outcome_distribution": {
+              "resolved": 3,
+              "unknown": 7
+            }
+          }
+        },
+        "generation_time_sec": 48.807933
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 3
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 720,
+      "raw_result": {
+        "solver_used": "nsga2",
+        "overall_fitness": 0.7518147650329222,
+        "total_delay_min": 1.5367999999999997,
+        "passenger_impact": 461.0399999999999,
+        "propagation_depth": 0,
+        "recovery_smoothness": 1.0,
+        "actions": [
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "FR_9752",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: PRED_FR_9752_10_19\nType: platform_conflict\nSeverity: 0.75\nAffected trains: FR_9752\nAffected stations: MILANO CENTRALE\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using nsga2):\n  1. SPEED_ADJUST - Train FR_9752\n      speed_factor: 1.12\n\nExpected Outcomes:\n  - Total delay: 1.5 minutes\n  - Passenger impact: 461 passenger-minutes\n  - Propagation depth: 0 trains\n  - Recovery smoothness: 1.00\n  - Overall fitness: 0.752"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "error",
+    "execution_ms": 2757,
+    "ranked_resolutions": null,
+    "raw_llm_response": null,
+    "error": "Groq API error (RateLimitError): Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kg4gh266e7tscb9zw2hr2rqr` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199987, Requested 1884. Please try again in 13m28.272s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  }
+}
