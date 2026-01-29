@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Lightbulb, Settings, Activity, Menu, Construction, Upload } from 'lucide-react';
+import { LayoutDashboard, Lightbulb, Settings, Activity, Menu, Construction, Upload, Download } from 'lucide-react';
+import { useInstallPrompt } from '@/hooks/use-install-prompt';
 
 interface NavItem {
   path: string;
@@ -19,6 +20,7 @@ export function Sidebar() {
   const [isOpen, setIsOpen] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const { isInstallable, installApp } = useInstallPrompt();
 
   return (
     <div className={`h-full bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 ${isOpen ? 'w-64' : 'w-16'}`}>
@@ -67,6 +69,16 @@ export function Sidebar() {
 
       {/* Footer */}
       <div className="p-4 border-t border-sidebar-border">
+        {isInstallable && (
+          <button 
+            onClick={installApp}
+            className="flex items-center gap-3 w-full px-4 py-3 mb-2 rounded-lg text-sm font-medium text-primary bg-primary/10 hover:bg-primary/20 transition-colors"
+          >
+            <Download className="w-5 h-5" />
+            {isOpen && 'Install App'}
+          </button>
+        )}
+
         <button className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
           <Settings className="w-5 h-5" />
           {isOpen && 'Settings'}

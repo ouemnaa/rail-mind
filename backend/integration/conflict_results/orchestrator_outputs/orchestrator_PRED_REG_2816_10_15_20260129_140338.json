@@ -1,0 +1,147 @@
+{
+  "status": "ok",
+  "conflict_id": "PRED_REG_2816_10_15",
+  "started_at": "2026-01-29T14:03:24.910001+00:00",
+  "finished_at": "2026-01-29T14:03:38.402789+00:00",
+  "total_execution_ms": 13492,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 12717,
+      "raw_result": {
+        "conflict_id": "PRED_REG_2816_10_15",
+        "conflict_summary": "",
+        "timestamp": "2026-01-29T15:03:37.610713",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [
+          {
+            "resolution_id": "algo_1",
+            "strategy_name": "Safety interval conflict",
+            "action_steps": [
+              "MILP rescheduling to enforce minimum headway and dwell-time constraints. Adjusts departure/arrival events to maintain safe separation."
+            ],
+            "expected_outcome": "Resolve the conflict based on algorithm",
+            "reasoning": "The MILP model explicitly encodes safety intervals as linear constraints. By optimizing timetable adjustments, it ensures all station events comply with signaling requirements, preventing collisions and reducing the need for emergency stops.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm score: 0.318"
+            ],
+            "confidence_score": 0.4162648355,
+            "algorithm_name": "Safety interval conflict",
+            "algorithm_reasoning": "The MILP model explicitly encodes safety intervals as linear constraints. By optimizing timetable adjustments, it ensures all station events comply with signaling requirements, preventing collisions and reducing the need for emergency stops.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [],
+            "estimated_delay_reduction_sec": null,
+            "side_effects": [],
+            "feasibility_score": 0.0,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "algo_2",
+            "strategy_name": "Operational dependency failure",
+            "action_steps": [
+              "Modify schedules to satisfy mandatory dependencies; break logical dependencies if unavoidable (with penalties)."
+            ],
+            "expected_outcome": "Resolve the conflict based on algorithm",
+            "reasoning": "Mandatory dependencies (e.g., crew changes) are critical for operations, while logical ones (e.g., passenger connections) are prioritized but can be broken to minimize overall delays. The algorithm penalizes broken dependencies in the objective function.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm score: 0.313"
+            ],
+            "confidence_score": 0.414427206,
+            "algorithm_name": "Operational dependency failure",
+            "algorithm_reasoning": "Mandatory dependencies (e.g., crew changes) are critical for operations, while logical ones (e.g., passenger connections) are prioritized but can be broken to minimize overall delays. The algorithm penalizes broken dependencies in the objective function.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [],
+            "estimated_delay_reduction_sec": null,
+            "side_effects": [],
+            "feasibility_score": 0.0,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "algo_3",
+            "strategy_name": "Delay propagation",
+            "action_steps": [
+              "Minimizing total timetable deviation (weighted sum of arrival/departure delays) in the MILP objective. The rolling horizon algorithm updates schedules incrementally as the disruption evolves."
+            ],
+            "expected_outcome": "Resolve the conflict based on algorithm",
+            "reasoning": "Reducing deviations stabilizes the timetable and limits delay spread. The rolling horizon method adapts to real-time changes (e.g., updated disruption duration) while maintaining computational tractability.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm score: 0.291"
+            ],
+            "confidence_score": 0.4070027505,
+            "algorithm_name": "Delay propagation",
+            "algorithm_reasoning": "Reducing deviations stabilizes the timetable and limits delay spread. The rolling horizon method adapts to real-time changes (e.g., updated disruption duration) while maintaining computational tractability.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [],
+            "estimated_delay_reduction_sec": null,
+            "side_effects": [],
+            "feasibility_score": 0.0,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        ],
+        "layer1_count": 3,
+        "layer2_refinements": {
+          "historical_cases_found": 10,
+          "algorithm_resolutions": 3,
+          "hybrid_resolutions_generated": 0,
+          "total_candidates_evaluated": 3,
+          "historical_success_rates": {
+            "total_cases": 10,
+            "average_similarity": 0.22203051899999998,
+            "outcome_distribution": {
+              "unknown": 10
+            }
+          }
+        },
+        "generation_time_sec": 6.432989
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 0
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 1286,
+      "raw_result": {
+        "solver_used": "nsga2",
+        "overall_fitness": 0.7475333760135289,
+        "total_delay_min": 1.9888,
+        "passenger_impact": 596.64,
+        "propagation_depth": 0,
+        "recovery_smoothness": 1.0,
+        "actions": [
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "REG_2816",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: PRED_REG_2816_10_15\nType: schedule_deviation\nSeverity: 0.75\nAffected trains: REG_2816\nAffected stations: MILANO CENTRALE\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using nsga2):\n  1. SPEED_ADJUST - Train REG_2816\n      speed_factor: 1.12\n\nExpected Outcomes:\n  - Total delay: 2.0 minutes\n  - Passenger impact: 597 passenger-minutes\n  - Propagation depth: 0 trains\n  - Recovery smoothness: 1.00\n  - Overall fitness: 0.748"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "error",
+    "execution_ms": 757,
+    "ranked_resolutions": null,
+    "raw_llm_response": null,
+    "error": "Groq API error (RateLimitError): Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kg4gh266e7tscb9zw2hr2rqr` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199675, Requested 870. Please try again in 3m55.44s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  }
+}

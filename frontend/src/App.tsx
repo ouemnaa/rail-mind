@@ -9,6 +9,7 @@ import Resolution from "./pages/Resolution";
 import Explanation from "./pages/Explanation";
 import Maintenance from "./pages/Maintenance";
 import Documentation from "./pages/Documentation";
+import User from "./pages/User";
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
 
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/explanation" element={<Explanation />} />
           <Route path="/maintenance" element={<Maintenance />} />
           <Route path="/documentation" element={<Documentation />} />
+          <Route path="/user" element={<User />} />
 
           {/* Catch-all */}
           <Route path="*" element={<NotFound />} />

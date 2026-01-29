@@ -12,6 +12,8 @@ interface UnifiedAlertPanelProps {
   detections: UnifiedConflict[];
   tickNumber?: number;
   simulationTime?: string;
+  onPause?: () => void;
+  onResume?: () => void;
 }
 
 // Styles for severity levels
@@ -210,18 +212,51 @@ export function UnifiedAlertPanel({
   detections,
   tickNumber,
   simulationTime,
+  onPause,
+  onResume,
 }: UnifiedAlertPanelProps) {
   const [expandedPrediction, setExpandedPrediction] = useState<string | null>(null);
   const [expandedDetection, setExpandedDetection] = useState<string | null>(null);
   const [showAllPredictions, setShowAllPredictions] = useState(false);
+  const [riskFilter, setRiskFilter] = useState<'all' | 'critical' | 'high' | 'medium' | 'low'>('all');
 
-  const sortedPredictions = [...predictions]
-    .filter(p => p.probability >= 0.3)
+  // Local state to hold the conflicts so they don't jump around while being inspected
+  const [localPredictions, setLocalPredictions] = useState(predictions);
+  const [localDetections, setLocalDetections] = useState(detections);
+
+  useEffect(() => {
+    // Only update the list if the user isn't currently inspecting a conflict
+    if (!expandedPrediction && !expandedDetection) {
+      setLocalPredictions(predictions);
+      setLocalDetections(detections);
+    }
+  }, [predictions, detections, expandedPrediction, expandedDetection]);
+
+  // Handle auto-pausing the simulation for critical inspection
+  useEffect(() => {
+    if (expandedPrediction || expandedDetection) {
+      onPause?.();
+    } else {
+      onResume?.();
+    }
+  }, [expandedPrediction, expandedDetection, onPause, onResume]);
+
+  const filteredPredictions = localPredictions.filter(p => {
+    if (riskFilter === 'all') return p.probability >= 0.3;
+    return p.severity === riskFilter;
+  });
+
+  const sortedPredictions = [...filteredPredictions]
     .sort((a, b) => b.probability - a.probability);
 
-  const highRiskPredictions = sortedPredictions.filter(p => p.probability >= 0.5);
-  const otherPredictions = sortedPredictions.filter(p => p.probability < 0.5);
-  const displayPredictions = showAllPredictions ? sortedPredictions.slice(0, 15) : highRiskPredictions.slice(0, 5);
+  const filteredDetections = localDetections.filter(d => {
+    if (riskFilter === 'all') return true;
+    return d.severity === riskFilter;
+  });
+
+  const highRiskPredictions = sortedPredictions.filter(p => p.probability >= 0.5 || riskFilter !== 'all');
+  const otherPredictions = sortedPredictions.filter(p => p.probability < 0.5 && riskFilter === 'all');
+  const displayPredictions = (showAllPredictions || riskFilter !== 'all') ? sortedPredictions.slice(0, 15) : highRiskPredictions.slice(0, 5);
 
   // Keep expanded state only if the conflict still exists in the current data
   useEffect(() => {
@@ -241,32 +276,52 @@ export function UnifiedAlertPanel({
 
   return (
     <div className="glass-panel p-4 h-full flex flex-col">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div>
+      <div className="flex flex-col gap-4 mb-6">
+        <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-300">
             Conflict Monitor
           </h3>
           {tickNumber !== undefined && (
-            <div className="text-xs text-slate-500">
-              Tick #{tickNumber} • {simulationTime || 'Running'}
+            <div className="text-[10px] text-slate-500 font-mono">
+              TICK #{tickNumber}
             </div>
           )}
+        </div>
+
+        {/* Filter Pills */}
+        <div className="flex flex-wrap gap-1.5">
+          {[
+            { id: 'all', label: 'All', color: 'bg-slate-700', active: 'bg-slate-600 text-white ring-1 ring-slate-400' },
+            { id: 'critical', label: 'Critical', color: 'bg-red-500/20 text-red-400', active: 'bg-red-600 text-white shadow-lg shadow-red-600/20' },
+            { id: 'high', label: 'High', color: 'bg-orange-600/20 text-orange-400', active: 'bg-orange-600 text-white shadow-lg shadow-orange-600/20' },
+            { id: 'medium', label: 'Med', color: 'bg-orange-500/20 text-orange-300', active: 'bg-orange-500 text-white shadow-lg shadow-orange-500/20' },
+            { id: 'low', label: 'Low', color: 'bg-yellow-500/20 text-yellow-400', active: 'bg-yellow-500 text-slate-900 shadow-lg shadow-yellow-500/20' },
+          ].map(f => (
+            <button
+              key={f.id}
+              onClick={() => setRiskFilter(f.id as any)}
+              className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter transition-all duration-200 border border-transparent ${
+                riskFilter === f.id ? f.active : `${f.color} hover:bg-white/5`
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto space-y-4 pr-1">
         {/* Detections */}
-        {detections.length > 0 && (
+        {filteredDetections.length > 0 && (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <XCircle className="w-4 h-4 text-red-500" />
               <span className="text-xs font-bold text-red-400 uppercase tracking-wider">
-                🚨 Active Conflicts ({detections.length})
+                🚨 {riskFilter === 'all' ? 'Active Conflicts' : `${riskFilter.toUpperCase()} Conflicts`} ({filteredDetections.length})
               </span>
             </div>
             <div className="space-y-2">
-              {detections.map(d => (
+              {filteredDetections.map(d => (
                 <ConflictCard
                   key={d.conflict_id}
                   conflict={d}
@@ -280,7 +335,7 @@ export function UnifiedAlertPanel({
         )}
 
         {/* Divider */}
-        {detections.length > 0 && displayPredictions.length > 0 && (
+        {filteredDetections.length > 0 && displayPredictions.length > 0 && (
           <div className="border-t border-slate-700 my-3" />
         )}
 
@@ -291,10 +346,10 @@ export function UnifiedAlertPanel({
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 text-orange-500" />
                 <span className="text-xs font-semibold text-orange-400 uppercase tracking-wider">
-                  Potential Conflicts ({sortedPredictions.length})
+                  {riskFilter === 'all' ? 'Potential Conflicts' : `${riskFilter.toUpperCase()} Predictions`} ({sortedPredictions.length})
                 </span>
               </div>
-              {otherPredictions.length > 0 && (
+              {riskFilter === 'all' && otherPredictions.length > 0 && (
                 <button
                   onClick={() => setShowAllPredictions(!showAllPredictions)}
                   className="text-xs text-slate-400 hover:text-white transition-colors"
@@ -318,11 +373,15 @@ export function UnifiedAlertPanel({
         )}
 
         {/* Empty state */}
-        {detections.length === 0 && displayPredictions.length === 0 && (
+        {filteredDetections.length === 0 && displayPredictions.length === 0 && (
           <div className="flex-1 flex flex-col items-center justify-center text-slate-500 py-8">
             <CheckCircle2 className="w-12 h-12 mb-3 text-emerald-500/50" />
-            <div className="text-sm font-medium">Network Operating Normally</div>
-            <div className="text-xs mt-1">No conflicts detected or predicted</div>
+            <div className="text-sm font-medium">No {riskFilter !== 'all' ? riskFilter : ''} Conflicts</div>
+            <div className="text-xs mt-1">
+              {riskFilter === 'all' 
+                ? 'Network Operating Normally' 
+                : `No ${riskFilter} risks detected in current scan`}
+            </div>
           </div>
         )}
       </div>

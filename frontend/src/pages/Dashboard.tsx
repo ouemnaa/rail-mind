@@ -114,7 +114,10 @@ const Dashboard = () => {
                 </div>
 
                 {mapMode==='lombardy' ? (
-                  <LombardyNetworkMap predictions={batchPrediction} onStationClick={()=>setShowConflictDetail(true)} />
+                  <LombardyNetworkMap 
+                    predictions={batchPrediction} 
+                    onStationClick={()=>setShowConflictDetail(true)} 
+                  />
                 ) : (
                   <NetworkMap  onStationClick={()=>setShowConflictDetail(true)} />
                 )}
