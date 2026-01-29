@@ -30,11 +30,13 @@ import {
   ChevronDown,
   ChevronUp,
   Search,
-  Filter
+  Filter,
+  Download
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useUnifiedSimulation } from '@/hooks/useUnifiedSimulation';
+import { useInstallPrompt } from '@/hooks/use-install-prompt';
 import { TrainCard, TrainCardCompact } from '@/components/user/TrainCard';
 import { TrainDetailDrawer } from '@/components/user/TrainDetailDrawer';
 import { toast } from 'sonner';
@@ -47,6 +49,7 @@ const MAJOR_DELAY_THRESHOLD = 600;
 
 export default function User() {
   const navigate = useNavigate();
+  const { isInstallable, installApp } = useInstallPrompt();
   const [showMapMobile, setShowMapMobile] = useState(false);
   const [selectedTrain, setSelectedTrain] = useState<TrainData | null>(null);
   const [lastNotifiedTrains, setLastNotifiedTrains] = useState<Set<string>>(new Set());
@@ -155,13 +158,28 @@ export default function User() {
           </div>
           
           <div className="flex items-center gap-4">
-             {/* Connection Status */}
+            {/* Connection Status */}
              <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest ${
               error ? 'bg-red-500/10 text-red-500' : 'bg-emerald-500/10 text-emerald-500'
             }`}>
               <Wifi className="w-3 h-3" />
               <span className="hidden md:inline">{error ? 'Offline' : 'Real-time'}</span>
             </div>
+
+            {/* Install App Button */}
+            {isInstallable && (
+              <button
+                onClick={installApp}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all ${
+                  isDarkMode 
+                    ? 'bg-blue-600/10 text-blue-400 hover:bg-blue-600/20' 
+                    : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                }`}
+              >
+                <Download className="w-3 h-3" />
+                <span className="hidden md:inline">Install App</span>
+              </button>
+            )}
 
             <button
               onClick={toggleTheme}
