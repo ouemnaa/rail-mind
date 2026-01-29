@@ -146,7 +146,14 @@ const Index = () => {
             </div>
 
             <div className="h-full min-h-[600px]">
-              <UnifiedAlertPanel predictions={predictions} detections={detections} tickNumber={state?.tick_number} simulationTime={state?.simulation_time} />
+              <UnifiedAlertPanel 
+                predictions={predictions} 
+                detections={detections} 
+                tickNumber={state?.tick_number} 
+                simulationTime={state?.simulation_time}
+                onPause={stop}
+                onResume={start}
+              />
             </div>
           </div>
         );
