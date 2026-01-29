@@ -1,12 +1,14 @@
 """
-Fair LLM-as-a-Judge System for Railway Conflict Resolutions
+Fair LLM-as-a-Judge System for Railway Conflict Resolutions (V2 - Groq Integrated)
 Normalizes outputs from both agents before evaluation to ensure objective ranking
 """
 
 import json
 import re
+import os
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, asdict
+from groq import Groq
 
 
 @dataclass
@@ -355,12 +357,13 @@ class ResolutionNormalizer:
 
 class LLMJudge:
     """
-    Fair LLM-based judge that evaluates normalized resolutions
+    Fair LLM-based judge that evaluates normalized resolutions using Groq
     """
     
-    def __init__(self, api_key: str, api_url: str = "https://openrouter.ai/api/v1/chat/completions"):
+    def __init__(self, api_key: str, model: str = "openai/gpt-oss-120b"):
         self.api_key = api_key
-        self.api_url = api_url
+        self.model = model
+        self.client = Groq(api_key=self.api_key)
     
     def rank_resolutions(
         self,
@@ -460,26 +463,28 @@ Evaluate the following {len(resolutions)} resolution strategies objectively and 
         
         prompt += """
 **OUTPUT FORMAT:**
-Return ONLY a JSON array with your top 3 ranked resolutions:
+Return ONLY a valid JSON array with your top 3 ranked resolutions. 
+Do not include any thinking process, introduction, or conclusion outside the JSON.
+Keep justifications extremely concise (max 2 sentences).
 
 [
   {
     "rank": 1,
     "resolution_number": <1-4>,
     "resolution_id": "<id>",
-    "bullet_resolution_actions":{},
+    "bullet_resolution_actions": {},
     "overall_score": <0-100>,
     "safety_rating": <0-10>,
     "efficiency_rating": <0-10>,
     "feasibility_rating": <0-10>,
     "robustness_rating": <0-10>,
-    "justification": "<2-3 sentence explanation focusing on objective strengths>"
-    
+    "justification": "<2 sentence explanation>"
   },
   ...
 ]
 
-**CRITICAL:** Base your judgment on OBJECTIVE PERFORMANCE METRICS and PRACTICAL VIABILITY, not on how detailed the explanation is. Mathematical optimization with strong metrics can outperform verbose explanations with weaker performance.
+**CRITICAL:** Base your judgment on OBJECTIVE PERFORMANCE METRICS and PRACTICAL VIABILITY. 
+Be concise. No preamble. No markdown code blocks unless necessary.
 """
         
         return prompt
@@ -495,43 +500,32 @@ Return ONLY a JSON array with your top 3 ranked resolutions:
         return '\n'.join([f"  - {effect}" for effect in effects])
     
     def _call_llm(self, prompt: str) -> str:
-        """Call LLM API"""
-        import requests
-        
-        headers = {
-            "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json",
-            "HTTP-Referer": "http://localhost",
-            "X-Title": "LLM Judge for Railway Conflicts"
-        }
-        
-        payload = {
-            "model": "tngtech/deepseek-r1t2-chimera:free",  # FREE model!
-            "messages": [
-                {"role": "user", "content": prompt}
-            ],
-            "temperature": 0.1,  # Low temperature for consistent judgment
-            "max_tokens": 2000
-        }
-        
+        """Call LLM API via Groq"""
         try:
-            response = requests.post(self.api_url, headers=headers, json=payload, timeout=120)
-            response.raise_for_status()
+            completion = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are an expert railway operations judge. Return only JSON."
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                temperature=0.1,
+                max_completion_tokens=8192,
+                top_p=1,
+                reasoning_effort="medium",
+                stream=False, # We want full response for sync parsing
+                stop=None
+            )
             
-            return response.json()["choices"][0]["message"]["content"]
-        
-        except requests.exceptions.HTTPError as e:
-            if e.response.status_code == 401:
-                raise Exception(
-                    "Authentication failed! Please check your API key.\n"
-                    f"Current API key: {self.api_key[:20]}...\n"
-                    "Get a new key at: https://openrouter.ai/keys"
-                )
-            else:
-                raise Exception(f"API request failed: {e.response.status_code} - {e.response.text}")
-        
+            return completion.choices[0].message.content
+            
         except Exception as e:
-            raise Exception(f"LLM API error: {str(e)}")
+            raise Exception(f"Groq API error ({type(e).__name__}): {str(e)}")
     
     def _parse_rankings(
         self,
@@ -539,58 +533,118 @@ Return ONLY a JSON array with your top 3 ranked resolutions:
         resolutions: List[NormalizedResolution],
         top_k: int
     ) -> List[Dict[str, Any]]:
-        """Parse LLM judgment into structured rankings"""
+        """Parse LLM judgment into structured rankings with robust recovery"""
         
         # Debug: Print what we received
-        print("\n[DEBUG] LLM Response:")
+        print("\n[DEBUG] LLM Response Preview:")
         print("="*70)
-        print(judgment_text[:500])
+        print(judgment_text[:800] + ("..." if len(judgment_text) > 800 else ""))
         print("="*70)
         
-        # Try to extract JSON from response
-        # Method 1: Look for ```json code block
-        json_match = re.search(r'```json\s*(.*?)\s*```', judgment_text, re.DOTALL)
-        if json_match:
-            json_str = json_match.group(1)
+        json_str = ""
+        
+        # Method 1: Look for JSON blocks
+        blocks = re.findall(r'```json\s*(.*?)\s*```', judgment_text, re.DOTALL)
+        if not blocks:
+            blocks = re.findall(r'```\s*(.*?)\s*```', judgment_text, re.DOTALL)
+            
+        if blocks:
+            json_str = blocks[-1] # Take the last block if multiple exist
         else:
-            # Method 2: Look for any code block
-            json_match = re.search(r'```\s*(.*?)\s*```', judgment_text, re.DOTALL)
-            if json_match:
-                json_str = json_match.group(1)
-            else:
-                # Method 3: Look for raw JSON array
-                json_match = re.search(r'\[.*\]', judgment_text, re.DOTALL)
-                if json_match:
-                    json_str = json_match.group()
+            # Method 2: Extract between [ and ]
+            start_idx = judgment_text.find('[')
+            if start_idx != -1:
+                # Find the last closing bracket that could belong to the root array
+                end_idx = judgment_text.rfind(']')
+                if end_idx > start_idx:
+                    json_str = judgment_text[start_idx:end_idx+1]
                 else:
-                    print("\n❌ Could not find JSON in LLM response")
-                    print("Full response:")
-                    print(judgment_text)
-                    raise ValueError("Could not parse LLM judgment - no JSON found")
-        
+                    # Partial JSON - we will try to repair it
+                    json_str = judgment_text[start_idx:]
+            else:
+                print("\n❌ No array found in response")
+                raise ValueError("Could not parse LLM judgment - no JSON array found")
+
+        # Try to parse and repair if needed
         try:
             rankings_json = json.loads(json_str)
-        except json.JSONDecodeError as e:
-            print(f"\n❌ JSON parsing error: {e}")
-            print(f"Attempted to parse: {json_str[:200]}...")
-            raise ValueError(f"Could not parse LLM judgment - invalid JSON: {e}")
-        
+        except json.JSONDecodeError:
+            print("⚠️  JSON appears malformed/truncated, attempting recovery...")
+            rankings_json = self._repair_truncated_json(json_str)
+            if not rankings_json:
+                 raise ValueError("Could not repair truncated LLM judgment")
+
         # Enrich with full resolution data
         enriched_rankings = []
-        for ranking in rankings_json[:top_k]:
-            # Find corresponding resolution
-            res_num = ranking.get('resolution_number', 0) - 1
-            if 0 <= res_num < len(resolutions):
-                resolution = resolutions[res_num]
+        for ranking in rankings_json:
+            if len(enriched_rankings) >= top_k:
+                break
                 
-                enriched_rankings.append({
-                    **ranking,
-                    'full_resolution': asdict(resolution)
-                })
+            # Find corresponding resolution
+            res_num = ranking.get('resolution_number')
+            if res_num is not None:
+                idx = int(res_num) - 1
+                if 0 <= idx < len(resolutions):
+                    resolution = resolutions[idx]
+                    enriched_rankings.append({
+                        **ranking,
+                        'full_resolution': asdict(resolution)
+                    })
+                else:
+                    print(f"⚠️  Warning: Invalid resolution_number {res_num}")
             else:
-                print(f"⚠️  Warning: Invalid resolution_number {ranking.get('resolution_number')}")
+                # If no number, try to match by ID
+                res_id = ranking.get('resolution_id')
+                found = False
+                for res in resolutions:
+                    if res.resolution_id == res_id:
+                        enriched_rankings.append({
+                            **ranking,
+                            'full_resolution': asdict(res)
+                        })
+                        found = True
+                        break
+                if not found:
+                    print(f"⚠️  Warning: Could not link ranking to any resolution")
         
+        if not enriched_rankings:
+            raise ValueError("No valid rankings could be extracted from JSON")
+            
         return enriched_rankings
+
+    def _repair_truncated_json(self, truncated_str: str) -> List[Dict]:
+        """
+        Force-repairs a truncated JSON array of objects.
+        Backtracks to the last complete object.
+        """
+        # Remove trailing junk
+        temp_str = truncated_str.strip()
+        
+        # Try to find the last complete object closing brace '}' 
+        # that is followed by either a comma or the end of a potential list item
+        objs = []
+        
+        # Very simple incremental parser: find all '{...}' blocks
+        # This is safer than regex for nested objects
+        stack = []
+        start = -1
+        for i, char in enumerate(temp_str):
+            if char == '{':
+                if not stack:
+                    start = i
+                stack.append('{')
+            elif char == '}':
+                if stack:
+                    stack.pop()
+                    if not stack:
+                        # We found a top-level object!
+                        obj_str = temp_str[start:i+1]
+                        try:
+                            objs.append(json.loads(obj_str))
+                        except:
+                            pass # Skip broken objects
+                            
+        return objs
 
 
 # =========================
@@ -608,17 +662,12 @@ def main():
     print("="*70 + "\n")
     
     # Example data (replace with actual inputs)
-    # ⚠️ IMPORTANT: Replace this with your actual OpenRouter API key!
-    # Get one at: https://openrouter.ai/keys
-    OPENROUTER_API_KEY = "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"  # ← CHANGE THIS!
+    # ⚠️ IMPORTANT: Replace this with your actual Groq API key!
+    GROQ_API_KEY = "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"
+    GROQ_MODEL = "openai/gpt-oss-120b"
     
-    if OPENROUTER_API_KEY == "YOUR_API_KEY_HERE":
-        print("❌ ERROR: Please set your OpenRouter API key in the script!")
-        print("\nTo fix this:")
-        print("1. Go to https://openrouter.ai/keys")
-        print("2. Create a new API key")
-        print("3. Replace 'YOUR_API_KEY_HERE' in line 585 of this script")
-        print("4. Or set it as an environment variable: OPENROUTER_API_KEY")
+    if GROQ_API_KEY == "YOUR_API_KEY_HERE":
+        print("❌ ERROR: Please set your Groq API key in the script!")
         return 1
     
     # Agent 1 resolutions (from JSON file)
@@ -669,8 +718,8 @@ def main():
             print(f"✓ Normalized: {normalized.strategy_name} (Agent 1)")
     
     except FileNotFoundError:
-        print("⚠️  Agent 1 JSON file not found, using example data...")
-        # Use example data from the document
+        print(f"⚠️  Agent 1 JSON file '{agent1_json_path}' not found!")
+        return 1
     
     # Normalize Agent 2 resolution
     agent2_normalized = normalizer.normalize_agent2_resolution(
@@ -689,7 +738,7 @@ def main():
     print("Step 2: LLM Judge Evaluation")
     print("="*70 + "\n")
     
-    judge = LLMJudge(api_key=OPENROUTER_API_KEY)
+    judge = LLMJudge(api_key=GROQ_API_KEY, model=GROQ_MODEL)
     
     rankings = judge.rank_resolutions(
         normalized_resolutions=normalized_resolutions,

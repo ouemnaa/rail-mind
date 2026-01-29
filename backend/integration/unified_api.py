@@ -24,21 +24,28 @@ Color Coding for Frontend:
 """
 
 import sys
+import os
+import asyncio
+import time
+import traceback
 from pathlib import Path
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 import json
+from concurrent.futures import ThreadPoolExecutor
 
 # Add paths
 # BASE_DIR is backend folder, detection modules are in agents/detection-agent/
 BASE_DIR = Path(__file__).resolve().parent.parent  # backend folder
 PROJECT_ROOT = BASE_DIR.parent  # rail-mind folder
+RESOLUTION_AGENT_DIR = PROJECT_ROOT / "agents" / "resolution-agent"
+sys.path.insert(0, str(RESOLUTION_AGENT_DIR))
 DETECTION_AGENT_DIR = PROJECT_ROOT / "agents" / "detection-agent"
 sys.path.insert(0, str(DETECTION_AGENT_DIR / "prediction_confilt"))
 sys.path.insert(0, str(DETECTION_AGENT_DIR / "deterministic-detection"))
 sys.path.insert(0, str(BASE_DIR / "integration"))
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -48,6 +55,10 @@ import uvicorn
 # Create output directory for conflict results
 CONFLICTS_OUTPUT_DIR = Path(__file__).parent / "conflict_results"
 CONFLICTS_OUTPUT_DIR.mkdir(exist_ok=True)
+
+# Create orchestrator output directory
+ORCHESTRATOR_OUTPUT_DIR = CONFLICTS_OUTPUT_DIR / "orchestrator_outputs"
+ORCHESTRATOR_OUTPUT_DIR.mkdir(exist_ok=True)
 
 # Track images directory
 TRACK_IMAGES_DIR = PROJECT_ROOT / "agents" / "detection-agent" / "Vision-Based Track Fault Detection" / "images"
@@ -162,8 +173,8 @@ def root():
     """API root with documentation."""
     return {
         "name": "Rail-Mind Unified API",
-        "version": "2.0.0",
-        "description": "ML Prediction + Deterministic Detection",
+        "version": "2.1.0",
+        "description": "ML Prediction + Deterministic Detection + Resolution Orchestration",
         "endpoints": {
             "/api/simulation/state": "Get current state without advancing",
             "/api/simulation/tick": "Advance simulation and get new state",
@@ -171,6 +182,10 @@ def root():
             "/api/prediction/{station_id}": "Get predictions for a station",
             "/api/region/{region}": "Get all data for a region",
             "/api/track-images/{filename}": "Get track fault images",
+            "/api/conflicts/save": "Save current conflicts to file",
+            "/api/conflicts/list": "List saved conflict files",
+            "/api/conflicts/resolve": "POST - Resolve a conflict using orchestrator",
+            "/api/conflicts/resolve/outputs": "List orchestrator output files",
             "/health": "Health check"
         },
         "color_coding": {
@@ -178,6 +193,16 @@ def root():
             "yellow": "Low risk (probability < 0.5)",
             "orange": "High risk (probability >= 0.5)",
             "red": "Active conflict (detected)"
+        },
+        "resolution_api": {
+            "description": "POST to /api/conflicts/resolve with conflict JSON",
+            "body_options": [
+                "{ conflict: {...} } - Direct conflict object",
+                "{ detection: {...} } - Detection from this API (auto-converted)",
+                "{ filename: 'file.json' } - Load from saved file"
+            ],
+            "optional_params": ["llm_api_key", "timeout", "context"],
+            "env_vars": ["GROQ_API_KEY - For LLM judge"]
         }
     }
 
@@ -535,6 +560,288 @@ def toggle_auto_save(enabled: bool = True, interval_ticks: int = 5) -> dict:
         "output_directory": str(CONFLICTS_OUTPUT_DIR),
         "note": "Auto-save will trigger every tick endpoint call if enabled"
     }
+
+
+# =============================================================================
+# Resolution Orchestrator Integration
+# =============================================================================
+
+# Simple rate limiter for orchestrator calls
+_rate_limit_store: Dict[str, tuple] = {}  # ip -> (last_time, count)
+RATE_LIMIT_CALLS = 5
+RATE_LIMIT_WINDOW_SEC = 60
+
+# Thread pool for orchestrator (limited to 2 concurrent resolutions)
+_orchestrator_executor = ThreadPoolExecutor(max_workers=2, thread_name_prefix="orchestrator")
+
+
+def _check_rate_limit(client_ip: str) -> bool:
+    """Check if client is rate limited. Returns True if request should be blocked."""
+    now = time.time()
+    if client_ip in _rate_limit_store:
+        last_time, count = _rate_limit_store[client_ip]
+        if now - last_time < RATE_LIMIT_WINDOW_SEC:
+            if count >= RATE_LIMIT_CALLS:
+                return True
+            _rate_limit_store[client_ip] = (last_time, count + 1)
+        else:
+            _rate_limit_store[client_ip] = (now, 1)
+    else:
+        _rate_limit_store[client_ip] = (now, 1)
+    return False
+
+
+def _run_orchestrator_sync(conflict: Dict[str, Any], context: Optional[Dict], timeout: float, api_key: Optional[str]) -> Dict[str, Any]:
+    """
+    Run the orchestrator synchronously (called in thread pool).
+    Handles the import and invocation of orchestrator.orchestrate().
+    """
+    try:
+        # Import orchestrator module
+        import resolution_orchestrator as orchestrator_module
+        
+        # Call orchestrate function
+        result = orchestrator_module.orchestrate(
+            conflict=conflict,
+            context=context,
+            timeout=timeout,
+            api_key=api_key
+        )
+        return result
+    except ImportError as e:
+        return {
+            "status": "error",
+            "error": f"Failed to import resolution_orchestrator: {str(e)}",
+            "traceback": traceback.format_exc()
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error": f"{type(e).__name__}: {str(e)}",
+            "traceback": traceback.format_exc()
+        }
+
+
+def _convert_detection_to_orchestrator_format(detection: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Convert a detection/prediction from unified_api format to orchestrator conflict format.
+    
+    The orchestrator expects:
+    - conflict_id
+    - conflict_type
+    - station_ids (list of station names)
+    - train_ids (list of train IDs)
+    - delay_values (dict of train_id -> delay)
+    - timestamp
+    - severity (0-1 float)
+    - blocking_behavior
+    """
+    # Extract trains from involved_trains
+    train_ids = detection.get("involved_trains", [])
+    
+    # Parse location to get station IDs
+    location = detection.get("location", "")
+    if "--" in location:
+        station_ids = location.split("--")
+    else:
+        station_ids = [location] if location else []
+    
+    # Map severity string to float
+    severity_map = {"low": 0.3, "medium": 0.5, "high": 0.75, "critical": 0.95}
+    severity_str = detection.get("severity", "medium")
+    severity = severity_map.get(severity_str, 0.5)
+    
+    # Build delay values from any available data
+    delay_values = {}
+    for train_id in train_ids:
+        delay_values[train_id] = 2.0  # Default delay estimate
+    
+    return {
+        "conflict_id": detection.get("conflict_id", f"CONF-{datetime.now().strftime('%Y%m%d%H%M%S')}"),
+        "conflict_type": detection.get("conflict_type", "unknown"),
+        "station_ids": station_ids,
+        "train_ids": train_ids,
+        "delay_values": delay_values,
+        "timestamp": datetime.now().timestamp(),
+        "severity": severity,
+        "blocking_behavior": "soft",
+        # Preserve original data for reference
+        "original_detection": detection
+    }
+
+
+@app.post("/api/conflicts/resolve")
+async def resolve_conflict(request: Request):
+    """
+    Resolve a conflict using the Resolution Orchestrator.
+    
+    Accepts either:
+    - JSON body with "conflict" object (in orchestrator format)
+    - JSON body with "detection" object (from unified_api detection format, will be converted)
+    - JSON body with "filename" to load a saved conflict file
+    
+    Optional parameters:
+    - llm_api_key: API key for LLM judge (or use GROQ_API_KEY env var)
+    - timeout: Per-agent timeout in seconds (default: 60)
+    - context: Optional operational context
+    
+    Returns:
+    - success: boolean
+    - filepath: path to saved output file
+    - output: complete orchestrator output with agent results, timings, and rankings
+    """
+    # Rate limiting
+    client_ip = request.client.host if request.client else "unknown"
+    if _check_rate_limit(client_ip):
+        raise HTTPException(
+            status_code=429, 
+            detail=f"Rate limit exceeded. Max {RATE_LIMIT_CALLS} calls per {RATE_LIMIT_WINDOW_SEC} seconds."
+        )
+    
+    # Parse request body
+    try:
+        body = await request.json()
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Invalid JSON body: {str(e)}")
+    
+    # Validate payload size (max 1MB)
+    content_length = request.headers.get("content-length", 0)
+    if int(content_length) > 1_000_000:
+        raise HTTPException(status_code=413, detail="Payload too large (max 1MB)")
+    
+    # Extract parameters
+    llm_api_key = body.get("llm_api_key") or request.headers.get("Authorization", "").replace("Bearer ", "") or None
+    timeout = float(body.get("timeout", 60))
+    context = body.get("context")
+    
+    # Get conflict from body, detection, or filename
+    conflict = body.get("conflict")
+    detection = body.get("detection")
+    filename = body.get("filename")
+    
+    # If detection provided, convert to orchestrator format
+    if detection and not conflict:
+        conflict = _convert_detection_to_orchestrator_format(detection)
+    
+    # If filename provided, load from file
+    if filename and not conflict:
+        # Security: only allow loading from CONFLICTS_OUTPUT_DIR, no path traversal
+        safe_filename = Path(filename).name
+        filepath = CONFLICTS_OUTPUT_DIR / safe_filename
+        
+        if not filepath.exists():
+            raise HTTPException(status_code=404, detail=f"Conflict file not found: {safe_filename}")
+        
+        try:
+            with open(filepath, "r", encoding="utf-8") as f:
+                file_data = json.load(f)
+            
+            # Check if this is a saved conflicts file (has predictions/detections) or direct conflict
+            if "predictions" in file_data or "detections" in file_data:
+                # Get first high-risk detection or prediction
+                detections = file_data.get("detections", [])
+                predictions = file_data.get("predictions", [])
+                
+                # Prefer detections (confirmed conflicts)
+                if detections:
+                    conflict = _convert_detection_to_orchestrator_format(detections[0])
+                elif predictions:
+                    # Get highest probability prediction
+                    sorted_preds = sorted(predictions, key=lambda p: p.get("probability", 0), reverse=True)
+                    conflict = _convert_detection_to_orchestrator_format(sorted_preds[0])
+                else:
+                    raise HTTPException(status_code=400, detail="No conflicts found in file")
+            else:
+                # Direct conflict format
+                conflict = file_data
+                
+        except json.JSONDecodeError as e:
+            raise HTTPException(status_code=400, detail=f"Invalid JSON in file: {str(e)}")
+    
+    if not conflict:
+        raise HTTPException(status_code=400, detail="No conflict provided. Send 'conflict', 'detection', or 'filename' in request body.")
+    
+    # Run orchestrator in thread pool to avoid blocking the event loop
+    # The orchestrator uses asyncio.run() internally, so we must run it in a separate thread
+    loop = asyncio.get_running_loop()
+    
+    try:
+        result = await loop.run_in_executor(
+            _orchestrator_executor,
+            _run_orchestrator_sync,
+            conflict,
+            context,
+            timeout,
+            llm_api_key
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Orchestrator execution failed: {str(e)}")
+    
+    # Save orchestrator output
+    conflict_id = conflict.get("conflict_id", "unknown")
+    ts = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    output_filename = f"orchestrator_{conflict_id}_{ts}.json"
+    output_path = ORCHESTRATOR_OUTPUT_DIR / output_filename
+    
+    try:
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump(result, f, indent=2, ensure_ascii=False, default=str)
+    except Exception as e:
+        print(f"[API] Warning: Failed to save orchestrator output: {e}")
+    
+    # Return response
+    return {
+        "success": result.get("status") in ["ok", "partial"],
+        "filepath": str(output_path),
+        "filename": output_filename,
+        "conflict_id": conflict_id,
+        "output": result
+    }
+
+
+@app.get("/api/conflicts/resolve/outputs")
+def list_orchestrator_outputs() -> dict:
+    """List all saved orchestrator output files."""
+    files = sorted(ORCHESTRATOR_OUTPUT_DIR.glob("orchestrator_*.json"), reverse=True)
+    
+    file_list = []
+    for f in files:
+        try:
+            with open(f, 'r', encoding='utf-8') as fp:
+                data = json.load(fp)
+                file_list.append({
+                    "filename": f.name,
+                    "filepath": str(f),
+                    "conflict_id": data.get("conflict_id", "unknown"),
+                    "status": data.get("status", "unknown"),
+                    "total_execution_ms": data.get("total_execution_ms", 0),
+                    "started_at": data.get("started_at", ""),
+                    "has_rankings": bool(data.get("llm_judge", {}).get("ranked_resolutions")),
+                })
+        except Exception as e:
+            print(f"Error reading {f}: {e}")
+    
+    return {
+        "count": len(file_list),
+        "files": file_list,
+        "output_directory": str(ORCHESTRATOR_OUTPUT_DIR)
+    }
+
+
+@app.get("/api/conflicts/resolve/output/{filename}")
+def get_orchestrator_output(filename: str) -> dict:
+    """Load a specific orchestrator output file."""
+    safe_filename = Path(filename).name
+    filepath = ORCHESTRATOR_OUTPUT_DIR / safe_filename
+    
+    if not filepath.exists():
+        raise HTTPException(status_code=404, detail=f"Output file not found: {safe_filename}")
+    
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error loading file: {str(e)}")
 
 
 # =============================================================================

@@ -1,9 +1,17 @@
 """
 Example usage of Rail Brain.
 """
+import sys
+import pathlib
 import numpy as np
 
-from rail_brain import (
+# Ensure the parent directory is on sys.path so the package can be imported
+CURRENT_DIR = pathlib.Path(__file__).resolve().parent
+PARENT_DIR = CURRENT_DIR.parent
+if str(PARENT_DIR) not in sys.path:
+    sys.path.insert(0, str(PARENT_DIR))
+
+from mathematical_resolution import (
     Conflict,
     Context,
     ResolutionOrchestrator,

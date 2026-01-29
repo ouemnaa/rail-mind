@@ -1,0 +1,82 @@
+[
+    {
+        "conflict_id": "c3f29257-b71e-4caa-8cd2-af92ffaa2757",
+        "timestamp": "2026-01-25T14:07:39.661982",
+        "conflict_type": "headway_violation",
+        "severity": "critical",
+        "location": {
+            "node_id": null,
+            "edge_id": "MILANO ROGOREDO--PAVIA"
+        },
+        "involved_trains": [
+            "REG_33003",
+            "REG_3053"
+        ],
+        "rule_triggered": "EDGE_HEADWAY_001",
+        "explanation": "Headway violation on MILANO ROGOREDO--PAVIA: REG_3053 entered 50s after REG_33003, minimum is 180s",
+        "metadata": {
+            "actual_headway_sec": 50.0,
+            "required_headway_sec": 180,
+            "direction": "MILANO ROGOREDO->PAVIA"
+        }
+    },
+    {
+        "conflict_id": "613f261e-1ef7-4056-8a22-31e542945351",
+        "timestamp": "2026-01-25T14:15:16.473649",
+        "conflict_type": "delay_propagation_risk",
+        "severity": "critical",
+        "location": {
+            "node_id": "LODI",
+            "edge_id": null
+        },
+        "involved_trains": [
+            "REG_1705"
+        ],
+        "rule_triggered": "TRAIN_DELAY_001",
+        "explanation": "Train REG_1705 (regional) has 733s delay at station LODI. Risk of downstream propagation.",
+        "metadata": {
+            "delay_seconds": 733,
+            "train_priority": 2,
+            "remaining_stops": 2
+        }
+    },
+    {
+        "conflict_id": "04152d31-9097-42f1-a237-4a756e5ca883",
+        "timestamp": "2026-01-25T14:07:39.663087",
+        "conflict_type": "high_risk_edge_stress",
+        "severity": "high",
+        "location": {
+            "node_id": null,
+            "edge_id": "MILANO ROGOREDO--PAVIA"
+        },
+        "involved_trains": [
+            "REG_3053"
+        ],
+        "rule_triggered": "NETWORK_WEATHER_001",
+        "explanation": "Weather risk for Train REG_3053: High speed (111km/h) in severe weather (storm)",
+        "metadata": {
+            "weather": "storm",
+            "speed": 110.53477063780633
+        }
+    },
+    {
+        "conflict_id": "730d0850-c64c-4de4-b7ce-b888faa0601b",
+        "timestamp": "2026-01-25T14:07:39.568790",
+        "conflict_type": "delay_propagation_risk",
+        "severity": "high",
+        "location": {
+            "node_id": null,
+            "edge_id": "BRESCIA--MILANO PORTA GARIBALDI"
+        },
+        "involved_trains": [
+            "FR_9750"
+        ],
+        "rule_triggered": "TRAIN_DELAY_001",
+        "explanation": "Train FR_9750 (high_speed) has 259s delay at edge BRESCIA--MILANO PORTA GARIBALDI. Risk of downstream propagation.",
+        "metadata": {
+            "delay_seconds": 259,
+            "train_priority": 5,
+            "remaining_stops": 3
+        }
+    }
+]

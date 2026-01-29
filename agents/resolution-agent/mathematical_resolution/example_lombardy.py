@@ -14,7 +14,7 @@ PARENT_DIR = CURRENT_DIR.parent
 if str(PARENT_DIR) not in sys.path:
     sys.path.insert(0, str(PARENT_DIR))
 
-from rail_brain import (
+from mathematical_resolution import (
     Conflict,
     Context,
     HistoricalConflict,

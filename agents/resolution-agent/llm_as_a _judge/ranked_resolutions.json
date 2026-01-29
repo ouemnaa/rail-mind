@@ -2,21 +2,19 @@
   {
     "rank": 1,
     "resolution_number": 1,
-    "resolution_id": "Dynamic Speed Harmonization with MILP Optimization",
+    "resolution_id": "Res1",
     "bullet_resolution_actions": {
-      "actions": [
-        "Activate MILP model for speed adjustments",
-        "Implement ETCS-enforced speed restrictions",
-        "Extend dwell time at Pavia",
-        "Update TMS with real-time rescheduling"
-      ]
+      "1": "Activate MILP model for speed adjustments of REG_3053 and slight acceleration of REG_33003",
+      "2": "Implement temporary speed restriction zones via ETCS Level\u202f2",
+      "3": "Extend dwell time at Pavia for REG_3053",
+      "4": "Update TMS with rolling\u2011horizon rescheduling"
     },
-    "overall_score": 85,
+    "overall_score": 75.3,
     "safety_rating": 7.5,
-    "efficiency_rating": 9.0,
+    "efficiency_rating": 7.5,
     "feasibility_rating": 8.5,
-    "robustness_rating": 7.0,
-    "justification": "Optimal balance of low delay (1.7min), high feasibility (ETCS enforcement), and controlled side effects. MILP optimization ensures safety compliance while minimizing operational disruption through recoverable speed/dwell adjustments.",
+    "robustness_rating": 6,
+    "justification": "Provides a mathematically optimal speed plan that meets the 180\u202fs headway with limited delay. Slight capacity loss and possible knock\u2011on delays are acceptable given the high feasibility and safety margins.",
     "full_resolution": {
       "resolution_id": "hybrid_1",
       "source_agent": "Agent 1 (Hybrid/Historical)",
@@ -78,22 +76,70 @@
   },
   {
     "rank": 2,
-    "resolution_number": 2,
-    "resolution_id": "Strategic Re-routing with Buffer Recovery",
+    "resolution_number": 4,
+    "resolution_id": "Res4",
     "bullet_resolution_actions": {
-      "actions": [
-        "Divert via Milano Lambrate-Mezzana stub",
-        "Utilize 4-minute recovery buffer at Mezzana",
-        "Virtual coupling with FR_8821",
-        "Reinsert at Pavia with moving-block signaling"
-      ]
+      "1": "Speed up REG_33003 by 12\u202f%",
+      "2": "Slow REG_3053 by 4\u202f%"
     },
-    "overall_score": 78,
+    "overall_score": 72.0,
+    "safety_rating": 9.5,
+    "efficiency_rating": 5.2,
+    "feasibility_rating": 7.0,
+    "robustness_rating": 7,
+    "justification": "Achieves the required headway through coordinated speed changes while preserving a very high safety score. Delay is larger than the MILP option, but implementation is simple and robust to operational uncertainties.",
+    "full_resolution": {
+      "resolution_id": "agent2_genetic_algorithm",
+      "source_agent": "Agent 2 (Mathematical Solver)",
+      "strategy_name": "Multi-Objective Evolutionary Optimization",
+      "actions": [
+        "Speed up REG_33003 by 12% to increase gap ahead",
+        "Slow REG_3053 by 4% to let leading train pull away"
+      ],
+      "expected_outcome": "Reduces total system delay to 4.2 minutes (improvement of 3.0% from baseline). Resolves headway violation through coordinated speed adjustments while maintaining safety constraints and operational feasibility. Affects 1259 passengers with minimal service disruption.",
+      "reasoning": "Uses evolutionary optimization with population-based search to balance multiple objectives simultaneously. Proven effective for multi-constraint railway scheduling with mutation and crossover operators ensuring solution diversity while converging to optimal tradeoffs. Achieves 97.6% recovery smoothness, minimizing operational disruption and maintaining schedule integrity. Implements 2 coordinated action(s) with verified constraint satisfaction and operational feasibility.",
+      "safety_score": 0.9500000000000001,
+      "efficiency_score": 0.5150115473441108,
+      "feasibility_score": 0.7000000000000001,
+      "overall_fitness": 0.697,
+      "estimated_delay_min": 4.2,
+      "affected_trains": [
+        "REG_3053",
+        "REG_33003"
+      ],
+      "side_effects": [
+        "Minimal cascading effects (isolated resolution)",
+        "Moderate passenger impact (1259 affected)",
+        "Simple implementation with minimal coordination overhead"
+      ],
+      "algorithm_type": "optimization_genetic_algorithm",
+      "raw_data": {
+        "fitness": 0.697,
+        "total_delay_min": 4.2,
+        "original_delay_min": 4.33,
+        "num_actions": 2,
+        "passenger_impact": 1259,
+        "propagation_depth": 0,
+        "recovery_smoothness": 0.976
+      }
+    }
+  },
+  {
+    "rank": 3,
+    "resolution_number": 2,
+    "resolution_id": "Res2",
+    "bullet_resolution_actions": {
+      "1": "Divert REG_3053 via Milano Lambrate\u2011Mezzana stub track",
+      "2": "Use 4\u2011minute dwell buffer at Mezzana",
+      "3": "Virtual coupling with freight service FR_8821",
+      "4": "Re\u2011enter main line at Pavia with moving\u2011block signaling"
+    },
+    "overall_score": 71.3,
     "safety_rating": 7.5,
-    "efficiency_rating": 8.0,
+    "efficiency_rating": 7.5,
     "feasibility_rating": 7.5,
-    "robustness_rating": 6.5,
-    "justification": "Effective physical separation (210s headway) with recoverable delay (65s). Historical buffer utilization ensures feasibility, though signaling transitions and freight coordination add moderate complexity.",
+    "robustness_rating": 5,
+    "justification": "Physical re\u2011routing guarantees the headway and limits delay to about 65\u202fs. The approach adds dispatcher workload and freight conflicts, reducing its robustness compared with the top two solutions.",
     "full_resolution": {
       "resolution_id": "hybrid_2",
       "source_agent": "Agent 1 (Hybrid/Historical)",
@@ -152,58 +198,6 @@
         "feasibility_score": 0.75,
         "safety_score": 0.75,
         "efficiency_score": 0.75
-      }
-    }
-  },
-  {
-    "rank": 3,
-    "resolution_number": 4,
-    "resolution_id": "Multi-Objective Evolutionary Optimization",
-    "bullet_resolution_actions": {
-      "actions": [
-        "Speed up REG_33003 by 12%",
-        "Slow REG_3053 by 4%"
-      ]
-    },
-    "overall_score": 70,
-    "safety_rating": 9.5,
-    "efficiency_rating": 6.0,
-    "feasibility_rating": 7.0,
-    "robustness_rating": 7.5,
-    "justification": "Highest safety rating (9.5) and robust evolutionary approach, but higher system delay (4.2min) and dual-train impact reduce efficiency. Simple implementation partially offsets longer passenger disruption.",
-    "full_resolution": {
-      "resolution_id": "agent2_genetic_algorithm",
-      "source_agent": "Agent 2 (Mathematical Solver)",
-      "strategy_name": "Multi-Objective Evolutionary Optimization",
-      "actions": [
-        "Speed up REG_33003 by 12% to increase gap ahead",
-        "Slow REG_3053 by 4% to let leading train pull away"
-      ],
-      "expected_outcome": "Reduces total system delay to 4.2 minutes (improvement of 3.0% from baseline). Resolves headway violation through coordinated speed adjustments while maintaining safety constraints and operational feasibility. Affects 1259 passengers with minimal service disruption.",
-      "reasoning": "Uses evolutionary optimization with population-based search to balance multiple objectives simultaneously. Proven effective for multi-constraint railway scheduling with mutation and crossover operators ensuring solution diversity while converging to optimal tradeoffs. Achieves 97.6% recovery smoothness, minimizing operational disruption and maintaining schedule integrity. Implements 2 coordinated action(s) with verified constraint satisfaction and operational feasibility.",
-      "safety_score": 0.9500000000000001,
-      "efficiency_score": 0.5150115473441108,
-      "feasibility_score": 0.7000000000000001,
-      "overall_fitness": 0.697,
-      "estimated_delay_min": 4.2,
-      "affected_trains": [
-        "REG_3053",
-        "REG_33003"
-      ],
-      "side_effects": [
-        "Minimal cascading effects (isolated resolution)",
-        "Moderate passenger impact (1259 affected)",
-        "Simple implementation with minimal coordination overhead"
-      ],
-      "algorithm_type": "optimization_genetic_algorithm",
-      "raw_data": {
-        "fitness": 0.697,
-        "total_delay_min": 4.2,
-        "original_delay_min": 4.33,
-        "num_actions": 2,
-        "passenger_impact": 1259,
-        "propagation_depth": 0,
-        "recovery_smoothness": 0.976
       }
     }
   }

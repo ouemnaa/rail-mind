@@ -1,0 +1,419 @@
+======================================================================
+  RAIL BRAIN - Conflict Resolution from nour.json
+======================================================================
+
+[DATA] Loading conflicts from: C:\rail-mind\backend\integration\detected_conflicts\detected_conflicts.json
+=== 11 CONFLICTS LOADED ===
+
+1. [268570c7] EDGE_CAPACITY_OVERFLOW (severity: 0.50)
+  Trains: REG_2816, FR_9703, REG_25512, FR_9717
+  Stations: MILANO CENTRALE, MILANO CENTRALE
+  Delays: REG_2816: 2.0min, FR_9703: 2.0min, REG_25512: 2.0min, FR_9717: 2.0min
+
+2. [fad445b0] EDGE_CAPACITY_OVERFLOW (severity: 0.50)
+  Trains: REG_2816, FR_9703, REG_25512, FR_9717
+  Stations: MILANO CENTRALE, MILANO CENTRALE
+  Delays: REG_2816: 2.0min, FR_9703: 2.0min, REG_25512: 2.0min, FR_9717: 2.0min
+
+3. [db7d6a45] EDGE_CAPACITY_OVERFLOW (severity: 0.50)
+  Trains: REG_2816, FR_9703, REG_25512, FR_9717
+  Stations: MILANO CENTRALE, MILANO CENTRALE
+  Delays: REG_2816: 2.0min, FR_9703: 2.0min, REG_25512: 2.0min, FR_9717: 2.0min
+
+4. [f89a6f95] EDGE_CAPACITY_OVERFLOW (severity: 0.50)
+  Trains: REG_2816, FR_9703, REG_25512, FR_9717
+  Stations: MILANO CENTRALE, MILANO CENTRALE
+  Delays: REG_2816: 2.0min, FR_9703: 2.0min, REG_25512: 2.0min, FR_9717: 2.0min
+
+5. [83ddfd76] EDGE_CAPACITY_OVERFLOW (severity: 0.50)
+  Trains: REG_2816, FR_9703, REG_25512, FR_9717
+  Stations: MILANO CENTRALE, MILANO CENTRALE
+  Delays: REG_2816: 2.0min, FR_9703: 2.0min, REG_25512: 2.0min, FR_9717: 2.0min
+
+6. [86732dee] EDGE_CAPACITY_OVERFLOW (severity: 0.50)
+  Trains: REG_2816, FR_9703, REG_25512, FR_9717
+  Stations: MILANO CENTRALE, MILANO CENTRALE
+  Delays: REG_2816: 2.0min, FR_9703: 2.0min, REG_25512: 2.0min, FR_9717: 2.0min
+
+7. [66cce419] EDGE_CAPACITY_OVERFLOW (severity: 0.50)
+  Trains: REG_2816, FR_9703, REG_25512, FR_9717
+  Stations: MILANO CENTRALE, MILANO CENTRALE
+  Delays: REG_2816: 2.0min, FR_9703: 2.0min, REG_25512: 2.0min, FR_9717: 2.0min
+
+8. [952ec738] EDGE_CAPACITY_OVERFLOW (severity: 0.50)
+  Trains: REG_2816, FR_9703, REG_25512, FR_9717
+  Stations: MILANO CENTRALE, MILANO CENTRALE
+  Delays: REG_2816: 2.0min, FR_9703: 2.0min, REG_25512: 2.0min, FR_9717: 2.0min
+
+9. [5622ef87] EDGE_CAPACITY_OVERFLOW (severity: 0.50)
+  Trains: REG_2816, FR_9703, REG_25512, FR_9717
+  Stations: MILANO CENTRALE, MILANO CENTRALE
+  Delays: REG_2816: 2.0min, FR_9703: 2.0min, REG_25512: 2.0min, FR_9717: 2.0min
+
+10. [TF-20260] TRACK_FAULT (severity: 0.95)
+  Trains: 
+  Stations: MILANO LAMBRATE, TREVIGLIO
+  Delays: 
+
+11. [TF-20260] TRACK_FAULT (severity: 0.95)
+  Trains: 
+  Stations: MILANO LAMBRATE, TREVIGLIO
+  Delays: 
+
+
+[INFO] Loading Lombardy network data...
+   DEBUG: Loading Lombardy data from C:\rail-mind\creating-context\lombardy_simulation_data.json
+   DEBUG: File starts with: '{\n  "trains": [\n    {\n      "train_id": "IC_1539",\n      "train_type": "intercity",\n      "route_id"'
+   DEBUG: Type of loaded data: <class 'dict'>
+   DEBUG: lombardy_data type: <class 'dict'>
+   DEBUG: lombardy_data keys: ['trains', 'stations', 'rails']
+   Loaded 288 trains
+
+[INFO] Loaded 3 historical cases for CBR
+
+⚙️  Config: run_all_solvers=True, quantum=enabled
+
+######################################################################
+# CONFLICT 1/11
+######################################################################
+
+============================================================
+RESOLVING: [268570c7] EDGE_CAPACITY_OVERFLOW (severity: 0.50)
+  Trains: REG_2816, FR_9703, REG_25512, FR_9717
+  Stations: MILANO CENTRALE, MILANO CENTRALE
+  Delays: REG_2816: 2.0min, FR_9703: 2.0min, REG_25512: 2.0min, FR_9717: 2.0min
+============================================================
+  [DEBUG] Running all solvers...
+    - greedy: fitness=0.568, actions=4, delay=10.5min
+    - lns: fitness=0.601, actions=4, delay=9.9min
+    - simulated_annealing: fitness=0.689, actions=2, delay=7.7min
+    - nsga2: fitness=0.681, actions=1, delay=7.9min
+    - genetic_algorithm: fitness=0.717, actions=4, delay=7.2min
+
+[PLAN] RESOLUTION PLAN (Solver: genetic_algorithm)
+   Overall Fitness: 0.7171
+   Total Delay: 7.23 min (was 8.00 min) → +9.6%
+   Passenger Impact: 2170
+   Propagation Depth: 0
+   Recovery Smoothness: 1.000
+
+   Actions for EDGE_CAPACITY_OVERFLOW conflict:
+   1. Speed up FR_9703 by 12%
+   2. Speed up FR_9717 by 12%
+   3. Speed up REG_2816 by 12%
+   4. Speed up REG_25512 by 12%
+
+######################################################################
+# CONFLICT 2/11
+######################################################################
+
+============================================================
+RESOLVING: [fad445b0] EDGE_CAPACITY_OVERFLOW (severity: 0.50)
+  Trains: REG_2816, FR_9703, REG_25512, FR_9717
+  Stations: MILANO CENTRALE, MILANO CENTRALE
+  Delays: REG_2816: 2.0min, FR_9703: 2.0min, REG_25512: 2.0min, FR_9717: 2.0min
+============================================================
+  [DEBUG] Running all solvers...
+    - greedy: fitness=0.520, actions=4, delay=11.7min
+    - lns: fitness=0.600, actions=4, delay=9.9min
+    - simulated_annealing: fitness=0.690, actions=4, delay=7.7min
+    - nsga2: fitness=0.683, actions=1, delay=7.8min
+    - genetic_algorithm: fitness=0.717, actions=4, delay=7.2min
+
+[PLAN] RESOLUTION PLAN (Solver: genetic_algorithm)
+   Overall Fitness: 0.7171
+   Total Delay: 7.23 min (was 8.00 min) → +9.6%
+   Passenger Impact: 2170
+   Propagation Depth: 0
+   Recovery Smoothness: 1.000
+
+   Actions for EDGE_CAPACITY_OVERFLOW conflict:
+   1. Speed up FR_9703 by 12%
+   2. Speed up FR_9717 by 12%
+   3. Speed up REG_2816 by 12%
+   4. Speed up REG_25512 by 12%
+
+######################################################################
+# CONFLICT 3/11
+######################################################################
+
+============================================================
+RESOLVING: [db7d6a45] EDGE_CAPACITY_OVERFLOW (severity: 0.50)
+  Trains: REG_2816, FR_9703, REG_25512, FR_9717
+  Stations: MILANO CENTRALE, MILANO CENTRALE
+  Delays: REG_2816: 2.0min, FR_9703: 2.0min, REG_25512: 2.0min, FR_9717: 2.0min
+============================================================
+  [DEBUG] Running all solvers...
+    - greedy: fitness=0.540, actions=4, delay=11.2min
+    - lns: fitness=0.607, actions=4, delay=9.7min
+    - simulated_annealing: fitness=0.698, actions=4, delay=7.6min
+    - nsga2: fitness=0.673, actions=1, delay=8.0min
+    - genetic_algorithm: fitness=0.705, actions=4, delay=7.4min
+
+[PLAN] RESOLUTION PLAN (Solver: genetic_algorithm)
+   Overall Fitness: 0.7053
+   Total Delay: 7.42 min (was 8.00 min) → +7.2%
+   Passenger Impact: 2227
+   Propagation Depth: 0
+   Recovery Smoothness: 0.993
+
+   Actions for EDGE_CAPACITY_OVERFLOW conflict:
+   1. Reassign FR_9703 to platform 10 before arrival
+   2. Speed up FR_9717 by 12%
+   3. Speed up REG_2816 by 12%
+   4. Speed up REG_25512 by 12%
+
+######################################################################
+# CONFLICT 4/11
+######################################################################
+
+============================================================
+RESOLVING: [f89a6f95] EDGE_CAPACITY_OVERFLOW (severity: 0.50)
+  Trains: REG_2816, FR_9703, REG_25512, FR_9717
+  Stations: MILANO CENTRALE, MILANO CENTRALE
+  Delays: REG_2816: 2.0min, FR_9703: 2.0min, REG_25512: 2.0min, FR_9717: 2.0min
+============================================================
+  [DEBUG] Running all solvers...
+    - greedy: fitness=0.510, actions=4, delay=12.0min
+    - lns: fitness=0.608, actions=4, delay=9.7min
+    - simulated_annealing: fitness=0.698, actions=4, delay=7.6min
+    - nsga2: fitness=0.677, actions=1, delay=7.9min
+    - genetic_algorithm: fitness=0.717, actions=4, delay=7.2min
+
+[PLAN] RESOLUTION PLAN (Solver: genetic_algorithm)
+   Overall Fitness: 0.7171
+   Total Delay: 7.23 min (was 8.00 min) → +9.6%
+   Passenger Impact: 2170
+   Propagation Depth: 0
+   Recovery Smoothness: 1.000
+
+   Actions for EDGE_CAPACITY_OVERFLOW conflict:
+   1. Speed up FR_9703 by 12%
+   2. Speed up FR_9717 by 12%
+   3. Speed up REG_2816 by 12%
+   4. Speed up REG_25512 by 12%
+
+######################################################################
+# CONFLICT 5/11
+######################################################################
+
+============================================================
+RESOLVING: [83ddfd76] EDGE_CAPACITY_OVERFLOW (severity: 0.50)
+  Trains: REG_2816, FR_9703, REG_25512, FR_9717
+  Stations: MILANO CENTRALE, MILANO CENTRALE
+  Delays: REG_2816: 2.0min, FR_9703: 2.0min, REG_25512: 2.0min, FR_9717: 2.0min
+============================================================
+  [DEBUG] Running all solvers...
+    - greedy: fitness=0.543, actions=4, delay=11.2min
+    - lns: fitness=0.609, actions=4, delay=9.6min
+    - simulated_annealing: fitness=0.696, actions=4, delay=7.6min
+    - nsga2: fitness=0.683, actions=1, delay=7.8min
+    - genetic_algorithm: fitness=0.717, actions=4, delay=7.2min
+
+[PLAN] RESOLUTION PLAN (Solver: genetic_algorithm)
+   Overall Fitness: 0.7171
+   Total Delay: 7.23 min (was 8.00 min) → +9.6%
+   Passenger Impact: 2170
+   Propagation Depth: 0
+   Recovery Smoothness: 1.000
+
+   Actions for EDGE_CAPACITY_OVERFLOW conflict:
+   1. Speed up FR_9703 by 12%
+   2. Speed up FR_9717 by 12%
+   3. Speed up REG_2816 by 12%
+   4. Speed up REG_25512 by 12%
+
+######################################################################
+# CONFLICT 6/11
+######################################################################
+
+============================================================
+RESOLVING: [86732dee] EDGE_CAPACITY_OVERFLOW (severity: 0.50)
+  Trains: REG_2816, FR_9703, REG_25512, FR_9717
+  Stations: MILANO CENTRALE, MILANO CENTRALE
+  Delays: REG_2816: 2.0min, FR_9703: 2.0min, REG_25512: 2.0min, FR_9717: 2.0min
+============================================================
+  [DEBUG] Running all solvers...
+    - greedy: fitness=0.536, actions=4, delay=11.3min
+    - lns: fitness=0.603, actions=4, delay=9.8min
+    - simulated_annealing: fitness=0.702, actions=4, delay=7.5min
+    - nsga2: fitness=0.683, actions=1, delay=7.8min
+    - genetic_algorithm: fitness=0.717, actions=4, delay=7.2min
+
+[PLAN] RESOLUTION PLAN (Solver: genetic_algorithm)
+   Overall Fitness: 0.7171
+   Total Delay: 7.23 min (was 8.00 min) → +9.6%
+   Passenger Impact: 2170
+   Propagation Depth: 0
+   Recovery Smoothness: 1.000
+
+   Actions for EDGE_CAPACITY_OVERFLOW conflict:
+   1. Speed up FR_9703 by 12%
+   2. Speed up FR_9717 by 12%
+   3. Speed up REG_2816 by 12%
+   4. Speed up REG_25512 by 12%
+
+######################################################################
+# CONFLICT 7/11
+######################################################################
+
+============================================================
+RESOLVING: [66cce419] EDGE_CAPACITY_OVERFLOW (severity: 0.50)
+  Trains: REG_2816, FR_9703, REG_25512, FR_9717
+  Stations: MILANO CENTRALE, MILANO CENTRALE
+  Delays: REG_2816: 2.0min, FR_9703: 2.0min, REG_25512: 2.0min, FR_9717: 2.0min
+============================================================
+  [DEBUG] Running all solvers...
+    - greedy: fitness=0.531, actions=4, delay=11.7min
+    - lns: fitness=0.608, actions=4, delay=9.7min
+    - simulated_annealing: fitness=0.689, actions=4, delay=7.7min
+    - nsga2: fitness=0.683, actions=1, delay=7.8min
+    - genetic_algorithm: fitness=0.717, actions=4, delay=7.2min
+
+[PLAN] RESOLUTION PLAN (Solver: genetic_algorithm)
+   Overall Fitness: 0.7171
+   Total Delay: 7.23 min (was 8.00 min) → +9.6%
+   Passenger Impact: 2170
+   Propagation Depth: 0
+   Recovery Smoothness: 1.000
+
+   Actions for EDGE_CAPACITY_OVERFLOW conflict:
+   1. Speed up FR_9703 by 12%
+   2. Speed up FR_9717 by 12%
+   3. Speed up REG_2816 by 12%
+   4. Speed up REG_25512 by 12%
+
+######################################################################
+# CONFLICT 8/11
+######################################################################
+
+============================================================
+RESOLVING: [952ec738] EDGE_CAPACITY_OVERFLOW (severity: 0.50)
+  Trains: REG_2816, FR_9703, REG_25512, FR_9717
+  Stations: MILANO CENTRALE, MILANO CENTRALE
+  Delays: REG_2816: 2.0min, FR_9703: 2.0min, REG_25512: 2.0min, FR_9717: 2.0min
+============================================================
+  [DEBUG] Running all solvers...
+    - greedy: fitness=0.555, actions=4, delay=10.8min
+    - lns: fitness=0.601, actions=4, delay=9.8min
+    - simulated_annealing: fitness=0.694, actions=3, delay=7.6min
+    - nsga2: fitness=0.673, actions=1, delay=8.0min
+    - genetic_algorithm: fitness=0.717, actions=4, delay=7.2min
+
+[PLAN] RESOLUTION PLAN (Solver: genetic_algorithm)
+   Overall Fitness: 0.7170
+   Total Delay: 7.23 min (was 8.00 min) → +9.6%
+   Passenger Impact: 2170
+   Propagation Depth: 0
+   Recovery Smoothness: 1.000
+
+   Actions for EDGE_CAPACITY_OVERFLOW conflict:
+   1. Speed up FR_9703 by 12%
+   2. Speed up FR_9717 by 12%
+   3. Speed up REG_2816 by 12%
+   4. Speed up REG_25512 by 12%
+
+######################################################################
+# CONFLICT 9/11
+######################################################################
+
+============================================================
+RESOLVING: [5622ef87] EDGE_CAPACITY_OVERFLOW (severity: 0.50)
+  Trains: REG_2816, FR_9703, REG_25512, FR_9717
+  Stations: MILANO CENTRALE, MILANO CENTRALE
+  Delays: REG_2816: 2.0min, FR_9703: 2.0min, REG_25512: 2.0min, FR_9717: 2.0min
+============================================================
+  [DEBUG] Running all solvers...
+    - greedy: fitness=0.496, actions=4, delay=12.5min
+    - lns: fitness=0.605, actions=4, delay=9.7min
+    - simulated_annealing: fitness=0.696, actions=4, delay=7.6min
+    - nsga2: fitness=0.683, actions=1, delay=7.8min
+    - genetic_algorithm: fitness=0.717, actions=4, delay=7.2min
+
+[PLAN] RESOLUTION PLAN (Solver: genetic_algorithm)
+   Overall Fitness: 0.7171
+   Total Delay: 7.23 min (was 8.00 min) → +9.6%
+   Passenger Impact: 2170
+   Propagation Depth: 0
+   Recovery Smoothness: 1.000
+
+   Actions for EDGE_CAPACITY_OVERFLOW conflict:
+   1. Speed up FR_9703 by 12%
+   2. Speed up FR_9717 by 12%
+   3. Speed up REG_2816 by 12%
+   4. Speed up REG_25512 by 12%
+
+######################################################################
+# CONFLICT 10/11
+######################################################################
+
+============================================================
+RESOLVING: [TF-20260] TRACK_FAULT (severity: 0.95)
+  Trains: 
+  Stations: MILANO LAMBRATE, TREVIGLIO
+  Delays: 
+============================================================
+  [DEBUG] Running all solvers...
+    - greedy: fitness=0.000, actions=0, delay=0.0min
+    - lns: fitness=0.000, actions=0, delay=0.0min
+    - simulated_annealing: fitness=0.000, actions=0, delay=0.0min
+    - nsga2: fitness=0.000, actions=0, delay=0.0min
+    - genetic_algorithm: fitness=0.000, actions=0, delay=0.0min
+
+[PLAN] RESOLUTION PLAN (Solver: greedy)
+   Overall Fitness: 0.0000
+   Total Delay: 0.00 min (was 0.00 min) → +0.0%
+   Passenger Impact: 0
+   Propagation Depth: 0
+   Recovery Smoothness: 0.000
+
+   Actions for TRACK_FAULT conflict:
+
+######################################################################
+# CONFLICT 11/11
+######################################################################
+
+============================================================
+RESOLVING: [TF-20260] TRACK_FAULT (severity: 0.95)
+  Trains: 
+  Stations: MILANO LAMBRATE, TREVIGLIO
+  Delays: 
+============================================================
+  [DEBUG] Running all solvers...
+    - greedy: fitness=0.000, actions=0, delay=0.0min
+    - lns: fitness=0.000, actions=0, delay=0.0min
+    - simulated_annealing: fitness=0.000, actions=0, delay=0.0min
+    - nsga2: fitness=0.000, actions=0, delay=0.0min
+    - genetic_algorithm: fitness=0.000, actions=0, delay=0.0min
+
+[PLAN] RESOLUTION PLAN (Solver: greedy)
+   Overall Fitness: 0.0000
+   Total Delay: 0.00 min (was 0.00 min) → +0.0%
+   Passenger Impact: 0
+   Propagation Depth: 0
+   Recovery Smoothness: 0.000
+
+   Actions for TRACK_FAULT conflict:
+
+======================================================================
+  RESOLUTION SUMMARY
+======================================================================
+
+📈 Total original delay: 72.00 min
+📉 Total resolved delay: 65.28 min
+✅ Delay reduction: 9.3%
+
+📋 Per-conflict results:
+   1. edge_capacity_overflow: 8.0min → 7.2min (+9.6%)
+   2. edge_capacity_overflow: 8.0min → 7.2min (+9.6%)
+   3. edge_capacity_overflow: 8.0min → 7.4min (+7.2%)
+   4. edge_capacity_overflow: 8.0min → 7.2min (+9.6%)
+   5. edge_capacity_overflow: 8.0min → 7.2min (+9.6%)
+   6. edge_capacity_overflow: 8.0min → 7.2min (+9.6%)
+   7. edge_capacity_overflow: 8.0min → 7.2min (+9.6%)
+   8. edge_capacity_overflow: 8.0min → 7.2min (+9.6%)
+   9. edge_capacity_overflow: 8.0min → 7.2min (+9.6%)
+   10. track_fault: 0.0min → 0.0min (+0.0%)
+   11. track_fault: 0.0min → 0.0min (+0.0%)
+
+[SUCCESS] Resolution complete!

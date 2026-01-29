@@ -1671,6 +1671,9 @@ class GeneticAlgorithm:
         for i in range(self.population_size):
             individual = []
             num_actions = random.randint(1, max(1, len(conflict.train_ids)))
+            if not conflict.train_ids:
+                population.append([])
+                continue
             trains = random.sample(conflict.train_ids, min(num_actions, len(conflict.train_ids)))
             
             # First portion uses conflict-aware action selection
@@ -1959,8 +1962,11 @@ class NSGAII:
         
         for _ in range(self.population_size):
             individual = []
-            num_actions = random.randint(1, len(conflict.train_ids))
-            trains = random.sample(conflict.train_ids, num_actions)
+            num_actions = random.randint(1, max(1, len(conflict.train_ids)))
+            if not conflict.train_ids:
+                population.append([])
+                continue
+            trains = random.sample(conflict.train_ids, min(num_actions, len(conflict.train_ids)))
             
             for train_id in trains:
                 action_type = random.choice([
