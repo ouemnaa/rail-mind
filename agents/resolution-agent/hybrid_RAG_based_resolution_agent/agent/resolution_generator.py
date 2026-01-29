@@ -11,7 +11,7 @@ from dataclasses import dataclass, asdict, field
 from datetime import datetime
 from qdrant_client import QdrantClient
 from qdrant_client.models import Filter, FieldCondition, MatchValue, Range
-import requests
+from groq import Groq
 
 
 # =========================
@@ -91,13 +91,13 @@ class AlgorithmResolutionExtractor:
         qdrant_client: QdrantClient,
         collection_name: str = "railway_algorithms",
         llm_api_key: Optional[str] = None,
-        llm_model: str = "tngtech/deepseek-r1t2-chimera:free"
+        llm_model: str = "mixtral-8x7b-32768"
     ):
         self.client = qdrant_client
         self.collection_name = collection_name
         self.llm_api_key = llm_api_key
         self.llm_model = llm_model
-        self.llm_url = "https://openrouter.ai/api/v1/chat/completions"
+        self.groq_client = Groq(api_key=llm_api_key) if llm_api_key else None
     
     def extract_algorithm_resolutions(
         self,
@@ -242,31 +242,15 @@ Return 2-4 resolutions maximum, ranked by confidence.
         return prompt
     
     def _call_llm(self, prompt: str) -> str:
-        """Call OpenRouter API"""
-        headers = {
-            "Authorization": f"Bearer {self.llm_api_key}",
-            "Content-Type": "application/json",
-            "HTTP-Referer": "http://localhost",
-            "X-Title": "Resolution Generator"
-        }
-        
-        payload = {
-            "model": self.llm_model,
-            "messages": [{"role": "user", "content": prompt}],
-            "temperature": 0.2,
-            "max_tokens": 4096
-        }
-        
-        response = requests.post(
-            self.llm_url,
-            headers=headers,
-            json=payload,
-            timeout=120
+        """Call Groq Cloud API"""
+        response = self.groq_client.chat.completions.create(
+            model=self.llm_model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.2,
+            max_tokens=4096
         )
         
-        response.raise_for_status()
-        data = response.json()
-        content = data["choices"][0]["message"]["content"].strip()
+        content = response.choices[0].message.content.strip()
         
         # Remove markdown fences if present
         if content.startswith("```"):
@@ -362,13 +346,13 @@ class HistoricalResolutionRefiner:
         qdrant_client: QdrantClient,
         collection_name: str = "historical_incidents",
         llm_api_key: Optional[str] = None,
-        llm_model: str = "tngtech/deepseek-r1t2-chimera:free"
+        llm_model: str = "mixtral-8x7b-32768"
     ):
         self.client = qdrant_client
         self.collection_name = collection_name
         self.llm_api_key = llm_api_key
         self.llm_model = llm_model
-        self.llm_url = "https://openrouter.ai/api/v1/chat/completions"
+        self.groq_client = Groq(api_key=llm_api_key) if llm_api_key else None
     
     def refine_and_rank(
         self,
@@ -672,31 +656,15 @@ Focus on PRACTICAL, ACTIONABLE resolutions.
         return prompt
     
     def _call_llm(self, prompt: str) -> str:
-        """Call OpenRouter API"""
-        headers = {
-            "Authorization": f"Bearer {self.llm_api_key}",
-            "Content-Type": "application/json",
-            "HTTP-Referer": "http://localhost",
-            "X-Title": "Resolution Refiner"
-        }
-        
-        payload = {
-            "model": self.llm_model,
-            "messages": [{"role": "user", "content": prompt}],
-            "temperature": 0.3,
-            "max_tokens": 3072
-        }
-        
-        response = requests.post(
-            self.llm_url,
-            headers=headers,
-            json=payload,
-            timeout=120
+        """Call Groq Cloud API"""
+        response = self.groq_client.chat.completions.create(
+            model=self.llm_model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.3,
+            max_tokens=3072
         )
         
-        response.raise_for_status()
-        data = response.json()
-        content = data["choices"][0]["message"]["content"].strip()
+        content = response.choices[0].message.content.strip()
         
         if content.startswith("```"):
             content = content.split("```")[1]
@@ -816,7 +784,7 @@ class ResolutionGenerationSystem:
         algorithm_collection: str = "railway_algorithms",
         historical_collection: str = "rail_incidents",
         llm_api_key: Optional[str] = None,
-        llm_model: str = "tngtech/deepseek-r1t2-chimera:free"
+        llm_model: str = "openai/gpt-oss-120b"
     ):
         # Initialize Qdrant client
         if qdrant_api_key:

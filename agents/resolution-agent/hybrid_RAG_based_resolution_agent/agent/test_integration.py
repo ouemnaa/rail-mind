@@ -71,18 +71,18 @@ def test_basic_functionality():
 
 def test_with_llm():
     """
-    Test with LLM integration (requires OpenRouter API key)
+    Test with LLM integration (requires Groq Cloud API key)
     """
     print("\n" + "="*70)
-    print("TEST 2: With LLM Integration")
+    print("TEST 2: With LLM Integration (Groq Cloud)")
     print("="*70)
     
     # Check if API key is available
-    OPENROUTER_API_KEY = "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"  # Replace with real key to test
+    GROQ_API_KEY = "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"  # Replace with real key to test
     
-    if "YOUR-API-KEY" in OPENROUTER_API_KEY:
+    if "YOUR-API-KEY" in GROQ_API_KEY:
         print("\n⚠️  No API key configured - skipping LLM test")
-        print("   To test LLM features, set OPENROUTER_API_KEY in this script")
+        print("   To test LLM features, set GROQ_API_KEY in this script")
         return
     
     # Load test data
@@ -95,16 +95,16 @@ def test_with_llm():
         context = json.load(f)
     
     # Initialize with LLM
-    print("\n⚙️  Initializing system with LLM...")
+    print("\n⚙️  Initializing system with LLM (Groq Cloud)...")
     
     try:
         system = ResolutionGenerationSystem(
             qdrant_url="https://cf323744-546a-492d-b614-8542cb3ce423.us-east-1-1.aws.cloud.qdrant.io",
             qdrant_api_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.fI89vclTejMkRnUs-MbAmV-O4PwoQcYE1DO_fN6l7LM",
-            llm_api_key="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",
-            llm_model="tngtech/deepseek-r1t2-chimera:free"
+            llm_api_key=GROQ_API_KEY,
+            llm_model="mixtral-8x7b-32768"
         )
-        print("✓ System initialized with LLM")
+        print("✓ System initialized with LLM (Groq)")
         
         # Generate resolutions
         print("\n🔄 Generating resolutions with LLM...")
