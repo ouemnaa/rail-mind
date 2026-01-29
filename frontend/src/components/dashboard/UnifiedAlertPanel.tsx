@@ -114,7 +114,7 @@ function ConflictCard({
           {/* Resolution Button */}
           <div className="mt-2 flex justify-end">
             <Button
-              onClick={() => navigate(`/resolution/${conflict.conflict_id}`)}
+              onClick={() => navigate(`/resolution/${conflict.conflict_id}`, { state: { activeConflict: conflict } })}
               size="sm"
               className="bg-blue-600 hover:bg-blue-700"
             >

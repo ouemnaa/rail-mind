@@ -21,7 +21,9 @@ const Resolution = () => {
         <main className="flex-1 overflow-auto p-6 max-w-[1600px] w-full mx-auto">
           {/* Pass conflictId to ResolutionPanel if available */}
           <ResolutionPanel
-            onViewExplanation={(resolution) => navigate("/explanation", { state: { resolution } })}
+            onViewExplanation={(resolution, result, activeConflict) => 
+               navigate("/explanation", { state: { resolution, resolutionResult: result, activeConflict } })
+            }
           />
         </main>
       </div>

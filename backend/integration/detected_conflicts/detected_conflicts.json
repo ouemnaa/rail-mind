@@ -1,9 +1,9 @@
 {
   "file_info": {
     "description": "All detected conflicts from simulation",
-    "last_updated": "2026-01-29T12:01:25.280137",
-    "total_conflicts": 12,
-    "unresolved_count": 12,
+    "last_updated": "2026-01-29T12:52:20.068507",
+    "total_conflicts": 13,
+    "unresolved_count": 13,
     "resolved_count": 0
   },
   "conflicts": [
@@ -4115,6 +4115,31 @@
           "current_stop_index": 0
         }
       ],
+      "network_context": {},
+      "status": "unresolved"
+    },
+    {
+      "metadata": {
+        "conflict_id": "TF-20260129125220",
+        "timestamp": "2026-01-29T06:50:00.422739",
+        "tick_number": 50,
+        "simulation_time": "2026-01-29T06:50:00.422739"
+      },
+      "conflict": {
+        "type": "track_fault",
+        "severity": "critical",
+        "probability": 0.86,
+        "location": "MILANO LAMBRATE--TREVIGLIO",
+        "location_type": "edge",
+        "explanation": "🛤️ DEFECTIVE TRACK detected by Vision AI | Edge: MILANO LAMBRATE--TREVIGLIO | Confidence: 86% | Track CLOSED for 45min repair",
+        "resolution_suggestions": [
+          "⚠️ Immediate track closure required",
+          "Dispatch maintenance team to MILANO LAMBRATE--TREVIGLIO",
+          "Estimated repair time: 45 minutes",
+          "Reroute all trains via alternate path"
+        ]
+      },
+      "affected_trains": [],
       "network_context": {},
       "status": "unresolved"
     }

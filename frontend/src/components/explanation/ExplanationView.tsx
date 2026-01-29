@@ -26,11 +26,18 @@ const excludedFactors = [
   { factor: 'Historical data > 2 years', reason: 'Outdated after signal system upgrade' },
 ];
 
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export function ExplanationView({ onBack }: ExplanationViewProps) {
+  const navigate = useNavigate();
   const location = useLocation();
   const resolutionData = location.state?.resolution;
+  const resolutionResult = location.state?.resolutionResult;
+  const activeConflict = location.state?.activeConflict;
+
+  const handleBack = () => {
+    navigate("/resolution", { state: { resolutionResult, activeConflict } });
+  };
 
   // Map dynamic data or use defaults
   const displayTitle = resolutionData?.title || "Decision Engineering";
@@ -53,7 +60,7 @@ export function ExplanationView({ onBack }: ExplanationViewProps) {
           <Button 
             variant="outline" 
             size="icon" 
-            onClick={onBack} 
+            onClick={handleBack} 
             className="w-14 h-14 rounded-2xl border-primary/20 bg-primary/5 hover:bg-primary/10 transition-all shrink-0"
           >
             <ArrowLeft className="w-6 h-6 text-primary" />

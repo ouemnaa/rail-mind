@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Lightbulb,
   Play,
@@ -81,67 +82,8 @@ interface ApiResponse {
   output: OrchestratorOutput;
 }
 
-// Sample conflict for demo/testing
-const SAMPLE_CONFLICT = {
-  conflict_id: "CONF-2026-0129-DEMO",
-  conflict_type: "headway",
-  station_ids: ["MILANO CENTRALE", "MILANO ROGOREDO"],
-  train_ids: ["REG_2816", "FR_9703"],
-  delay_values: { REG_2816: 2.5, FR_9703: 1.8 },
-  timestamp: Date.now() / 1000,
-  severity: 0.75,
-  blocking_behavior: "soft",
-};
-
-// Fallback static options when API not available
-const staticResolutionOptions = [
-  {
-    rank: 1,
-    title: "Reroute via Platform 3",
-    description:
-      "Redirect TR-2847 to available platform 3, allowing TR-1923 to proceed on original schedule.",
-    delayReduction: 8,
-    riskLevel: "low" as const,
-    supportingCases: 12,
-    safetyChecks: [
-      { name: "Clearance", passed: true },
-      { name: "Capacity", passed: true },
-      { name: "Signal", passed: true },
-    ],
-    isRecommended: true,
-  },
-  {
-    rank: 2,
-    title: "Hold & Sequence",
-    description:
-      "Hold TR-2847 at approach signal, sequence arrivals with 3-minute buffer.",
-    delayReduction: 5,
-    riskLevel: "low" as const,
-    supportingCases: 8,
-    safetyChecks: [
-      { name: "Clearance", passed: true },
-      { name: "Capacity", passed: true },
-      { name: "Signal", passed: true },
-    ],
-  },
-  {
-    rank: 3,
-    title: "Express Override",
-    description:
-      "Grant priority to TR-1923 (express), cascade delay to local services.",
-    delayReduction: 10,
-    riskLevel: "medium" as const,
-    supportingCases: 5,
-    safetyChecks: [
-      { name: "Clearance", passed: true },
-      { name: "Capacity", passed: false },
-      { name: "Signal", passed: true },
-    ],
-  },
-];
-
 interface ResolutionPanelProps {
-  onViewExplanation?: (resolution: any) => void;
+  onViewExplanation?: (resolution: any, result: ApiResponse | null, activeConflict: any) => void;
   conflictId?: string;
   detection?: any;
 }
@@ -150,10 +92,21 @@ export function ResolutionPanel({
   onViewExplanation,
   detection,
 }: ResolutionPanelProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<ApiResponse | null>(null);
-  const [selectedConflict] = useState<any>(detection || SAMPLE_CONFLICT);
+  
+  // Use state from location if available (persists when going back), otherwise use passed detection
+  const [result, setResult] = useState<ApiResponse | null>(location.state?.resolutionResult || null);
+  const [selectedConflict] = useState<any>(detection || location.state?.activeConflict || null);
+
+  // Auto-run resolution if we have a conflict but no results yet
+  useEffect(() => {
+    if (selectedConflict && !result && !isLoading) {
+      handleResolve();
+    }
+  }, [selectedConflict]);
 
   // Convert orchestrator result to display format
   const getResolutionOptions = () => {
@@ -235,9 +188,25 @@ export function ResolutionPanel({
     }
   };
 
-  const dynamicOptions = getResolutionOptions();
-  const resolutionOptions = dynamicOptions || staticResolutionOptions;
-  const hasApiResults = dynamicOptions !== null;
+  const resolutionOptions = getResolutionOptions() || [];
+  const hasApiResults = resolutionOptions.length > 0;
+
+  if (!selectedConflict) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center p-12 text-center animate-fade-in">
+        <div className="w-24 h-24 rounded-3xl bg-primary/5 flex items-center justify-center mb-8 border border-primary/10 shadow-2xl shadow-primary/5">
+          <AlertCircle className="w-12 h-12 text-primary/40" />
+        </div>
+        <h2 className="text-3xl font-bold tracking-tight mb-4">No Active Conflict Selected</h2>
+        <p className="text-muted-foreground max-w-md mx-auto mb-8 text-lg">
+          The resolution engine requires a specific conflict context to generate optimal routing solutions.
+        </p>
+        <Button onClick={() => navigate("/")} size="lg" className="gap-2 px-8 h-14 text-lg">
+          Return to Dashboard
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex flex-col w-full gap-8">
@@ -292,11 +261,13 @@ export function ResolutionPanel({
             </div>
             <div className="pt-2 border-t border-border/50">
               <div className="text-sm text-muted-foreground">Affected Network</div>
-              <div className="font-semibold">{selectedConflict.station_ids?.join(" ↔ ")}</div>
+              <div className="font-semibold">{selectedConflict.station_ids?.join(" ↔ ") || selectedConflict.location}</div>
             </div>
             <div>
               <div className="text-sm text-muted-foreground">Involved Assets</div>
-              <div className="font-mono text-sm font-bold text-primary">{selectedConflict.train_ids?.join(", ")}</div>
+              <div className="font-mono text-sm font-bold text-primary">
+                {selectedConflict.train_ids?.join(", ") || selectedConflict.involved_trains?.join(", ")}
+              </div>
             </div>
           </div>
         </div>
@@ -394,7 +365,7 @@ export function ResolutionPanel({
                 supportingCases={option.supportingCases}
                 safetyChecks={option.safetyChecks}
                 isRecommended={option.isRecommended}
-                onClick={() => onViewExplanation?.(option)}
+                onClick={() => onViewExplanation?.(option, result, selectedConflict)}
               />
               {/* Source Agent Badge (only for API results) */}
               {hasApiResults && "sourceAgent" in option && (
