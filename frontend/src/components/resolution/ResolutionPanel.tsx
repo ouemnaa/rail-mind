@@ -141,7 +141,7 @@ const staticResolutionOptions = [
 ];
 
 interface ResolutionPanelProps {
-  onViewExplanation?: () => void;
+  onViewExplanation?: (resolution: any) => void;
   conflictId?: string;
   detection?: any;
 }
@@ -394,7 +394,7 @@ export function ResolutionPanel({
                 supportingCases={option.supportingCases}
                 safetyChecks={option.safetyChecks}
                 isRecommended={option.isRecommended}
-                onClick={() => onViewExplanation?.()}
+                onClick={() => onViewExplanation?.(option)}
               />
               {/* Source Agent Badge (only for API results) */}
               {hasApiResults && "sourceAgent" in option && (
