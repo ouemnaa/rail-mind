@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => ({
   preview: {
     host: "0.0.0.0",
     port: 4173,
-    allowedHosts: ["all"]
+    allowedHosts: ["rail-mind-production.up.railway.app"],
   }, 
   plugins: [
     react(),
