@@ -795,7 +795,7 @@ class IntegrationEngine:
                     
                     # Get relative image path for frontend
                     image_filename = Path(result.image_path).name
-                    image_url = f"/track-images/{image_filename}"
+                    image_url = f"/api/track-images/{image_filename}"
                     
                     # Find affected trains
                     affected_trains = []

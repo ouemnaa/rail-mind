@@ -1,0 +1,170 @@
+{
+  "status": "ok",
+  "conflict_id": "TF-20260129164004",
+  "started_at": "2026-01-29T15:49:14.966262+00:00",
+  "finished_at": "2026-01-29T15:49:27.680980+00:00",
+  "total_execution_ms": 12714,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 12010,
+      "raw_result": {
+        "conflict_id": "TF-20260129164004",
+        "conflict_summary": "",
+        "timestamp": "2026-01-29T16:49:26.982419",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [
+          {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Predictive Maintenance Dispatch with Adaptive Speed Envelope",
+            "action_steps": [
+              "1. Cross‑check the AI‑detected fault with remote ultrasonic and vibration sensor feeds (historical multi‑sensor verification proved to cut false positives).",
+              "2. If combined confidence ≥ 70 % and severity ≥ 0.9, impose an immediate 40 km/h speed restriction on the Milano Lambrate‑Treviglio segment.",
+              "3. Activate a pre‑positioned mobile maintenance crew (historical cases showed crews stationed ≤ 15 km away cut response time by 20 min). Crew must arrive on‑site within 20 minutes.",
+              "4. Launch a dynamic timetable adjustment: shift all downstream services by 2‑minute slots using slack from the adjacent Milan‑Bergamo line, and automatically re‑book passengers onto the next available service.",
+              "5. Conduct a rapid on‑site visual inspection after crew arrival; if the defect is classified as critical, transition to full halt and initiate a bus‑bridge (see Strategy 2). If minor, lift the speed restriction after a 10‑minute re‑inspection.",
+              "6. Keep the control centre and train drivers updated through the real‑time operations dashboard."
+            ],
+            "expected_outcome": "Limited service continues safely, the defect is verified and repaired within 30 minutes, and overall passenger delay is reduced while avoiding a full line closure.",
+            "reasoning": "Combines algorithmic early‑warning speed control with the historical advantage of pre‑positioned crews and dynamic timetable slack. Multi‑sensor verification lowers false alarms, and the adaptive speed envelope keeps trains moving, preserving network capacity.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.8280000000000001,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "MAINTENANCE_REQUIRED"
+            ],
+            "estimated_delay_reduction_sec": 60,
+            "side_effects": [
+              "Slight increase in travel time for all trains on the segment (≈ 2 min per service)",
+              "Potential congestion on the adjacent line due to timetable shifts",
+              "Additional crew dispatch cost"
+            ],
+            "feasibility_score": 0.88,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          },
+          {
+            "resolution_id": "hybrid_2",
+            "strategy_name": "Hybrid Bus‑Rail Bridge with Crowd‑Sourced Real‑Time Monitoring",
+            "action_steps": [
+              "1. Immediately deploy a temporary bus bridge using the regional fleet that historically cleared similar faults within 25 minutes.",
+              "2. While the bus bridge is mobilising, collect crowd‑sourced vibration data from train drivers' smartphones to continuously monitor the track condition (historical driver‑feedback loops improved detection reliability).",
+              "3. Impose a 45 km/h speed restriction on the affected segment until the bus bridge is operational.",
+              "4. Re‑schedule the affected train (MAINTENANCE_REQUIRED) to a 15‑minute later slot, freeing the track for the bus shuttle and creating a safety buffer.",
+              "5. Push real‑time passenger notifications via the mobile app, offering automatic re‑booking to the bus service and compensation vouchers.",
+              "6. Operate the bus shuttle every 15 minutes between Milano Lambrate and Treviglio; once the track defect is repaired, synchronize the shuttle termination with the resumption of normal rail service."
+            ],
+            "expected_outcome": "Eliminates the risk of derailment, maintains passenger movement through the bus bridge, and allows maintenance crews to work without train traffic.",
+            "reasoning": "Historical cases showed that a quickly organised bus bridge can restore passenger flow faster than waiting for full track repairs. Adding crowd‑sourced monitoring provides continuous safety assurance while the bridge is in place, merging algorithmic vigilance with proven operational contingency.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.786,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "MAINTENANCE_REQUIRED"
+            ],
+            "estimated_delay_reduction_sec": 40,
+            "side_effects": [
+              "Higher operational cost for bus fleet deployment",
+              "Potential road traffic impact on the bus route",
+              "Passenger inconvenience due to mode change"
+            ],
+            "feasibility_score": 0.81,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          },
+          {
+            "resolution_id": "algo_1",
+            "strategy_name": "Track fault",
+            "action_steps": [
+              "1. Issue immediate speed restriction (30-50 km/h) on affected segment. 2. Dispatch track inspection team to verify defect. 3. If defect confirmed critical (>70% confidence): halt traffic, reroute trains via alternative paths. 4. For minor defects: maintain reduced speed, schedule maintenance window. 5. Notify control center and update train drivers."
+            ],
+            "expected_outcome": "Resolve the conflict based on algorithm",
+            "reasoning": "Track faults pose direct safety risks. Vision AI provides early detection. Speed restrictions reduce derailment risk while maintaining limited service. Verification confirms AI detection accuracy before major disruptions.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm score: 0.641"
+            ],
+            "confidence_score": 0.529448896,
+            "algorithm_name": "Track fault",
+            "algorithm_reasoning": "Track faults pose direct safety risks. Vision AI provides early detection. Speed restrictions reduce derailment risk while maintaining limited service. Verification confirms AI detection accuracy before major disruptions.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [],
+            "estimated_delay_reduction_sec": null,
+            "side_effects": [],
+            "feasibility_score": 0.0,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        ],
+        "layer1_count": 3,
+        "layer2_refinements": {
+          "historical_cases_found": 10,
+          "algorithm_resolutions": 3,
+          "hybrid_resolutions_generated": 2,
+          "total_candidates_evaluated": 5,
+          "historical_success_rates": {
+            "total_cases": 10,
+            "average_similarity": 0.319787899,
+            "outcome_distribution": {
+              "resolved": 6,
+              "unknown": 4
+            }
+          }
+        },
+        "generation_time_sec": 4.545275
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 2
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 713,
+      "raw_result": {
+        "solver_used": "nsga2",
+        "overall_fitness": 0.752684396736797,
+        "total_delay_min": 1.4464,
+        "passenger_impact": 433.91999999999996,
+        "propagation_depth": 0,
+        "recovery_smoothness": 1.0,
+        "actions": [
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "MAINTENANCE_REQUIRED",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: TF-20260129164004\nType: track_fault\nSeverity: 0.95\nAffected trains: MAINTENANCE_REQUIRED\nAffected stations: MILANO LAMBRATE--TREVIGLIO\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using nsga2):\n  1. SPEED_ADJUST - Train MAINTENANCE_REQUIRED\n      speed_factor: 1.12\n\nExpected Outcomes:\n  - Total delay: 1.4 minutes\n  - Passenger impact: 434 passenger-minutes\n  - Propagation depth: 0 trains\n  - Recovery smoothness: 1.00\n  - Overall fitness: 0.753"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "error",
+    "execution_ms": 690,
+    "ranked_resolutions": null,
+    "raw_llm_response": null,
+    "error": "Groq API error (RateLimitError): Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kg4gh266e7tscb9zw2hr2rqr` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199999, Requested 1782. Please try again in 12m49.392s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  }
+}
