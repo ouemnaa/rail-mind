@@ -1,0 +1,13 @@
+# Resolution Agent Requirements
+# =============================
+
+# Core dependencies
+python-dotenv>=1.0.0
+groq>=0.4.0
+qdrant-client>=1.7.0
+sentence-transformers>=2.2.0
+
+# Optional dependencies (if not already installed)
+numpy
+torch
+transformers

@@ -91,7 +91,7 @@ class AlgorithmResolutionExtractor:
         qdrant_client: QdrantClient,
         collection_name: str = "railway_algorithms",
         llm_api_key: Optional[str] = None,
-        llm_model: str = "mixtral-8x7b-32768",
+        llm_model: str = "llama-3.3-70b-versatile",
         embedder: Optional[Any] = None
     ):
         self.client = qdrant_client
@@ -347,7 +347,7 @@ class HistoricalResolutionRefiner:
         qdrant_client: QdrantClient,
         collection_name: str = "historical_incidents",
         llm_api_key: Optional[str] = None,
-        llm_model: str = "mixtral-8x7b-32768",
+        llm_model: str = "llama-3.3-70b-versatile",
         embedder: Optional[Any] = None
     ):
         self.client = qdrant_client
@@ -786,7 +786,7 @@ class ResolutionGenerationSystem:
         algorithm_collection: str = "railway_algorithms",
         historical_collection: str = "rail_incidents",
         llm_api_key: Optional[str] = None,
-        llm_model: str = "openai/gpt-oss-120b"
+        llm_model: str = "llama-3.3-70b-versatile"
     ):
         # Initialize Qdrant client
         if qdrant_api_key:

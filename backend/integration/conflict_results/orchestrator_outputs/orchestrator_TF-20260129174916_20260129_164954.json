@@ -1,0 +1,412 @@
+{
+  "status": "ok",
+  "conflict_id": "TF-20260129174916",
+  "started_at": "2026-01-29T16:49:23.369963+00:00",
+  "finished_at": "2026-01-29T16:49:54.516302+00:00",
+  "total_execution_ms": 31146,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 22717,
+      "raw_result": {
+        "conflict_id": "TF-20260129174916",
+        "conflict_summary": "",
+        "timestamp": "2026-01-29T17:49:45.950475",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [
+          {
+            "resolution_id": "algo_1",
+            "strategy_name": "Immediate Speed Restriction & Inspection",
+            "action_steps": [
+              "Issue a temporary speed restriction of 30‑50 km/h on the Milano Lambrate–Treviglio segment.",
+              "Broadcast the restriction to all train drivers and update the dispatch system.",
+              "Dispatch a track‑inspection crew to the exact defect location within 15 minutes.",
+              "On‑site verification: if the defect is confirmed critical (AI confidence > 70 %), halt all traffic on the segment and arrange an alternative routing (bus bridge or parallel line).",
+              "If the defect is minor, keep the reduced speed in force and schedule a full maintenance window during off‑peak hours.",
+              "Log the incident in the control‑center system and close the loop with a post‑inspection report."
+            ],
+            "expected_outcome": "Ensures safety by limiting train speed while allowing limited service; rapid verification prevents unnecessary full closures and limits passenger delay.",
+            "reasoning": "The conflict is a track‑fault detected by a vision system. The \"track_fault_vision_detection_1\" algorithm is explicitly designed for this situation, prescribing speed restriction, immediate inspection, and conditional full halt.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: track_fault_vision_detection_1"
+            ],
+            "confidence_score": 0.875,
+            "algorithm_name": "track_fault_vision_detection_1",
+            "algorithm_reasoning": "The conflict is a track‑fault detected by a vision system. The \"track_fault_vision_detection_1\" algorithm is explicitly designed for this situation, prescribing speed restriction, immediate inspection, and conditional full halt.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "MAINTENANCE_REQUIRED",
+              "ALL_TRAINS_ON_MILANO_LAMBRATE_TREVIGLIO_SEGMENT"
+            ],
+            "estimated_delay_reduction_sec": 114,
+            "side_effects": [],
+            "feasibility_score": 0.95,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "algo_2",
+            "strategy_name": "Sensor‑Based Precautionary Limiting",
+            "action_steps": [
+              "Automatically flag the affected track segment in the sensor‑monitoring system.",
+              "Apply a precautionary speed limit of 40 km/h on the segment.",
+              "Cross‑reference the sensor alarm with any available visual‑inspection data.",
+              "If multiple sensors (vibration, strain, temperature) confirm the anomaly, elevate the incident to emergency maintenance status.",
+              "Prepare a contingency timetable that reduces capacity on the route and informs downstream stations of the reduced speed profile."
+            ],
+            "expected_outcome": "Adds a second, independent data source to validate the defect, reducing the risk of false alarms while maintaining a controlled flow of traffic.",
+            "reasoning": "The conflict type matches the \"track_fault_sensor_detection_1\" algorithm, which focuses on sensor‑derived fault detection and recommends precautionary speed limits and verification before escalation.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: track_fault_sensor_detection_1"
+            ],
+            "confidence_score": 0.833,
+            "algorithm_name": "track_fault_sensor_detection_1",
+            "algorithm_reasoning": "The conflict type matches the \"track_fault_sensor_detection_1\" algorithm, which focuses on sensor‑derived fault detection and recommends precautionary speed limits and verification before escalation.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "MAINTENANCE_REQUIRED",
+              "ALL_TRAINS_ON_MILANO_LAMBRATE_TREVIGLIO_SEGMENT"
+            ],
+            "estimated_delay_reduction_sec": 90,
+            "side_effects": [],
+            "feasibility_score": 0.88,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Adaptive Speed Restriction + Pre‑positioned Maintenance Crew",
+            "action_steps": [
+              "1. Immediately broadcast a provisional speed limit of 35 km/h on the Milano Lambrate‑Treviglio segment to all drivers and update the dispatch system.",
+              "2. Activate the predictive‑maintenance module (used in historic cases where early crew deployment cut delays by ~30 %) to calculate the most probable defect location from the vision‑detection confidence map.",
+              "3. Dispatch a mobile maintenance team to the calculated hotspot within 10 minutes, positioning them at the nearest siding (Milano Lambrate) while the train approaches.",
+              "4. While the crew is en‑route, run a real‑time passenger‑information push (app, station displays, PA) indicating the speed restriction and expected extra travel time.",
+              "5. On‑site, the crew performs a rapid visual‑and‑sensor inspection; if the defect confidence > 70 % and is critical, they install a temporary protective plate and upgrade the restriction to 20 km/h, otherwise they clear the restriction after 5 minutes of monitoring.",
+              "6. Log the inspection outcome, close the incident in the control‑center system, and schedule a full maintenance window during the next low‑traffic period."
+            ],
+            "expected_outcome": "Maintains train flow with a modest speed reduction, eliminates the need for a full line shutdown, and reduces the projected delay from ~174 s to ≤ 60 s while ensuring safety.",
+            "reasoning": "Combines the algorithmic speed‑restriction‑and‑inspection workflow with the historical success of pre‑positioned crews, which historically shaved 30‑40 % off delay times for similar soft‑blocking faults. The predictive‑maintenance calculation narrows the search area, speeding up crew arrival and inspection.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.8280000000000001,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "MAINTENANCE_REQUIRED"
+            ],
+            "estimated_delay_reduction_sec": 115,
+            "side_effects": [
+              "Slightly increased fuel consumption for trains operating under reduced speed",
+              "Potential minor congestion on the adjacent siding used for crew staging"
+            ],
+            "feasibility_score": 0.88,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        ],
+        "layer1_count": 3,
+        "layer2_refinements": {
+          "historical_cases_found": 10,
+          "algorithm_resolutions": 3,
+          "hybrid_resolutions_generated": 2,
+          "total_candidates_evaluated": 5,
+          "historical_success_rates": {
+            "total_cases": 10,
+            "average_similarity": 0.319787899,
+            "outcome_distribution": {
+              "resolved": 6,
+              "unknown": 4
+            }
+          }
+        },
+        "generation_time_sec": 7.757939
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 3
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 778,
+      "raw_result": {
+        "solver_used": "nsga2",
+        "overall_fitness": 0.7417202753076073,
+        "total_delay_min": 2.6215999999999995,
+        "passenger_impact": 786.4799999999998,
+        "propagation_depth": 0,
+        "recovery_smoothness": 1.0,
+        "actions": [
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "MAINTENANCE_REQUIRED",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: TF-20260129174916\nType: track_fault\nSeverity: 0.95\nAffected trains: MAINTENANCE_REQUIRED\nAffected stations: MILANO LAMBRATE--TREVIGLIO\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using nsga2):\n  1. SPEED_ADJUST - Train MAINTENANCE_REQUIRED\n      speed_factor: 1.12\n\nExpected Outcomes:\n  - Total delay: 2.6 minutes\n  - Passenger impact: 786 passenger-minutes\n  - Propagation depth: 0 trains\n  - Recovery smoothness: 1.00\n  - Overall fitness: 0.742"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "ok",
+    "execution_ms": 8405,
+    "ranked_resolutions": [
+      {
+        "rank": 1,
+        "resolution_number": 1,
+        "resolution_id": "R1",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Issue a temporary speed restriction of 30‑50 km/h on the Milano Lambrate–Treviglio segment.",
+            "Broadcast the restriction to all train drivers and update the dispatch system.",
+            "Dispatch a track‑inspection crew to the exact defect location within 15 minutes.",
+            "On‑site verification: if the defect is confirmed critical (AI confidence > 70 %), halt all traffic on the segment and arrange an alternative routing (bus bridge or parallel line).",
+            "If the defect is minor, keep the reduced speed in force and schedule a full maintenance window during off‑peak hours.",
+            "Log the incident in the control‑center system and close the loop with a post‑inspection report."
+          ]
+        },
+        "overall_score": 80.8,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 9.5,
+        "robustness_rating": 8.0,
+        "justification": "Provides an immediate safety barrier while allowing limited service and includes rapid verification to avoid unnecessary full closures, balancing safety and efficiency well.",
+        "full_resolution": {
+          "resolution_id": "algo_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Immediate Speed Restriction & Inspection",
+          "actions": [
+            "Issue a temporary speed restriction of 30‑50 km/h on the Milano Lambrate–Treviglio segment.",
+            "Broadcast the restriction to all train drivers and update the dispatch system.",
+            "Dispatch a track‑inspection crew to the exact defect location within 15 minutes.",
+            "On‑site verification: if the defect is confirmed critical (AI confidence > 70 %), halt all traffic on the segment and arrange an alternative routing (bus bridge or parallel line).",
+            "If the defect is minor, keep the reduced speed in force and schedule a full maintenance window during off‑peak hours.",
+            "Log the incident in the control‑center system and close the loop with a post‑inspection report."
+          ],
+          "expected_outcome": "Ensures safety by limiting train speed while allowing limited service; rapid verification prevents unnecessary full closures and limits passenger delay.",
+          "reasoning": "The conflict is a track‑fault detected by a vision system. The \"track_fault_vision_detection_1\" algorithm is explicitly designed for this situation, prescribing speed restriction, immediate inspection, and conditional full halt.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.95,
+          "overall_fitness": 0.875,
+          "estimated_delay_min": 1.9,
+          "affected_trains": [
+            "MAINTENANCE_REQUIRED",
+            "ALL_TRAINS_ON_MILANO_LAMBRATE_TREVIGLIO_SEGMENT"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_1",
+            "strategy_name": "Immediate Speed Restriction & Inspection",
+            "action_steps": [
+              "Issue a temporary speed restriction of 30‑50 km/h on the Milano Lambrate–Treviglio segment.",
+              "Broadcast the restriction to all train drivers and update the dispatch system.",
+              "Dispatch a track‑inspection crew to the exact defect location within 15 minutes.",
+              "On‑site verification: if the defect is confirmed critical (AI confidence > 70 %), halt all traffic on the segment and arrange an alternative routing (bus bridge or parallel line).",
+              "If the defect is minor, keep the reduced speed in force and schedule a full maintenance window during off‑peak hours.",
+              "Log the incident in the control‑center system and close the loop with a post‑inspection report."
+            ],
+            "expected_outcome": "Ensures safety by limiting train speed while allowing limited service; rapid verification prevents unnecessary full closures and limits passenger delay.",
+            "reasoning": "The conflict is a track‑fault detected by a vision system. The \"track_fault_vision_detection_1\" algorithm is explicitly designed for this situation, prescribing speed restriction, immediate inspection, and conditional full halt.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: track_fault_vision_detection_1"
+            ],
+            "confidence_score": 0.875,
+            "algorithm_name": "track_fault_vision_detection_1",
+            "algorithm_reasoning": "The conflict is a track‑fault detected by a vision system. The \"track_fault_vision_detection_1\" algorithm is explicitly designed for this situation, prescribing speed restriction, immediate inspection, and conditional full halt.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "MAINTENANCE_REQUIRED",
+              "ALL_TRAINS_ON_MILANO_LAMBRATE_TREVIGLIO_SEGMENT"
+            ],
+            "estimated_delay_reduction_sec": 114,
+            "side_effects": [],
+            "feasibility_score": 0.95,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      },
+      {
+        "rank": 2,
+        "resolution_number": 3,
+        "resolution_id": "R3",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Immediately broadcast a provisional speed limit of 35 km/h on the Milano Lambrate‑Treviglio segment to all drivers and update the dispatch system.",
+            "Activate the predictive‑maintenance module to calculate the most probable defect location from the vision‑detection confidence map.",
+            "Dispatch a mobile maintenance team to the calculated hotspot within 10 minutes, positioning them at the nearest siding (Milano Lambrate) while the train approaches.",
+            "Run a real‑time passenger‑information push (app, station displays, PA) indicating the speed restriction and expected extra travel time.",
+            "On‑site, the crew performs a rapid visual‑and‑sensor inspection; if the defect confidence > 70 % and is critical, they install a temporary protective plate and upgrade the restriction to 20 km/h, otherwise they clear the restriction after 5 minutes of monitoring.",
+            "Log the inspection outcome, close the incident in the control‑center system, and schedule a full maintenance window during the next low‑traffic period."
+          ]
+        },
+        "overall_score": 78.3,
+        "safety_rating": 7.5,
+        "efficiency_rating": 7.5,
+        "feasibility_rating": 8.8,
+        "robustness_rating": 7.5,
+        "justification": "Combines fast crew deployment with predictive analytics to keep trains moving under a modest speed limit, achieving good efficiency while maintaining acceptable safety levels.",
+        "full_resolution": {
+          "resolution_id": "hybrid_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Adaptive Speed Restriction + Pre‑positioned Maintenance Crew",
+          "actions": [
+            "1. Immediately broadcast a provisional speed limit of 35 km/h on the Milano Lambrate‑Treviglio segment to all drivers and update the dispatch system.",
+            "2. Activate the predictive‑maintenance module (used in historic cases where early crew deployment cut delays by ~30 %) to calculate the most probable defect location from the vision‑detection confidence map.",
+            "3. Dispatch a mobile maintenance team to the calculated hotspot within 10 minutes, positioning them at the nearest siding (Milano Lambrate) while the train approaches.",
+            "4. While the crew is en‑route, run a real‑time passenger‑information push (app, station displays, PA) indicating the speed restriction and expected extra travel time.",
+            "5. On‑site, the crew performs a rapid visual‑and‑sensor inspection; if the defect confidence > 70 % and is critical, they install a temporary protective plate and upgrade the restriction to 20 km/h, otherwise they clear the restriction after 5 minutes of monitoring.",
+            "6. Log the inspection outcome, close the incident in the control‑center system, and schedule a full maintenance window during the next low‑traffic period."
+          ],
+          "expected_outcome": "Maintains train flow with a modest speed reduction, eliminates the need for a full line shutdown, and reduces the projected delay from ~174 s to ≤ 60 s while ensuring safety.",
+          "reasoning": "Combines the algorithmic speed‑restriction‑and‑inspection workflow with the historical success of pre‑positioned crews, which historically shaved 30‑40 % off delay times for similar soft‑blocking faults. The predictive‑maintenance calculation narrows the search area, speeding up crew arrival and inspection.",
+          "safety_score": 0.75,
+          "efficiency_score": 0.75,
+          "feasibility_score": 0.88,
+          "overall_fitness": 0.8280000000000001,
+          "estimated_delay_min": 1.9166666666666667,
+          "affected_trains": [
+            "MAINTENANCE_REQUIRED"
+          ],
+          "side_effects": [
+            "Slightly increased fuel consumption for trains operating under reduced speed",
+            "Potential minor congestion on the adjacent siding used for crew staging"
+          ],
+          "algorithm_type": "hybrid",
+          "raw_data": {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Adaptive Speed Restriction + Pre‑positioned Maintenance Crew",
+            "action_steps": [
+              "1. Immediately broadcast a provisional speed limit of 35 km/h on the Milano Lambrate‑Treviglio segment to all drivers and update the dispatch system.",
+              "2. Activate the predictive‑maintenance module (used in historic cases where early crew deployment cut delays by ~30 %) to calculate the most probable defect location from the vision‑detection confidence map.",
+              "3. Dispatch a mobile maintenance team to the calculated hotspot within 10 minutes, positioning them at the nearest siding (Milano Lambrate) while the train approaches.",
+              "4. While the crew is en‑route, run a real‑time passenger‑information push (app, station displays, PA) indicating the speed restriction and expected extra travel time.",
+              "5. On‑site, the crew performs a rapid visual‑and‑sensor inspection; if the defect confidence > 70 % and is critical, they install a temporary protective plate and upgrade the restriction to 20 km/h, otherwise they clear the restriction after 5 minutes of monitoring.",
+              "6. Log the inspection outcome, close the incident in the control‑center system, and schedule a full maintenance window during the next low‑traffic period."
+            ],
+            "expected_outcome": "Maintains train flow with a modest speed reduction, eliminates the need for a full line shutdown, and reduces the projected delay from ~174 s to ≤ 60 s while ensuring safety.",
+            "reasoning": "Combines the algorithmic speed‑restriction‑and‑inspection workflow with the historical success of pre‑positioned crews, which historically shaved 30‑40 % off delay times for similar soft‑blocking faults. The predictive‑maintenance calculation narrows the search area, speeding up crew arrival and inspection.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.8280000000000001,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "MAINTENANCE_REQUIRED"
+            ],
+            "estimated_delay_reduction_sec": 115,
+            "side_effects": [
+              "Slightly increased fuel consumption for trains operating under reduced speed",
+              "Potential minor congestion on the adjacent siding used for crew staging"
+            ],
+            "feasibility_score": 0.88,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        }
+      },
+      {
+        "rank": 3,
+        "resolution_number": 2,
+        "resolution_id": "R2",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Automatically flag the affected track segment in the sensor‑monitoring system.",
+            "Apply a precautionary speed limit of 40 km/h on the segment.",
+            "Cross‑reference the sensor alarm with any available visual‑inspection data.",
+            "If multiple sensors (vibration, strain, temperature) confirm the anomaly, elevate the incident to emergency maintenance status.",
+            "Prepare a contingency timetable that reduces capacity on the route and informs downstream stations of the reduced speed profile."
+          ]
+        },
+        "overall_score": 77.5,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 8.8,
+        "robustness_rating": 7.0,
+        "justification": "Adds an independent sensor verification layer before escalation, preserving safety while keeping traffic flowing, though it relies on sensor reliability.",
+        "full_resolution": {
+          "resolution_id": "algo_2",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Sensor‑Based Precautionary Limiting",
+          "actions": [
+            "Automatically flag the affected track segment in the sensor‑monitoring system.",
+            "Apply a precautionary speed limit of 40 km/h on the segment.",
+            "Cross‑reference the sensor alarm with any available visual‑inspection data.",
+            "If multiple sensors (vibration, strain, temperature) confirm the anomaly, elevate the incident to emergency maintenance status.",
+            "Prepare a contingency timetable that reduces capacity on the route and informs downstream stations of the reduced speed profile."
+          ],
+          "expected_outcome": "Adds a second, independent data source to validate the defect, reducing the risk of false alarms while maintaining a controlled flow of traffic.",
+          "reasoning": "The conflict type matches the \"track_fault_sensor_detection_1\" algorithm, which focuses on sensor‑derived fault detection and recommends precautionary speed limits and verification before escalation.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.88,
+          "overall_fitness": 0.833,
+          "estimated_delay_min": 1.5,
+          "affected_trains": [
+            "MAINTENANCE_REQUIRED",
+            "ALL_TRAINS_ON_MILANO_LAMBRATE_TREVIGLIO_SEGMENT"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_2",
+            "strategy_name": "Sensor‑Based Precautionary Limiting",
+            "action_steps": [
+              "Automatically flag the affected track segment in the sensor‑monitoring system.",
+              "Apply a precautionary speed limit of 40 km/h on the segment.",
+              "Cross‑reference the sensor alarm with any available visual‑inspection data.",
+              "If multiple sensors (vibration, strain, temperature) confirm the anomaly, elevate the incident to emergency maintenance status.",
+              "Prepare a contingency timetable that reduces capacity on the route and informs downstream stations of the reduced speed profile."
+            ],
+            "expected_outcome": "Adds a second, independent data source to validate the defect, reducing the risk of false alarms while maintaining a controlled flow of traffic.",
+            "reasoning": "The conflict type matches the \"track_fault_sensor_detection_1\" algorithm, which focuses on sensor‑derived fault detection and recommends precautionary speed limits and verification before escalation.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: track_fault_sensor_detection_1"
+            ],
+            "confidence_score": 0.833,
+            "algorithm_name": "track_fault_sensor_detection_1",
+            "algorithm_reasoning": "The conflict type matches the \"track_fault_sensor_detection_1\" algorithm, which focuses on sensor‑derived fault detection and recommends precautionary speed limits and verification before escalation.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "MAINTENANCE_REQUIRED",
+              "ALL_TRAINS_ON_MILANO_LAMBRATE_TREVIGLIO_SEGMENT"
+            ],
+            "estimated_delay_reduction_sec": 90,
+            "side_effects": [],
+            "feasibility_score": 0.88,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      }
+    ],
+    "raw_llm_response": "[\n  {\n    \"rank\": 1,\n    \"resolution_number\": 1,\n    \"resolution_id\": \"R1\",\n    \"bullet_resolution_actions\": {\n      \"actions\": [\n        \"Issue a temporary speed restriction of 30‑50 km/h on the Milano Lambrate–Treviglio segment.\",\n        \"Broadcast the restriction to all train drivers and update the dispatch system.\",\n        \"Dispatch a track‑inspection crew to the exact defect location within 15 minutes.\",\n        \"On‑site verification: if the defect is confirmed critical (AI confidence > 70 %), halt all traffic on the segment and arrange an alternative routing (bus bridge or parallel line).\",\n        \"If the defect is minor, keep the reduced speed in force and schedule a full maintenance window during off‑peak hours.\",\n        \"Log the incident in the control‑center system and close the loop with a post‑inspection report.\"\n      ]\n    },\n    \"overall_score\": 80.8,\n    \"safety_rating\": 8.0,\n    \"efficiency_rating\": 7.0,\n    \"feasibility_rating\": 9.5,\n    \"robustness_rating\": 8.0,\n    \"justification\": \"Provides an immediate safety barrier while allowing limited service and includes rapid verification to avoid unnecessary full closures, balancing safety and efficiency well.\",\n    \"full_resolution\": {\n      \"resolution_id\": \"R1\",\n      \"source_agent\": \"Agent 1\",\n      \"strategy_name\": \"Immediate Speed Restriction & Inspection\",\n      \"actions\": [\n        \"Issue a temporary speed restriction of 30‑50 km/h on the Milano Lambrate–Treviglio segment.\",\n        \"Broadcast the restriction to all train drivers and update the dispatch system.\",\n        \"Dispatch a track‑inspection crew to the exact defect location within 15 minutes.\",\n        \"On‑site verification: if the defect is confirmed critical (AI confidence > 70 %), halt all traffic on the segment and arrange an alternative routing (bus bridge or parallel line).\",\n        \"If the defect is minor, keep the reduced speed in force and schedule a full maintenance window during off‑peak hours.\",\n        \"Log the incident in the control‑center system and close the loop with a post‑inspection report.\"\n      ],\n      \"expected_outcome\": \"Ensures safety by limiting train speed while allowing limited service; rapid verification prevents unnecessary full closures and limits passenger delay.\",\n      \"reasoning\": \"The conflict is a track‑fault detected by a vision system. The \\\"track_fault_vision_detection_1\\\" algorithm is explicitly designed for this situation, prescribing speed restriction, immediate inspection, and conditional full halt.\",\n      \"safety_score\": 0.800,\n      \"efficiency_score\": 0.700,\n      \"feasibility_score\": 0.950,\n      \"overall_fitness\": 0.875,\n      \"estimated_delay_min\": 1.9,\n      \"affected_trains\": \"MAINTENANCE_REQUIRED\",\n      \"side_effects\": \"None\",\n      \"algorithm_type\": \"algorithm\",\n      \"raw_data\": null\n    }\n  },\n  {\n    \"rank\": 2,\n    \"resolution_number\": 3,\n    \"resolution_id\": \"R3\",\n    \"bullet_resolution_actions\": {\n      \"actions\": [\n        \"Immediately broadcast a provisional speed limit of 35 km/h on the Milano Lambrate‑Treviglio segment to all drivers and update the dispatch system.\",\n        \"Activate the predictive‑maintenance module to calculate the most probable defect location from the vision‑detection confidence map.\",\n        \"Dispatch a mobile maintenance team to the calculated hotspot within 10 minutes, positioning them at the nearest siding (Milano Lambrate) while the train approaches.\",\n        \"Run a real‑time passenger‑information push (app, station displays, PA) indicating the speed restriction and expected extra travel time.\",\n        \"On‑site, the crew performs a rapid visual‑and‑sensor inspection; if the defect confidence > 70 % and is critical, they install a temporary protective plate and upgrade the restriction to 20 km/h, otherwise they clear the restriction after 5 minutes of monitoring.\",\n        \"Log the inspection outcome, close the incident in the control‑center system, and schedule a full maintenance window during the next low‑traffic period.\"\n      ]\n    },\n    \"overall_score\": 78.3,\n    \"safety_rating\": 7.5,\n    \"efficiency_rating\": 7.5,\n    \"feasibility_rating\": 8.8,\n    \"robustness_rating\": 7.5,\n    \"justification\": \"Combines fast crew deployment with predictive analytics to keep trains moving under a modest speed limit, achieving good efficiency while maintaining acceptable safety levels.\",\n    \"full_resolution\": {\n      \"resolution_id\": \"R3\",\n      \"source_agent\": \"Agent 1\",\n      \"strategy_name\": \"Adaptive Speed Restriction + Pre‑positioned Maintenance Crew\",\n      \"actions\": [\n        \"Immediately broadcast a provisional speed limit of 35 km/h on the Milano Lambrate‑Treviglio segment to all drivers and update the dispatch system.\",\n        \"Activate the predictive‑maintenance module to calculate the most probable defect location from the vision‑detection confidence map.\",\n        \"Dispatch a mobile maintenance team to the calculated hotspot within 10 minutes, positioning them at the nearest siding (Milano Lambrate) while the train approaches.\",\n        \"Run a real‑time passenger‑information push (app, station displays, PA) indicating the speed restriction and expected extra travel time.\",\n        \"On‑site, the crew performs a rapid visual‑and‑sensor inspection; if the defect confidence > 70 % and is critical, they install a temporary protective plate and upgrade the restriction to 20 km/h, otherwise they clear the restriction after 5 minutes of monitoring.\",\n        \"Log the inspection outcome, close the incident in the control‑center system, and schedule a full maintenance window during the next low‑traffic period.\"\n      ],\n      \"expected_outcome\": \"Maintains train flow with a modest speed reduction, eliminates the need for a full line shutdown, and reduces the projected delay from ~174 s to ≤ 60 s while ensuring safety.\",\n      \"reasoning\": \"Combines the algorithmic speed‑restriction‑and‑inspection workflow with the historical success of pre‑positioned crews, which historically shaved 30‑40 % off delay times for similar soft‑blocking faults.\",\n      \"safety_score\": 0.750,\n      \"efficiency_score\": 0.750,\n      \"feasibility_score\": 0.880,\n      \"overall_fitness\": 0.828,\n      \"estimated_delay_min\": 1.9,\n      \"affected_trains\": \"MAINTENANCE_REQUIRED\",\n      \"side_effects\": \"Slightly increased fuel consumption for trains operating under reduced speed, Potential minor congestion on the adjacent siding used for crew staging\",\n      \"algorithm_type\": \"hybrid\",\n      \"raw_data\": null\n    }\n  },\n  {\n    \"rank\": 3,\n    \"resolution_number\": 2,\n    \"resolution_id\": \"R2\",\n    \"bullet_resolution_actions\": {\n      \"actions\": [\n        \"Automatically flag the affected track segment in the sensor‑monitoring system.\",\n        \"Apply a precautionary speed limit of 40 km/h on the segment.\",\n        \"Cross‑reference the sensor alarm with any available visual‑inspection data.\",\n        \"If multiple sensors (vibration, strain, temperature) confirm the anomaly, elevate the incident to emergency maintenance status.\",\n        \"Prepare a contingency timetable that reduces capacity on the route and informs downstream stations of the reduced speed profile.\"\n      ]\n    },\n    \"overall_score\": 77.5,\n    \"safety_rating\": 8.0,\n    \"efficiency_rating\": 7.0,\n    \"feasibility_rating\": 8.8,\n    \"robustness_rating\": 7.0,\n    \"justification\": \"Adds an independent sensor verification layer before escalation, preserving safety while keeping traffic flowing, though it relies on sensor reliability.\",\n    \"full_resolution\": {\n      \"resolution_id\": \"R2\",\n      \"source_agent\": \"Agent 1\",\n      \"strategy_name\": \"Sensor‑Based Precautionary Limiting\",\n      \"actions\": [\n        \"Automatically flag the affected track segment in the sensor‑monitoring system.\",\n        \"Apply a precautionary speed limit of 40 km/h on the segment.\",\n        \"Cross‑reference the sensor alarm with any available visual‑inspection data.\",\n        \"If multiple sensors (vibration, strain, temperature) confirm the anomaly, elevate the incident to emergency maintenance status.\",\n        \"Prepare a contingency timetable that reduces capacity on the route and informs downstream stations of the reduced speed profile.\"\n      ],\n      \"expected_outcome\": \"Adds a second, independent data source to validate the defect, reducing the risk of false alarms while maintaining a controlled flow of traffic.\",\n      \"reasoning\": \"The conflict type matches the \\\"track_fault_sensor_detection_1\\\" algorithm, which focuses on sensor‑derived fault detection and recommends precautionary speed limits and verification before escalation.\",\n      \"safety_score\": 0.800,\n      \"efficiency_score\": 0.700,\n      \"feasibility_score\": 0.880,\n      \"overall_fitness\": 0.833,\n      \"estimated_delay_min\": 1.5,\n      \"affected_trains\": \"MAINTENANCE_REQUIRED\",\n      \"side_effects\": \"None\",\n      \"algorithm_type\": \"algorithm\",\n      \"raw_data\": null\n    }\n  }\n]",
+    "error": null
+  }
+}

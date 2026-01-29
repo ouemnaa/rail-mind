@@ -1,0 +1,68 @@
+{
+  "status": "ok",
+  "conflict_id": "TF-20260129172454",
+  "started_at": "2026-01-29T16:30:51.844379+00:00",
+  "finished_at": "2026-01-29T16:32:14.448009+00:00",
+  "total_execution_ms": 82603,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 79875,
+      "raw_result": {
+        "conflict_id": "TF-20260129172454",
+        "conflict_summary": "",
+        "timestamp": "2026-01-29T17:32:11.726224",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [],
+        "layer1_count": 0,
+        "layer2_refinements": {
+          "historical_cases_found": 0,
+          "algorithm_resolutions": 0,
+          "hybrid_resolutions_generated": 0,
+          "total_candidates_evaluated": 0,
+          "historical_success_rates": {}
+        },
+        "generation_time_sec": 74.906923
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 0
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 1593,
+      "raw_result": {
+        "solver_used": "nsga2",
+        "overall_fitness": 0.7425381589983048,
+        "total_delay_min": 2.5311999999999997,
+        "passenger_impact": 759.3599999999999,
+        "propagation_depth": 0,
+        "recovery_smoothness": 1.0,
+        "actions": [
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "MAINTENANCE_REQUIRED",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: TF-20260129172454\nType: track_fault\nSeverity: 0.95\nAffected trains: MAINTENANCE_REQUIRED\nAffected stations: MILANO LAMBRATE--TREVIGLIO\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using nsga2):\n  1. SPEED_ADJUST - Train MAINTENANCE_REQUIRED\n      speed_factor: 1.12\n\nExpected Outcomes:\n  - Total delay: 2.5 minutes\n  - Passenger impact: 759 passenger-minutes\n  - Propagation depth: 0 trains\n  - Recovery smoothness: 1.00\n  - Overall fitness: 0.743"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "error",
+    "execution_ms": 2654,
+    "ranked_resolutions": null,
+    "raw_llm_response": null,
+    "error": "Groq API error (BadRequestError): Error code: 400 - {'error': {'message': '`reasoning_effort` is not supported with this model', 'type': 'invalid_request_error'}}"
+  }
+}

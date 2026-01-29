@@ -361,7 +361,7 @@ class LLMJudge:
     Fair LLM-based judge that evaluates normalized resolutions using Groq
     """
     
-    def __init__(self, api_key: str, model: str = "openai/gpt-oss-120b"):
+    def __init__(self, api_key: str, model: str = "llama-3.3-70b-versatile"):
         self.api_key = api_key
         self.model = model
         self.client = Groq(api_key=self.api_key)
@@ -664,7 +664,7 @@ def main():
     
     # ⚠️ IMPORTANT: Replace this with your actual Groq API key!
     GROQ_API_KEY = "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"
-    GROQ_MODEL = "openai/gpt-oss-120b"
+    GROQ_MODEL = "llama-3.3-70b-versatile"
     
     if GROQ_API_KEY == "YOUR_API_KEY_HERE":
         print("❌ ERROR: Please set your Groq API key in the script!")

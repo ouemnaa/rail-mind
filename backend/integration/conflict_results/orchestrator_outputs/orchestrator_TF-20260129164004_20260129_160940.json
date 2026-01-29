@@ -1,0 +1,148 @@
+{
+  "status": "ok",
+  "conflict_id": "TF-20260129164004",
+  "started_at": "2026-01-29T16:09:26.187344+00:00",
+  "finished_at": "2026-01-29T16:09:40.651039+00:00",
+  "total_execution_ms": 14463,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 13913,
+      "raw_result": {
+        "conflict_id": "TF-20260129164004",
+        "conflict_summary": "",
+        "timestamp": "2026-01-29T17:09:40.098938",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [
+          {
+            "resolution_id": "algo_1",
+            "strategy_name": "Track fault",
+            "action_steps": [
+              "1. Issue immediate speed restriction (30-50 km/h) on affected segment. 2. Dispatch track inspection team to verify defect. 3. If defect confirmed critical (>70% confidence): halt traffic, reroute trains via alternative paths. 4. For minor defects: maintain reduced speed, schedule maintenance window. 5. Notify control center and update train drivers."
+            ],
+            "expected_outcome": "Resolve the conflict based on algorithm",
+            "reasoning": "Track faults pose direct safety risks. Vision AI provides early detection. Speed restrictions reduce derailment risk while maintaining limited service. Verification confirms AI detection accuracy before major disruptions.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm score: 0.641"
+            ],
+            "confidence_score": 0.529448896,
+            "algorithm_name": "Track fault",
+            "algorithm_reasoning": "Track faults pose direct safety risks. Vision AI provides early detection. Speed restrictions reduce derailment risk while maintaining limited service. Verification confirms AI detection accuracy before major disruptions.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [],
+            "estimated_delay_reduction_sec": null,
+            "side_effects": [],
+            "feasibility_score": 0.0,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "algo_2",
+            "strategy_name": "Track defect",
+            "action_steps": [
+              "1. Automatically flag segment for inspection. 2. Apply precautionary speed limit. 3. Cross-reference with visual inspection data. 4. If multiple sensors confirm: escalate to emergency maintenance. 5. Prepare contingency timetable with reduced capacity on affected route."
+            ],
+            "expected_outcome": "Resolve the conflict based on algorithm",
+            "reasoning": "Sensor-based detection complements visual inspection. Multiple data sources improve accuracy. Precautionary measures prevent accidents while investigation proceeds.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm score: 0.553"
+            ],
+            "confidence_score": 0.49855228549999997,
+            "algorithm_name": "Track defect",
+            "algorithm_reasoning": "Sensor-based detection complements visual inspection. Multiple data sources improve accuracy. Precautionary measures prevent accidents while investigation proceeds.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [],
+            "estimated_delay_reduction_sec": null,
+            "side_effects": [],
+            "feasibility_score": 0.0,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "algo_3",
+            "strategy_name": "Track fault",
+            "action_steps": [
+              "1. Immediately impose 50 km/h speed restriction. 2. Dispatch track inspection team within 30 minutes. 3. Verify defect severity on-site. 4. If critical (>70% confidence): halt all traffic, arrange bus bridge. 5. If minor: maintain speed restriction, schedule maintenance."
+            ],
+            "expected_outcome": "Resolve the conflict based on algorithm",
+            "reasoning": "AI-detected defects require verification but immediate precaution. Speed restrictions prevent potential derailment while allowing service continuity. Human verification confirms severity.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm score: 0.526"
+            ],
+            "confidence_score": 0.48904029,
+            "algorithm_name": "Track fault",
+            "algorithm_reasoning": "AI-detected defects require verification but immediate precaution. Speed restrictions prevent potential derailment while allowing service continuity. Human verification confirms severity.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [],
+            "estimated_delay_reduction_sec": null,
+            "side_effects": [],
+            "feasibility_score": 0.0,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        ],
+        "layer1_count": 3,
+        "layer2_refinements": {
+          "historical_cases_found": 10,
+          "algorithm_resolutions": 3,
+          "hybrid_resolutions_generated": 0,
+          "total_candidates_evaluated": 3,
+          "historical_success_rates": {
+            "total_cases": 10,
+            "average_similarity": 0.319787899,
+            "outcome_distribution": {
+              "resolved": 6,
+              "unknown": 4
+            }
+          }
+        },
+        "generation_time_sec": 1.858555
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 0
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 1277,
+      "raw_result": {
+        "solver_used": "nsga2",
+        "overall_fitness": 0.752684396736797,
+        "total_delay_min": 1.4464,
+        "passenger_impact": 433.91999999999996,
+        "propagation_depth": 0,
+        "recovery_smoothness": 1.0,
+        "actions": [
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "MAINTENANCE_REQUIRED",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: TF-20260129164004\nType: track_fault\nSeverity: 0.95\nAffected trains: MAINTENANCE_REQUIRED\nAffected stations: MILANO LAMBRATE--TREVIGLIO\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using nsga2):\n  1. SPEED_ADJUST - Train MAINTENANCE_REQUIRED\n      speed_factor: 1.12\n\nExpected Outcomes:\n  - Total delay: 1.4 minutes\n  - Passenger impact: 434 passenger-minutes\n  - Propagation depth: 0 trains\n  - Recovery smoothness: 1.00\n  - Overall fitness: 0.753"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "error",
+    "execution_ms": 540,
+    "ranked_resolutions": null,
+    "raw_llm_response": null,
+    "error": "Groq API error (RateLimitError): Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kg4gh266e7tscb9zw2hr2rqr` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199628, Requested 893. Please try again in 3m45.072s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  }
+}

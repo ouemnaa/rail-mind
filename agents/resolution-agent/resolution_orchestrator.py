@@ -19,6 +19,10 @@ from dataclasses import dataclass, asdict
 from concurrent.futures import ThreadPoolExecutor
 import traceback
 from groq import Groq
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Add paths for imports
 CURRENT_DIR = Path(__file__).resolve().parent
@@ -82,11 +86,13 @@ def run_hybrid_rag_agent(conflict: Dict[str, Any], context: Dict[str, Any], time
         from agent.resolution_generator import ResolutionGenerationSystem
         from qdrant_client import QdrantClient
         
-        GROQ_API_KEY = "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" 
+        # Load configuration from environment variables
+        GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+        GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
         
         # Initialize Qdrant client (use local or cloud based on env)
-        qdrant_url = "https://cf323744-546a-492d-b614-8542cb3ce423.us-east-1-1.aws.cloud.qdrant.io"
-        qdrant_api_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.fI89vclTejMkRnUs-MbAmV-O4PwoQcYE1DO_fN6l7LM"
+        qdrant_url = os.getenv("QDRANT_URL")
+        qdrant_api_key = os.getenv("QDRANT_API_KEY")
         
         if qdrant_api_key:
             qdrant_client = QdrantClient(url=qdrant_url, api_key=qdrant_api_key)
@@ -98,7 +104,9 @@ def run_hybrid_rag_agent(conflict: Dict[str, Any], context: Dict[str, Any], time
             qdrant_url=qdrant_url,
             qdrant_api_key=qdrant_api_key,
             llm_api_key=GROQ_API_KEY,
-            llm_model="openai/gpt-oss-120b"
+            llm_model=GROQ_MODEL,
+            algorithm_collection=os.getenv("ALGORITHM_COLLECTION", "railway_algorithms"),
+            historical_collection=os.getenv("HISTORICAL_COLLECTION", "rail_incidents")
         )
         
         # Generate resolutions (returns ResolutionReport with ranked resolutions)
@@ -305,7 +313,7 @@ def normalize_agent1_output(raw_result: Dict[str, Any]) -> List[Dict[str, Any]]:
                 'efficiency_score': float(res_dict.get('efficiency_score', 0.5)),
                 'feasibility_score': float(res_dict.get('feasibility_score', 0.5)),
                 'overall_fitness': float(res_dict.get('confidence_score', 0.5)),
-                'estimated_delay_min': abs(res_dict.get('estimated_delay_reduction_sec', 0)) / 60.0,
+                'estimated_delay_min': abs(res_dict.get('estimated_delay_reduction_sec') or 0) / 60.0,
                 'affected_trains': res_dict.get('affected_trains', []),
                 'side_effects': res_dict.get('side_effects', []),
                 'algorithm_type': res_dict.get('source_type', 'hybrid'),
@@ -457,7 +465,7 @@ def call_llm_judge(
     prompt = _build_judge_prompt(conflict_context, normalized_candidates)
     
     try:
-        model_name = "openai/gpt-oss-120b"
+        model_name = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
         client = Groq(api_key=api_key)
         
         completion = client.chat.completions.create(
@@ -492,6 +500,22 @@ def call_llm_judge(
         
     except Exception as e:
         execution_ms = int((time.perf_counter() - start_time) * 1000)
+        
+        # Log detailed error to file for debugging
+        try:
+            with open("judge_error.log", "w") as f:
+                f.write(f"Error Type: {type(e).__name__}\n")
+                f.write(f"Error Message: {str(e)}\n\n")
+                f.write("Traceback:\n")
+                f.write(traceback.format_exc())
+            
+            # Log prompt to file
+            with open("judge_prompt.log", "w", encoding='utf-8') as f:
+                f.write(prompt)
+                
+        except Exception as log_err:
+            print(f"Failed to write debug logs: {log_err}")
+            
         return JudgeResult(
             status="error",
             execution_ms=execution_ms,
@@ -742,9 +766,11 @@ def orchestrate(
             'network_load': 0.5
         }
     
-    # Get API key (Groq)
+    # Get API key (Groq) from environment
     if api_key is None:
-        api_key = os.environ.get("GROQ_API_KEY", "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")
+        api_key = os.getenv("GROQ_API_KEY")
+        if not api_key:
+            raise ValueError("GROQ_API_KEY not found in environment variables. Please set it in .env file.")
     
     conflict_id = conflict.get('conflict_id', 'unknown')
     
