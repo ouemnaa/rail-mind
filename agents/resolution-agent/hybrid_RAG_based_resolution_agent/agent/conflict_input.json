@@ -1,0 +1,51 @@
+{
+  "conflict_id": "c3f29257-b71e-4caa-8cd2-af92ffaa2757",
+  "conflict_type": "headway_violation",
+  "severity": "high",
+  "explanation": "Headway violation on MILANO ROGOREDO--PAVIA: REG_3053 entered 50s after REG_33003, minimum is 180s",
+  "location": {
+    "edge_id": "MILANO ROGOREDO--PAVIA",
+    "node_id": null
+  },
+  "metadata": {
+    "train_1": "REG_3053",
+    "train_2": "REG_33003",
+    "actual_headway_sec": 50,
+    "minimum_headway_sec": 180
+  },
+  "timestamp": "2026-01-28T14:30:00Z"
+}
+
+{
+  "conflict_id": "track_fault_001",
+  "conflict_type": "track_fault",
+  "severity": "critical",
+  "explanation": "Vision system detected potential track defect with 86% confidence on Milano-Lodi segment",
+  "location": {
+    "edge_id": "MILANO--LODI",
+    "node_id": null
+  },
+  "metadata": {
+    "confidence": 0.86,
+    "detection_source": "vision_ai",
+    "image_path": "1.MOV_20201221091849_4580.JPEG"
+  },
+  "timestamp": "2026-01-28T15:00:00Z"
+}
+
+{
+  "conflict_id": "platform_congest_001",
+  "conflict_type": "platform_congestion",
+  "severity": "high",
+  "explanation": "5 trains simultaneously requesting platform 3 at Milano Centrale station",
+  "location": {
+    "edge_id": null,
+    "node_id": "MILANO CENTRALE"
+  },
+  "metadata": {
+    "platform": 3,
+    "trains_requesting": ["REG_1001", "REG_1002", "IC_501", "FR_9601", "REG_1003"],
+    "platform_capacity": 1
+  },
+  "timestamp": "2026-01-28T08:30:00Z"
+}

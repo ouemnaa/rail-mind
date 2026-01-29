@@ -1,0 +1,23 @@
+{
+  "trains": [
+    {"id": "REG_3053", "type": "regional", "priority": 2, "current_delay_min": 5},
+    {"id": "REG_33003", "type": "regional", "priority": 2, "current_delay_min": 0},
+    {"id": "REG_1001", "type": "regional", "priority": 2, "current_delay_min": 3},
+    {"id": "REG_1002", "type": "regional", "priority": 2, "current_delay_min": 8},
+    {"id": "IC_501", "type": "intercity", "priority": 3, "current_delay_min": 2},
+    {"id": "FR_9601", "type": "high_speed", "priority": 5, "current_delay_min": 0},
+    {"id": "REG_1003", "type": "regional", "priority": 2, "current_delay_min": 12}
+  ],
+  "edges": [
+    {"id": "MILANO ROGOREDO--PAVIA", "capacity": 2, "current_trains": 3},
+    {"id": "MILANO--LODI", "capacity": 2, "current_trains": 1},
+    {"id": "MILANO CENTRALE--MILANO ROGOREDO", "capacity": 4, "current_trains": 2}
+  ],
+  "stations": [
+    {"id": "MILANO CENTRALE", "platforms": 24, "is_hub": true},
+    {"id": "MILANO ROGOREDO", "platforms": 6, "is_hub": false},
+    {"id": "PAVIA", "platforms": 4, "is_hub": false},
+    {"id": "LODI", "platforms": 4, "is_hub": false}
+  ],
+  "timestamp": "2026-01-28T14:30:00Z"
+}
