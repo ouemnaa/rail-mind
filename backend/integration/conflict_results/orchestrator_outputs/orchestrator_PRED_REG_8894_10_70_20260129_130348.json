@@ -1,0 +1,99 @@
+{
+  "status": "partial",
+  "conflict_id": "PRED_REG_8894_10_70",
+  "started_at": "2026-01-29T13:03:42.526636+00:00",
+  "finished_at": "2026-01-29T13:03:48.298290+00:00",
+  "total_execution_ms": 5771,
+  "agents": {
+    "hybrid_rag": {
+      "status": "error",
+      "execution_ms": 3,
+      "raw_result": null,
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 0
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 634,
+      "raw_result": {
+        "solver_used": "nsga2",
+        "overall_fitness": 0.7579986260612198,
+        "total_delay_min": 0.9039999999999999,
+        "passenger_impact": 271.2,
+        "propagation_depth": 0,
+        "recovery_smoothness": 1.0,
+        "actions": [
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "REG_8894",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: PRED_REG_8894_10_70\nType: schedule_deviation\nSeverity: 0.75\nAffected trains: REG_8894\nAffected stations: NOVATE M.SE\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using nsga2):\n  1. SPEED_ADJUST - Train REG_8894\n      speed_factor: 1.12\n\nExpected Outcomes:\n  - Total delay: 0.9 minutes\n  - Passenger impact: 271 passenger-minutes\n  - Propagation depth: 0 trains\n  - Recovery smoothness: 1.00\n  - Overall fitness: 0.758"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "ok",
+    "execution_ms": 5130,
+    "ranked_resolutions": [
+      {
+        "rank": 1,
+        "resolution_number": 1,
+        "resolution_id": "resolution_1",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Speed up REG_8894 by 12%"
+          ]
+        },
+        "overall_score": 77,
+        "safety_rating": 9.8,
+        "efficiency_rating": 5.5,
+        "feasibility_rating": 7.5,
+        "robustness_rating": 8.0,
+        "justification": "The solution offers a high safety margin and feasible implementation while delivering a modest efficiency gain; its simplicity makes it robust against uncertainties.",
+        "full_resolution": {
+          "resolution_id": "agent2_nsga2",
+          "source_agent": "Agent 2 (Mathematical Solver)",
+          "strategy_name": "Pareto-Optimal Multi-Criteria Solution",
+          "actions": [
+            "Speed up REG_8894 by 12%"
+          ],
+          "expected_outcome": "Reduces total system delay to 0.9 minutes (improvement of 9.1% from baseline). Resolves headway violation through coordinated speed adjustments while maintaining safety constraints and operational feasibility. Affects 271.2 passengers with minimal service disruption.",
+          "reasoning": "Multi-objective evolutionary algorithm using Pareto dominance to simultaneously optimize conflicting goals (delay vs safety vs capacity). Non-dominated sorting ensures balanced solutions across all objectives, with crowding distance maintaining solution diversity. Achieves 100.0% recovery smoothness, minimizing operational disruption and maintaining schedule integrity. Implements 1 coordinated action(s) with verified constraint satisfaction and operational feasibility.",
+          "safety_score": 0.9800000000000001,
+          "efficiency_score": 0.5454545454545455,
+          "feasibility_score": 0.75,
+          "overall_fitness": 0.7579986260612198,
+          "estimated_delay_min": 0.9039999999999999,
+          "affected_trains": [
+            "REG_8894"
+          ],
+          "side_effects": [
+            "Minimal cascading effects (isolated resolution)",
+            "Moderate passenger impact (271.2 affected)",
+            "Simple implementation with minimal coordination overhead"
+          ],
+          "algorithm_type": "optimization_nsga2",
+          "raw_data": {
+            "fitness": 0.7579986260612198,
+            "total_delay_min": 0.9039999999999999,
+            "original_delay_min": 0.9944,
+            "num_actions": 1,
+            "passenger_impact": 271.2,
+            "propagation_depth": 0,
+            "recovery_smoothness": 1.0
+          }
+        }
+      }
+    ],
+    "raw_llm_response": "{\n  \"ranked_resolutions\": [\n    {\n      \"rank\": 1,\n      \"resolution_number\": 1,\n      \"resolution_id\": \"resolution_1\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Speed up REG_8894 by 12%\"\n        ]\n      },\n      \"overall_score\": 77,\n      \"safety_rating\": 9.8,\n      \"efficiency_rating\": 5.5,\n      \"feasibility_rating\": 7.5,\n      \"robustness_rating\": 8.0,\n      \"justification\": \"The solution offers a high safety margin and feasible implementation while delivering a modest efficiency gain; its simplicity makes it robust against uncertainties.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"resolution_1\",\n        \"source_agent\": \"Agent 2\",\n        \"strategy_name\": \"Pareto-Optimal Multi-Criteria Solution\",\n        \"actions\": [\n          \"Speed up REG_8894 by 12%\"\n        ],\n        \"expected_outcome\": \"Reduces total system delay to 0.9 minutes (improvement of 9.1% from baseline). Resolves headway violation through coordinated speed adjustments while maintaining safety constraints and operational feasibility. Affects 271.2 passengers with minimal service disruption.\",\n        \"reasoning\": \"Multi-objective evolutionary algorithm using Pareto dominance to simultaneously optimize conflicting goals (delay vs safety vs capacity). Non-dominated sorting ensures balanced solutions across all objectives, with crowding distance maintaining solution diversity. Achieves 100.0% recovery smoothness, minimizing operational disruption and maintaining schedule integrity. Implements 1 coordinated action(s) with verified constraint satisfaction and operational feasibility.\",\n        \"safety_score\": 0.98,\n        \"efficiency_score\": 0.545,\n        \"feasibility_score\": 0.75,\n        \"overall_fitness\": 0.758,\n        \"estimated_delay_min\": 0.9,\n        \"affected_trains\": [\n          \"REG_8894\"\n        ],\n        \"side_effects\": \"Minimal cascading effects (isolated resolution), Moderate passenger impact (271.2 affected), Simple implementation with minimal coordination overhead\",\n        \"algorithm_type\": \"optimization_nsga2\",\n        \"raw_data\": null\n      }\n    }\n  ]\n}",
+    "error": null
+  }
+}

@@ -1,0 +1,384 @@
+{
+  "status": "ok",
+  "conflict_id": "TEST-001",
+  "started_at": "2026-01-29T13:37:05.278060+00:00",
+  "finished_at": "2026-01-29T13:37:44.591047+00:00",
+  "total_execution_ms": 39313,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 32130,
+      "raw_result": {
+        "conflict_id": "TEST-001",
+        "conflict_summary": "",
+        "timestamp": "2026-01-29T14:37:37.404965",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [
+          {
+            "resolution_id": "algo_1",
+            "strategy_name": "Immediate speed reduction & hold (segment‑specific)",
+            "action_steps": [
+              "1. Send an immediate caution order to the following train (FR_002).",
+              "2. Instruct FR_002 to reduce speed to 60 km/h on the Milano – Pavia segment.",
+              "3. Command FR_002 to hold at the next signal (Pavia) until the minimum 180 s headway with REG_001 is re‑established.",
+              "4. Log the event and start a root‑cause investigation (dispatch error vs driver error).",
+              "5. After the hold, adjust the departure times of subsequent trains on the line to restore the normal headway pattern."
+            ],
+            "expected_outcome": "Safe separation of at least 180 seconds between REG_001 and FR_002, eliminating the rear‑end collision risk while adding only a short, controlled delay to FR_002.",
+            "reasoning": "The algorithm *synthetic_headway_rogoredo_pavia* deals with the exact same corridor (Milano‑Rogoredo → Pavia) and prescribes speed reduction plus a hold at the next signal to rebuild the headway. Because the conflict type and location match, the prescribed actions are directly applicable.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: synthetic_headway_rogoredo_pavia"
+            ],
+            "confidence_score": 0.875,
+            "algorithm_name": "synthetic_headway_rogoredo_pavia",
+            "algorithm_reasoning": "The algorithm *synthetic_headway_rogoredo_pavia* deals with the exact same corridor (Milano‑Rogoredo → Pavia) and prescribes speed reduction plus a hold at the next signal to rebuild the headway. Because the conflict type and location match, the prescribed actions are directly applicable.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_002",
+              "REG_001"
+            ],
+            "estimated_delay_reduction_sec": 20,
+            "side_effects": [],
+            "feasibility_score": 0.95,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "algo_2",
+            "strategy_name": "Generic headway‑violation mitigation",
+            "action_steps": [
+              "1. Issue an immediate caution to the following train (FR_002).",
+              "2. Reduce FR_002’s speed to a safe value (e.g., 60‑70 km/h) until the headway gap reaches the required minimum.",
+              "3. Hold FR_002 at the next available signal (Pavia) until the 180 s separation is achieved.",
+              "4. Conduct a quick diagnostic of signal status, driver input, and schedule alignment.",
+              "5. Update the departure schedule for downstream services to prevent repeat violations."
+            ],
+            "expected_outcome": "Restores the required headway, prevents a rear‑end incident, and limits the added delay to a few tens of seconds.",
+            "reasoning": "The *headway_violation_resolution_1* algorithm provides a universal set of steps for any headway breach. Although it is not corridor‑specific, its actions (caution, speed reduction, hold, investigation, schedule update) are fully compatible with the current conflict.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: headway_violation_resolution_1"
+            ],
+            "confidence_score": 0.815,
+            "algorithm_name": "headway_violation_resolution_1",
+            "algorithm_reasoning": "The *headway_violation_resolution_1* algorithm provides a universal set of steps for any headway breach. Although it is not corridor‑specific, its actions (caution, speed reduction, hold, investigation, schedule update) are fully compatible with the current conflict.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_002",
+              "REG_001"
+            ],
+            "estimated_delay_reduction_sec": 15,
+            "side_effects": [],
+            "feasibility_score": 0.85,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Adaptive Speed‑Buffer & Real‑Time Timetable Sync",
+            "action_steps": [
+              "1. Dispatch a Caution Order to FR_002 via the driver‑machine interface (DMI).",
+              "2. Apply a graduated speed‑reduction curve: 80 km/h → 70 km/h → 60 km/h as FR_002 approaches the Milano‑Pavia segment, calculated by the on‑board predictive headway module.",
+              "3. Simultaneously, the Traffic Management System (TMS) inserts a 30‑second buffer into the downstream timetable of FR_002 (and any following services) to absorb the reduced speed without propagating a cascade.",
+              "4. Broadcast the revised departure time to the driver, the control centre, and the next‑station dispatcher (Pavia) in real time.",
+              "5. Continuously monitor the separation using the ETCS Level 2 position reports; once the 180 s headway is re‑established, lift the speed restriction and restore the original line speed.",
+              "6. Log the event, flag the incident for post‑analysis, and close the loop by automatically updating the schedule database with the actual delay experienced."
+            ],
+            "expected_outcome": "The 180 s headway is restored within ~2 minutes while keeping FR_002 on the main line; downstream services experience only a small, pre‑planned buffer, preventing a ripple effect.",
+            "reasoning": "This hybrid merges the algorithmic immediate speed‑reduction/hold concept with the historical practice of proactive timetable smoothing. By using a real‑time buffer rather than a hard stop, we retain line capacity and limit the total delay, a tactic that proved effective in past Italian corridor incidents where early speed‑profile adjustments avoided full stops.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.792,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_002"
+            ],
+            "estimated_delay_reduction_sec": 100,
+            "side_effects": [
+              "Slight increase in fuel/energy consumption due to speed changes",
+              "Minor delay (≈30 s) imposed on downstream services",
+              "Higher driver workload for monitoring speed curve"
+            ],
+            "feasibility_score": 0.82,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        ],
+        "layer1_count": 3,
+        "layer2_refinements": {
+          "historical_cases_found": 10,
+          "algorithm_resolutions": 3,
+          "hybrid_resolutions_generated": 2,
+          "total_candidates_evaluated": 5,
+          "historical_success_rates": {
+            "total_cases": 10,
+            "average_similarity": 0.116559712,
+            "outcome_distribution": {
+              "resolved": 9,
+              "unknown": 1
+            }
+          }
+        },
+        "generation_time_sec": 26.492073
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 3
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 809,
+      "raw_result": {
+        "solver_used": "greedy",
+        "overall_fitness": 1.0,
+        "total_delay_min": 0,
+        "passenger_impact": 0,
+        "propagation_depth": 0,
+        "recovery_smoothness": 1.0,
+        "actions": [
+          {
+            "action_type": "hold",
+            "target_train_id": "FR_002",
+            "parameters": {
+              "hold_minutes": 2.5
+            }
+          },
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "REG_001",
+            "parameters": {
+              "speed_factor": 1.1
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: TEST-001\nType: headway\nSeverity: 0.75\nAffected trains: REG_001, FR_002\nAffected stations: MILANO CENTRALE, PAVIA\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using greedy):\n  1. HOLD - Train FR_002\n      hold_minutes: 2.50\n  2. SPEED_ADJUST - Train REG_001\n      speed_factor: 1.10\n\nExpected Outcomes:\n  - Total delay: 0.0 minutes\n  - Passenger impact: 0 passenger-minutes\n  - Propagation depth: 0 trains\n  - Recovery smoothness: 1.00\n  - Overall fitness: 1.000"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "ok",
+    "execution_ms": 7172,
+    "ranked_resolutions": [
+      {
+        "rank": 1,
+        "resolution_number": 4,
+        "resolution_id": "res4",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Hold FR_002 for 2.5 minutes",
+            "Speed up REG_001 by 10%"
+          ]
+        },
+        "overall_score": 100,
+        "safety_rating": 9.0,
+        "efficiency_rating": 5.0,
+        "feasibility_rating": 8.5,
+        "robustness_rating": 6.0,
+        "justification": "Provides the highest overall fitness with excellent safety and feasibility, and eliminates any net delay, though its efficiency is modest due to the hold time.",
+        "full_resolution": {
+          "resolution_id": "agent2_greedy",
+          "source_agent": "Agent 2 (Mathematical Solver)",
+          "strategy_name": "Fast Constructive Heuristic",
+          "actions": [
+            "Hold FR_002 for 2.5 minutes",
+            "Speed up REG_001 by 10%"
+          ],
+          "expected_outcome": "Reduces total system delay to 0.0 minutes (improvement of 0.0% from baseline). Resolves headway violation through coordinated speed adjustments while maintaining safety constraints and operational feasibility. Affects 0 passengers with minimal service disruption.",
+          "reasoning": "Fast constructive heuristic making locally optimal decisions at each step. Low computational overhead enables real-time deployment while maintaining acceptable solution quality. Particularly effective when immediate response is critical and solution space is well-structured. Achieves 100.0% recovery smoothness, minimizing operational disruption and maintaining schedule integrity. Implements 2 coordinated action(s) with verified constraint satisfaction and operational feasibility.",
+          "safety_score": 0.9000000000000001,
+          "efficiency_score": 0.5,
+          "feasibility_score": 0.8500000000000001,
+          "overall_fitness": 1.0,
+          "estimated_delay_min": 0,
+          "affected_trains": [
+            "FR_002",
+            "REG_001"
+          ],
+          "side_effects": [
+            "Minimal cascading effects (isolated resolution)",
+            "Simple implementation with minimal coordination overhead"
+          ],
+          "algorithm_type": "optimization_greedy",
+          "raw_data": {
+            "fitness": 1.0,
+            "total_delay_min": 0,
+            "original_delay_min": 0.0,
+            "num_actions": 2,
+            "passenger_impact": 0,
+            "propagation_depth": 0,
+            "recovery_smoothness": 1.0
+          }
+        }
+      },
+      {
+        "rank": 2,
+        "resolution_number": 1,
+        "resolution_id": "res1",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Send an immediate caution order to FR_002",
+            "Instruct FR_002 to reduce speed to 60 km/h on the Milano‑Pavia segment",
+            "Command FR_002 to hold at the next signal (Pavia) until the minimum 180 s headway with REG_001 is re‑established",
+            "Log the event and start a root‑cause investigation",
+            "After the hold, adjust the departure times of subsequent trains to restore the normal headway pattern"
+          ]
+        },
+        "overall_score": 88,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 9.5,
+        "robustness_rating": 7.0,
+        "justification": "High safety and feasibility with a corridor‑specific approach that quickly restores headway while keeping added delay minimal.",
+        "full_resolution": {
+          "resolution_id": "algo_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Immediate speed reduction & hold (segment‑specific)",
+          "actions": [
+            "1. Send an immediate caution order to the following train (FR_002).",
+            "2. Instruct FR_002 to reduce speed to 60 km/h on the Milano – Pavia segment.",
+            "3. Command FR_002 to hold at the next signal (Pavia) until the minimum 180 s headway with REG_001 is re‑established.",
+            "4. Log the event and start a root‑cause investigation (dispatch error vs driver error).",
+            "5. After the hold, adjust the departure times of subsequent trains on the line to restore the normal headway pattern."
+          ],
+          "expected_outcome": "Safe separation of at least 180 seconds between REG_001 and FR_002, eliminating the rear‑end collision risk while adding only a short, controlled delay to FR_002.",
+          "reasoning": "The algorithm *synthetic_headway_rogoredo_pavia* deals with the exact same corridor (Milano‑Rogoredo → Pavia) and prescribes speed reduction plus a hold at the next signal to rebuild the headway. Because the conflict type and location match, the prescribed actions are directly applicable.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.95,
+          "overall_fitness": 0.875,
+          "estimated_delay_min": 0.3333333333333333,
+          "affected_trains": [
+            "FR_002",
+            "REG_001"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_1",
+            "strategy_name": "Immediate speed reduction & hold (segment‑specific)",
+            "action_steps": [
+              "1. Send an immediate caution order to the following train (FR_002).",
+              "2. Instruct FR_002 to reduce speed to 60 km/h on the Milano – Pavia segment.",
+              "3. Command FR_002 to hold at the next signal (Pavia) until the minimum 180 s headway with REG_001 is re‑established.",
+              "4. Log the event and start a root‑cause investigation (dispatch error vs driver error).",
+              "5. After the hold, adjust the departure times of subsequent trains on the line to restore the normal headway pattern."
+            ],
+            "expected_outcome": "Safe separation of at least 180 seconds between REG_001 and FR_002, eliminating the rear‑end collision risk while adding only a short, controlled delay to FR_002.",
+            "reasoning": "The algorithm *synthetic_headway_rogoredo_pavia* deals with the exact same corridor (Milano‑Rogoredo → Pavia) and prescribes speed reduction plus a hold at the next signal to rebuild the headway. Because the conflict type and location match, the prescribed actions are directly applicable.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: synthetic_headway_rogoredo_pavia"
+            ],
+            "confidence_score": 0.875,
+            "algorithm_name": "synthetic_headway_rogoredo_pavia",
+            "algorithm_reasoning": "The algorithm *synthetic_headway_rogoredo_pavia* deals with the exact same corridor (Milano‑Rogoredo → Pavia) and prescribes speed reduction plus a hold at the next signal to rebuild the headway. Because the conflict type and location match, the prescribed actions are directly applicable.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_002",
+              "REG_001"
+            ],
+            "estimated_delay_reduction_sec": 20,
+            "side_effects": [],
+            "feasibility_score": 0.95,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      },
+      {
+        "rank": 3,
+        "resolution_number": 2,
+        "resolution_id": "res2",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Issue an immediate caution to FR_002",
+            "Reduce FR_002’s speed to a safe value (e.g., 60‑70 km/h) until the headway gap reaches the required minimum",
+            "Hold FR_002 at the next available signal (Pavia) until the 180 s separation is achieved",
+            "Conduct a quick diagnostic of signal status, driver input, and schedule alignment",
+            "Update the departure schedule for downstream services to prevent repeat violations"
+          ]
+        },
+        "overall_score": 82,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 8.5,
+        "robustness_rating": 6.5,
+        "justification": "A generic but fully compatible solution that maintains safety and good feasibility, with slightly lower robustness than the corridor‑specific option.",
+        "full_resolution": {
+          "resolution_id": "algo_2",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Generic headway‑violation mitigation",
+          "actions": [
+            "1. Issue an immediate caution to the following train (FR_002).",
+            "2. Reduce FR_002’s speed to a safe value (e.g., 60‑70 km/h) until the headway gap reaches the required minimum.",
+            "3. Hold FR_002 at the next available signal (Pavia) until the 180 s separation is achieved.",
+            "4. Conduct a quick diagnostic of signal status, driver input, and schedule alignment.",
+            "5. Update the departure schedule for downstream services to prevent repeat violations."
+          ],
+          "expected_outcome": "Restores the required headway, prevents a rear‑end incident, and limits the added delay to a few tens of seconds.",
+          "reasoning": "The *headway_violation_resolution_1* algorithm provides a universal set of steps for any headway breach. Although it is not corridor‑specific, its actions (caution, speed reduction, hold, investigation, schedule update) are fully compatible with the current conflict.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.85,
+          "overall_fitness": 0.815,
+          "estimated_delay_min": 0.25,
+          "affected_trains": [
+            "FR_002",
+            "REG_001"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_2",
+            "strategy_name": "Generic headway‑violation mitigation",
+            "action_steps": [
+              "1. Issue an immediate caution to the following train (FR_002).",
+              "2. Reduce FR_002’s speed to a safe value (e.g., 60‑70 km/h) until the headway gap reaches the required minimum.",
+              "3. Hold FR_002 at the next available signal (Pavia) until the 180 s separation is achieved.",
+              "4. Conduct a quick diagnostic of signal status, driver input, and schedule alignment.",
+              "5. Update the departure schedule for downstream services to prevent repeat violations."
+            ],
+            "expected_outcome": "Restores the required headway, prevents a rear‑end incident, and limits the added delay to a few tens of seconds.",
+            "reasoning": "The *headway_violation_resolution_1* algorithm provides a universal set of steps for any headway breach. Although it is not corridor‑specific, its actions (caution, speed reduction, hold, investigation, schedule update) are fully compatible with the current conflict.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: headway_violation_resolution_1"
+            ],
+            "confidence_score": 0.815,
+            "algorithm_name": "headway_violation_resolution_1",
+            "algorithm_reasoning": "The *headway_violation_resolution_1* algorithm provides a universal set of steps for any headway breach. Although it is not corridor‑specific, its actions (caution, speed reduction, hold, investigation, schedule update) are fully compatible with the current conflict.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_002",
+              "REG_001"
+            ],
+            "estimated_delay_reduction_sec": 15,
+            "side_effects": [],
+            "feasibility_score": 0.85,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      }
+    ],
+    "raw_llm_response": "{\n  \"ranked_resolutions\": [\n    {\n      \"rank\": 1,\n      \"resolution_number\": 4,\n      \"resolution_id\": \"res4\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Hold FR_002 for 2.5 minutes\",\n          \"Speed up REG_001 by 10%\"\n        ]\n      },\n      \"overall_score\": 100,\n      \"safety_rating\": 9.0,\n      \"efficiency_rating\": 5.0,\n      \"feasibility_rating\": 8.5,\n      \"robustness_rating\": 6.0,\n      \"justification\": \"Provides the highest overall fitness with excellent safety and feasibility, and eliminates any net delay, though its efficiency is modest due to the hold time.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"res4\",\n        \"source_agent\": \"Agent 2\",\n        \"strategy_name\": \"fast_constructive_heuristic\",\n        \"actions\": [\n          \"Hold FR_002 for 2.5 minutes\",\n          \"Speed up REG_001 by 10%\"\n        ],\n        \"expected_outcome\": \"Reduces total system delay to 0.0 minutes (improvement of 0.0% from baseline). Resolves headway violation through coordinated speed adjustments while maintaining safety constraints and operational feasibility. Affects 0 passengers with minimal service disruption.\",\n        \"reasoning\": \"Fast constructive heuristic making locally optimal decisions at each step. Low computational overhead enables real-time deployment while maintaining acceptable solution quality. Particularly effective when immediate response is critical and solution space is well-structured. Achieves 100.0% recovery smoothness, minimizing operational disruption and maintaining schedule integrity. Implements 2 coordinated action(s) with verified constraint satisfaction and operational feasibility.\",\n        \"safety_score\": 0.9,\n        \"efficiency_score\": 0.5,\n        \"feasibility_score\": 0.85,\n        \"overall_fitness\": 1.0,\n        \"estimated_delay_min\": 0.0,\n        \"affected_trains\": [\"REG_001\", \"FR_002\"],\n        \"side_effects\": \"Minimal cascading effects (isolated resolution), Simple implementation with minimal coordination overhead\",\n        \"algorithm_type\": \"optimization_greedy\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 2,\n      \"resolution_number\": 1,\n      \"resolution_id\": \"res1\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Send an immediate caution order to FR_002\",\n          \"Instruct FR_002 to reduce speed to 60 km/h on the Milano‑Pavia segment\",\n          \"Command FR_002 to hold at the next signal (Pavia) until the minimum 180 s headway with REG_001 is re‑established\",\n          \"Log the event and start a root‑cause investigation\",\n          \"After the hold, adjust the departure times of subsequent trains to restore the normal headway pattern\"\n        ]\n      },\n      \"overall_score\": 88,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 9.5,\n      \"robustness_rating\": 7.0,\n      \"justification\": \"High safety and feasibility with a corridor‑specific approach that quickly restores headway while keeping added delay minimal.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"res1\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"synthetic_headway_rogoredo_pavia\",\n        \"actions\": [\n          \"Send an immediate caution order to the following train (FR_002).\",\n          \"Instruct FR_002 to reduce speed to 60 km/h on the Milano – Pavia segment.\",\n          \"Command FR_002 to hold at the next signal (Pavia) until the minimum 180 s headway with REG_001 is re‑established.\",\n          \"Log the event and start a root‑cause investigation (dispatch error vs driver error).\",\n          \"After the hold, adjust the departure times of subsequent trains on the line to restore the normal headway pattern.\"\n        ],\n        \"expected_outcome\": \"Safe separation of at least 180 seconds between REG_001 and FR_002, eliminating the rear‑end collision risk while adding only a short, controlled delay to FR_002.\",\n        \"reasoning\": \"The algorithm synthetic_headway_rogoredo_pavia deals with the exact same corridor (Milano‑Rogoredo → Pavia) and prescribes speed reduction plus a hold at the next signal to rebuild the headway. Because the conflict type and location match, the prescribed actions are directly applicable.\",\n        \"safety_score\": 0.8,\n        \"efficiency_score\": 0.7,\n        \"feasibility_score\": 0.95,\n        \"overall_fitness\": 0.875,\n        \"estimated_delay_min\": 0.3,\n        \"affected_trains\": [\"REG_001\", \"FR_002\"],\n        \"side_effects\": \"None\",\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 3,\n      \"resolution_number\": 2,\n      \"resolution_id\": \"res2\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Issue an immediate caution to FR_002\",\n          \"Reduce FR_002’s speed to a safe value (e.g., 60‑70 km/h) until the headway gap reaches the required minimum\",\n          \"Hold FR_002 at the next available signal (Pavia) until the 180 s separation is achieved\",\n          \"Conduct a quick diagnostic of signal status, driver input, and schedule alignment\",\n          \"Update the departure schedule for downstream services to prevent repeat violations\"\n        ]\n      },\n      \"overall_score\": 82,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 8.5,\n      \"robustness_rating\": 6.5,\n      \"justification\": \"A generic but fully compatible solution that maintains safety and good feasibility, with slightly lower robustness than the corridor‑specific option.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"res2\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"headway_violation_resolution_1\",\n        \"actions\": [\n          \"Issue an immediate caution to the following train (FR_002).\",\n          \"Reduce FR_002’s speed to a safe value (e.g., 60‑70 km/h) until the headway gap reaches the required minimum.\",\n          \"Hold FR_002 at the next available signal (Pavia) until the 180 s separation is achieved.\",\n          \"Conduct a quick diagnostic of signal status, driver input, and schedule alignment.\",\n          \"Update the departure schedule for downstream services to prevent repeat violations.\"\n        ],\n        \"expected_outcome\": \"Restores the required headway, prevents a rear‑end incident, and limits the added delay to a few tens of seconds.\",\n        \"reasoning\": \"The headway_violation_resolution_1 algorithm provides a universal set of steps for any headway breach. Although it is not corridor‑specific, its actions (caution, speed reduction, hold, investigation, schedule update) are fully compatible with the current conflict.\",\n        \"safety_score\": 0.8,\n        \"efficiency_score\": 0.7,\n        \"feasibility_score\": 0.85,\n        \"overall_fitness\": 0.815,\n        \"estimated_delay_min\": 0.2,\n        \"affected_trains\": [\"REG_001\", \"FR_002\"],\n        \"side_effects\": \"None\",\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    }\n  ]\n}",
+    "error": null
+  }
+}

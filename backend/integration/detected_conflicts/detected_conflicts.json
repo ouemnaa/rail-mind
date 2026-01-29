@@ -1,9 +1,9 @@
 {
   "file_info": {
     "description": "All detected conflicts from simulation",
-    "last_updated": "2026-01-29T12:52:20.068507",
-    "total_conflicts": 13,
-    "unresolved_count": 13,
+    "last_updated": "2026-01-29T14:02:50.295050",
+    "total_conflicts": 15,
+    "unresolved_count": 15,
     "resolved_count": 0
   },
   "conflicts": [
@@ -4124,6 +4124,295 @@
         "timestamp": "2026-01-29T06:50:00.422739",
         "tick_number": 50,
         "simulation_time": "2026-01-29T06:50:00.422739"
+      },
+      "conflict": {
+        "type": "track_fault",
+        "severity": "critical",
+        "probability": 0.86,
+        "location": "MILANO LAMBRATE--TREVIGLIO",
+        "location_type": "edge",
+        "explanation": "🛤️ DEFECTIVE TRACK detected by Vision AI | Edge: MILANO LAMBRATE--TREVIGLIO | Confidence: 86% | Track CLOSED for 45min repair",
+        "resolution_suggestions": [
+          "⚠️ Immediate track closure required",
+          "Dispatch maintenance team to MILANO LAMBRATE--TREVIGLIO",
+          "Estimated repair time: 45 minutes",
+          "Reroute all trains via alternate path"
+        ]
+      },
+      "affected_trains": [],
+      "network_context": {},
+      "status": "unresolved"
+    },
+    {
+      "metadata": {
+        "conflict_id": "2c172e94-b86a-4192-bc09-f7fa9b96166c",
+        "timestamp": "2026-01-29T13:43:08.536478",
+        "tick_number": 20,
+        "simulation_time": "2026-01-29T06:20:00.780659"
+      },
+      "conflict": {
+        "type": "edge_capacity_overflow",
+        "severity": "medium",
+        "probability": 1.0,
+        "location": "PAVIA--MILANO CENTRALE",
+        "location_type": "edge",
+        "explanation": "🚨 EDGE OVERLOAD at PAVIA--MILANO CENTRALE | Trains involved: IC_1539, REG_22613, FR_9752 (+1 more) | Edge PAVIA--MILANO CENTRALE has 4 trains but capacity is 3. Overflow ratio: 1.3x",
+        "resolution_suggestions": [
+          "Hold trains at previous station",
+          "Reroute via alternative track",
+          "Reduce speed to create spacing"
+        ]
+      },
+      "affected_trains": [
+        {
+          "train_id": "IC_1539",
+          "train_type": "intercity",
+          "current_station": null,
+          "next_station": "MILANO CENTRALE",
+          "current_edge": "PAVIA--MILANO CENTRALE",
+          "position_km": 4.0,
+          "speed_kmh": 120,
+          "delay_sec": 119,
+          "status": "en_route",
+          "lat": 45.22447222155689,
+          "lon": 9.151842143712575,
+          "route": [
+            {
+              "station_name": "VOGHERA",
+              "station_order": 3,
+              "lat": 44.9978,
+              "lon": 9.007942,
+              "distance_from_previous_km": 64.82
+            },
+            {
+              "station_name": "PAVIA",
+              "station_order": 4,
+              "lat": 45.188843,
+              "lon": 9.144674,
+              "distance_from_previous_km": 23.8
+            },
+            {
+              "station_name": "MILANO CENTRALE",
+              "station_order": 5,
+              "lat": 45.486347,
+              "lon": 9.204528,
+              "distance_from_previous_km": 33.4
+            }
+          ],
+          "current_stop_index": 1
+        },
+        {
+          "train_id": "REG_22613",
+          "train_type": "regional",
+          "current_station": null,
+          "next_station": "PALAZZOLO M.SE",
+          "current_edge": "PAVIA--MILANO CENTRALE",
+          "position_km": 3.1333333333333333,
+          "speed_kmh": 20,
+          "delay_sec": 0,
+          "status": "en_route",
+          "lat": 45.593239185404336,
+          "lon": 9.158552122287968,
+          "route": [
+            {
+              "station_name": "MILANO BOVISA",
+              "station_order": 1,
+              "lat": 45.502546,
+              "lon": 9.15928,
+              "distance_from_previous_km": 0.0
+            },
+            {
+              "station_name": "M.N. AFFORI",
+              "station_order": 2,
+              "lat": 45.521382,
+              "lon": 9.167436,
+              "distance_from_previous_km": 2.19
+            },
+            {
+              "station_name": "M.N. BRUZZANO",
+              "station_order": 3,
+              "lat": 45.533807,
+              "lon": 9.1724,
+              "distance_from_previous_km": 1.43
+            },
+            {
+              "station_name": "CORMANO-CUSANO MILANINO",
+              "station_order": 4,
+              "lat": 45.545793,
+              "lon": 9.174415,
+              "distance_from_previous_km": 1.34
+            },
+            {
+              "station_name": "PADERNO DUGNANO",
+              "station_order": 5,
+              "lat": 45.565133,
+              "lon": 9.161958,
+              "distance_from_previous_km": 2.36
+            },
+            {
+              "station_name": "PALAZZOLO M.SE",
+              "station_order": 6,
+              "lat": 45.5954518,
+              "lon": 9.158284,
+              "distance_from_previous_km": 3.38
+            },
+            {
+              "station_name": "VAREDO",
+              "station_order": 7,
+              "lat": 45.595667,
+              "lon": 9.15379,
+              "distance_from_previous_km": 0.35
+            },
+            {
+              "station_name": "BOVISIO M. - MOMBELLO",
+              "station_order": 8,
+              "lat": 45.612932,
+              "lon": 9.141506,
+              "distance_from_previous_km": 2.14
+            },
+            {
+              "station_name": "CESANO MADERNO",
+              "station_order": 9,
+              "lat": 45.630862,
+              "lon": 9.142905,
+              "distance_from_previous_km": 2.0
+            },
+            {
+              "station_name": "SEVESO",
+              "station_order": 10,
+              "lat": 45.648187,
+              "lon": 9.140488,
+              "distance_from_previous_km": 1.93
+            }
+          ],
+          "current_stop_index": 4
+        },
+        {
+          "train_id": "FR_9752",
+          "train_type": "high_speed",
+          "current_station": null,
+          "next_station": "MILANO CENTRALE",
+          "current_edge": "PAVIA--MILANO CENTRALE",
+          "position_km": 3.9333333333333336,
+          "speed_kmh": 20,
+          "delay_sec": 0,
+          "status": "en_route",
+          "lat": 45.53002513846673,
+          "lon": 10.16260028976697,
+          "route": [
+            {
+              "station_name": "BRESCIA",
+              "station_order": 7,
+              "lat": 45.532315,
+              "lon": 10.212828,
+              "distance_from_previous_km": 42.1
+            },
+            {
+              "station_name": "MILANO CENTRALE",
+              "station_order": 8,
+              "lat": 45.486347,
+              "lon": 9.204528,
+              "distance_from_previous_km": 78.96
+            }
+          ],
+          "current_stop_index": 0
+        },
+        {
+          "train_id": "REG_2553",
+          "train_type": "regional",
+          "current_station": null,
+          "next_station": "ARCISATE",
+          "current_edge": "PAVIA--MILANO CENTRALE",
+          "position_km": 4.733333333333333,
+          "speed_kmh": 20,
+          "delay_sec": 0,
+          "status": "en_route",
+          "lat": 45.86537390264942,
+          "lon": 8.87654884288355,
+          "route": [
+            {
+              "station_name": "PORTO CERESIO",
+              "station_order": 1,
+              "lat": 45.903675,
+              "lon": 8.900357,
+              "distance_from_previous_km": 4.18
+            },
+            {
+              "station_name": "BISUSCHIO VIGGIU",
+              "station_order": 2,
+              "lat": 45.870658,
+              "lon": 8.887544,
+              "distance_from_previous_km": 8.32
+            },
+            {
+              "station_name": "ARCISATE",
+              "station_order": 3,
+              "lat": 45.858579,
+              "lon": 8.86241,
+              "distance_from_previous_km": 10.82
+            },
+            {
+              "station_name": "INDUNO OLONA",
+              "station_order": 4,
+              "lat": 45.846432,
+              "lon": 8.838357,
+              "distance_from_previous_km": 3.91
+            },
+            {
+              "station_name": "VARESE",
+              "station_order": 5,
+              "lat": 45.816201,
+              "lon": 8.833089,
+              "distance_from_previous_km": 12.46
+            },
+            {
+              "station_name": "GALLARATE",
+              "station_order": 6,
+              "lat": 45.659828,
+              "lon": 8.798243,
+              "distance_from_previous_km": 0.76
+            },
+            {
+              "station_name": "BUSTO ARSIZIO",
+              "station_order": 7,
+              "lat": 45.616164,
+              "lon": 8.865031,
+              "distance_from_previous_km": 0.57
+            },
+            {
+              "station_name": "LEGNANO",
+              "station_order": 8,
+              "lat": 45.593653,
+              "lon": 8.910638,
+              "distance_from_previous_km": 1.43
+            },
+            {
+              "station_name": "RHO FIERA MILANO",
+              "station_order": 9,
+              "lat": 45.521157,
+              "lon": 9.088595,
+              "distance_from_previous_km": 23.11
+            },
+            {
+              "station_name": "MILANO PORTA GARIBALDI",
+              "station_order": 10,
+              "lat": 45.484917,
+              "lon": 9.187683,
+              "distance_from_previous_km": 7.97
+            }
+          ],
+          "current_stop_index": 1
+        }
+      ],
+      "network_context": {},
+      "status": "unresolved"
+    },
+    {
+      "metadata": {
+        "conflict_id": "TF-20260129140250",
+        "timestamp": "2026-01-29T06:50:00.780659",
+        "tick_number": 50,
+        "simulation_time": "2026-01-29T06:50:00.780659"
       },
       "conflict": {
         "type": "track_fault",

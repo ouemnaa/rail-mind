@@ -36,18 +36,22 @@ export function ExplanationView({ onBack }: ExplanationViewProps) {
   const activeConflict = location.state?.activeConflict;
 
   const handleBack = () => {
-    navigate("/resolution", { state: { resolutionResult, activeConflict } });
+    if (activeConflict?.conflict_id) {
+      navigate(`/resolution/${activeConflict.conflict_id}`, { state: { resolutionResult, activeConflict } });
+    } else {
+      navigate("/resolution");
+    }
   };
 
   // Map dynamic data or use defaults
   const displayTitle = resolutionData?.title || "Decision Engineering";
   const displayJustification = resolutionData?.description || resolutionData?.justification || "The recommended resolution has been successfully applied in 12 out of 14 similar historical cases, representing an 86% success rate.";
-  
+
   // Create dynamic similarity breakdown if possible, otherwise use sample
   const displaySimilarity = [
     { label: 'Neural Matching', value: resolutionData?.overallScore ? Math.round(resolutionData.overallScore) : 94, description: 'Neural network pattern matching with historical resolutions' },
-    { label: 'Safety Rating', value: resolutionData?.safetyChecks ? 92 : 87, description: 'Evaluation of safety constraints and signal clearance' },
-    { label: 'Efficiency Index', value: resolutionData?.delayReduction ? Math.min(95, 80 + resolutionData.delayReduction) : 91, description: 'Calculation of delay reduction effectiveness' },
+    { label: 'Safety Rating', value: resolutionData?.safetyRating ? Math.round(resolutionData.safetyRating * 10) : 92, description: 'Evaluation of safety constraints and signal clearance' },
+    { label: 'Efficiency Index', value: resolutionData?.efficiencyRating ? Math.round(resolutionData.efficiencyRating * 10) : 91, description: 'Calculation of delay reduction effectiveness' },
   ];
 
   const compositeScore = resolutionData?.overallScore || 91.4;
@@ -57,10 +61,10 @@ export function ExplanationView({ onBack }: ExplanationViewProps) {
       {/* Premium Header */}
       <div className="flex items-center justify-between gap-6">
         <div className="flex items-center gap-6">
-          <Button 
-            variant="outline" 
-            size="icon" 
-            onClick={handleBack} 
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleBack}
             className="w-14 h-14 rounded-2xl border-primary/20 bg-primary/5 hover:bg-primary/10 transition-all shrink-0"
           >
             <ArrowLeft className="w-6 h-6 text-primary" />
@@ -114,9 +118,9 @@ export function ExplanationView({ onBack }: ExplanationViewProps) {
                     <span className="text-sm font-mono font-black text-primary bg-primary/10 px-2 py-0.5 rounded">{item.value}%</span>
                   </div>
                   <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden mb-2">
-                    <div 
-                      className="h-full bg-primary transition-all duration-1000 ease-out" 
-                      style={{ width: `${item.value}%` }} 
+                    <div
+                      className="h-full bg-primary transition-all duration-1000 ease-out"
+                      style={{ width: `${item.value}%` }}
                     />
                   </div>
                   <p className="text-[11px] text-muted-foreground leading-tight px-1">{item.description}</p>
@@ -146,9 +150,8 @@ export function ExplanationView({ onBack }: ExplanationViewProps) {
             <div className="space-y-3">
               {resolutionData?.safetyChecks ? (
                 resolutionData.safetyChecks.map((check: any, i: number) => (
-                  <div key={i} className={`flex items-center justify-between p-3 border rounded-xl transition-all ${
-                    check.passed ? 'bg-success/5 border-success/20 hover:bg-success/10' : 'bg-destructive/5 border-destructive/20 hover:bg-destructive/10'
-                  }`}>
+                  <div key={i} className={`flex items-center justify-between p-3 border rounded-xl transition-all ${check.passed ? 'bg-success/5 border-success/20 hover:bg-success/10' : 'bg-destructive/5 border-destructive/20 hover:bg-destructive/10'
+                    }`}>
                     <div className="flex items-center gap-3">
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${check.passed ? 'bg-success/20' : 'bg-destructive/20'}`}>
                         {check.passed ? <CheckCircle className="w-4 h-4 text-success" /> : <XCircle className="w-4 h-4 text-destructive" />}
@@ -190,85 +193,94 @@ export function ExplanationView({ onBack }: ExplanationViewProps) {
         <div className="lg:col-span-8 space-y-6">
           {/* Main Confidence Statement */}
           <div className="glass-panel p-8 bg-gradient-to-br from-card/80 to-primary/5 transition-all hover:shadow-2xl hover:shadow-primary/5">
-             <div className="flex items-center gap-3 mb-6">
-               <div className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center border border-accent/20">
-                 <FileText className="w-6 h-6 text-accent" />
-               </div>
-               <h3 className="font-bold tracking-tight text-xl">LLM Judge Justification</h3>
-             </div>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center border border-accent/20">
+                <FileText className="w-6 h-6 text-accent" />
+              </div>
+              <h3 className="font-bold tracking-tight text-xl">LLM Judge Justification</h3>
+            </div>
 
-             <div className="p-6 bg-background/60 backdrop-blur-md rounded-2xl border border-border/50 relative overflow-hidden group min-h-[160px]">
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                  <Brain className="w-24 h-24" />
-                </div>
-                <p className="text-lg leading-relaxed text-foreground/90 relative z-10">
-                  {displayJustification}
-                </p>
-             </div>
+            <div className="p-6 bg-background/60 backdrop-blur-md rounded-2xl border border-border/50 relative overflow-hidden group min-h-[160px]">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <Brain className="w-24 h-24" />
+              </div>
+              <p className="text-lg leading-relaxed text-foreground/90 relative z-10">
+                {displayJustification}
+              </p>
+            </div>
 
-             {resolutionData?.actions && resolutionData.actions.length > 0 && (
-               <div className="mt-8">
-                  <h4 className="text-sm font-bold uppercase tracking-widest text-primary mb-4">Strategic Execution Steps</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {resolutionData.actions.map((action: string, i: number) => (
-                      <div key={i} className="flex gap-4 p-4 bg-primary/5 rounded-xl border border-primary/10">
-                        <span className="text-primary font-black text-xl opacity-40 italic">0{i+1}</span>
-                        <p className="text-sm font-medium">{action}</p>
-                      </div>
-                    ))}
-                  </div>
-               </div>
-             )}
+            {resolutionData?.actions && resolutionData.actions.length > 0 && (
+              <div className="mt-8">
+                <h4 className="text-sm font-bold uppercase tracking-widest text-primary mb-4">Strategic Execution Steps</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {resolutionData.actions.map((action: string, i: number) => (
+                    <div key={i} className="flex gap-4 p-4 bg-primary/5 rounded-xl border border-primary/10">
+                      <span className="text-primary font-black text-xl opacity-40 italic">0{i + 1}</span>
+                      <p className="text-sm font-medium">{action}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
-             <div className="mt-8 flex flex-wrap gap-6 pt-6 border-t border-border/50">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-muted-foreground uppercase font-black tracking-tighter">Delay Impact</span>
-                  <span className="text-sm font-bold text-success">-{resolutionData?.delayReduction || 8} MIN SAVINGS</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-muted-foreground uppercase font-black tracking-tighter">Source Agent</span>
-                  <span className="text-sm font-bold text-primary">{resolutionData?.sourceAgent || 'HYBRID RAG'}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-muted-foreground uppercase font-black tracking-tighter">Traceability</span>
-                  <span className="text-sm font-bold text-accent font-mono uppercase">100% AUDITABLE</span>
-                </div>
-             </div>
+            <div className="mt-8 flex flex-wrap gap-6 pt-6 border-t border-border/50">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-muted-foreground uppercase font-black tracking-tighter">Delay Impact</span>
+                <span className="text-sm font-bold text-success">-{resolutionData?.delayReduction || 8} MIN SAVINGS</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-muted-foreground uppercase font-black tracking-tighter">Source Agent</span>
+                <span className="text-sm font-bold text-primary">{resolutionData?.sourceAgent || 'HYBRID RAG'}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-muted-foreground uppercase font-black tracking-tighter">Traceability</span>
+                <span className="text-sm font-bold text-accent font-mono uppercase">100% AUDITABLE</span>
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Factors Considered */}
             <div className="glass-panel p-6 border-l-4 border-l-success">
               <div className="flex items-center gap-3 mb-5">
-                <CheckCircle className="w-5 h-5 text-success" />
-                <h3 className="font-bold uppercase tracking-wider text-sm opacity-70">Inclusion Logic</h3>
+                <div className="w-5 h-5 rounded-full bg-success/10 flex items-center justify-center">
+                  <Network className="w-3 h-3 text-success" />
+                </div>
+                <h3 className="font-bold uppercase tracking-wider text-sm opacity-70">Affected Assets</h3>
               </div>
               <div className="space-y-4">
-                {includedFactors.map((factor, i) => (
-                  <div key={i} className="flex items-center gap-3 group">
-                    <div className="w-1.5 h-1.5 rounded-full bg-success group-hover:scale-150 transition-transform" />
-                    <span className="text-sm font-medium opacity-90">{factor}</span>
-                  </div>
-                ))}
+                {resolutionData?.affectedTrains && resolutionData.affectedTrains.length > 0 ? (
+                  resolutionData.affectedTrains.map((train: string, i: number) => (
+                    <div key={i} className="flex items-center gap-3 group">
+                      <div className="w-1.5 h-1.5 rounded-full bg-success group-hover:scale-150 transition-transform" />
+                      <span className="text-sm font-medium opacity-90">{train}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-sm text-muted-foreground italic">No specific assets identified.</div>
+                )}
               </div>
             </div>
 
             {/* Factors Excluded */}
-            <div className="glass-panel p-6 border-l-4 border-l-muted-foreground/30">
+            <div className="glass-panel p-6 border-l-4 border-l-orange-500/30">
               <div className="flex items-center gap-3 mb-5">
-                <XCircle className="w-5 h-5 text-muted-foreground" />
-                <h3 className="font-bold uppercase tracking-wider text-sm opacity-70">Pruning Logic</h3>
+                <AlertTriangle className="w-5 h-5 text-orange-500" />
+                <h3 className="font-bold uppercase tracking-wider text-sm opacity-70">Risk Factors & Side Effects</h3>
               </div>
               <div className="space-y-3">
-                {excludedFactors.map((item, i) => (
-                  <div key={i} className="p-3 bg-muted/20 rounded-xl border border-border/30 hover:bg-muted/30 transition-colors">
-                    <div className="flex items-center gap-2 text-xs font-black text-muted-foreground uppercase mb-1">
-                      <AlertTriangle className="w-3 h-3" />
-                      {item.factor}
+                {resolutionData?.sideEffects && resolutionData.sideEffects.length > 0 ? (
+                  resolutionData.sideEffects.map((effect: string, i: number) => (
+                    <div key={i} className="p-3 bg-muted/20 rounded-xl border border-border/30 hover:bg-muted/30 transition-colors">
+                      <div className="flex items-start gap-2">
+                        <span className="text-orange-500 mt-0.5">•</span>
+                        <p className="text-[11px] text-muted-foreground leading-relaxed font-medium">{effect}</p>
+                      </div>
                     </div>
-                    <p className="text-[11px] text-muted-foreground leading-relaxed italic">{item.reason}</p>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <div className="text-sm text-muted-foreground italic">No significant side effects detected.</div>
+                )}
               </div>
             </div>
           </div>

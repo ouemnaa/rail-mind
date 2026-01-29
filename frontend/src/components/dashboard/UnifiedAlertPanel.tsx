@@ -114,7 +114,35 @@ function ConflictCard({
           {/* Resolution Button */}
           <div className="mt-2 flex justify-end">
             <Button
-              onClick={() => navigate(`/resolution/${conflict.conflict_id}`, { state: { activeConflict: conflict } })}
+              onClick={() => {
+                const severityMap = {
+                  low: 0.25,
+                  medium: 0.5,
+                  high: 0.75,
+                  critical: 0.95,
+                };
+
+                // Mock delay values
+                const delay_values: Record<string, number> = {};
+                conflict.involved_trains.forEach((t) => {
+                  delay_values[t] = Math.round((Math.random() * 5 + 1) * 10) / 10;
+                });
+
+                const conflictData = {
+                  conflict_id: conflict.conflict_id,
+                  conflict_type: conflict.conflict_type,
+                  station_ids: [conflict.location],
+                  train_ids: conflict.involved_trains,
+                  delay_values,
+                  timestamp: Date.now() / 1000,
+                  severity: severityMap[conflict.severity as keyof typeof severityMap] || 0.5,
+                  blocking_behavior: "soft",
+                };
+
+                navigate(`/resolution/${conflict.conflict_id}`, {
+                  state: { activeConflict: conflictData },
+                });
+              }}
               size="sm"
               className="bg-blue-600 hover:bg-blue-700"
             >
