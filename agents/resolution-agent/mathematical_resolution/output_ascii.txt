@@ -1,0 +1,118 @@
+Traceback (most recent call last):
+  File "C:\rail-mind\agents\resolution-agent\mathematical_resolution\example_nour.py", line 362, in <module>
+    main()
+    ~~~~^^
+  File "C:\rail-mind\agents\resolution-agent\mathematical_resolution\example_nour.py", line 317, in main
+    plan = resolve_single_conflict(
+        conflict, context, similar, lombardy_data, config
+    )
+  File "C:\rail-mind\agents\resolution-agent\mathematical_resolution\example_nour.py", line 216, in resolve_single_conflict
+    plans = orchestrator.resolve(
+        conflict=conflict,
+    ...<3 lines>...
+        similar_cases=similar_cases
+    )
+  File "C:\rail-mind\agents\resolution-agent\mathematical_resolution\orchestrator.py", line 120, in resolve
+    plan = self._run_solver(solver_type, conflict, context, adjacency)
+  File "C:\rail-mind\agents\resolution-agent\mathematical_resolution\orchestrator.py", line 325, in _run_solver
+    return solver.solve(conflict, context, adjacency)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\rail-mind\agents\resolution-agent\mathematical_resolution\math.py", line 1906, in solve
+    population = self._initialize_population(conflict)
+  File "C:\rail-mind\agents\resolution-agent\mathematical_resolution\math.py", line 1962, in _initialize_population
+    num_actions = random.randint(1, len(conflict.train_ids))
+  File "C:\Users\user\AppData\Local\Programs\Python\Python313\Lib\random.py", line 340, in randint
+    return self.randrange(a, b+1)
+           ~~~~~~~~~~~~~~^^^^^^^^
+  File "C:\Users\user\AppData\Local\Programs\Python\Python313\Lib\random.py", line 323, in randrange
+    raise ValueError(f"empty range in randrange({start}, {stop})")
+ValueError: empty range in randrange(1, 1)
+======================================================================
+  RAIL BRAIN - Conflict Resolution from nour.json
+======================================================================
+
+[DATA] Loading conflicts from: C:\rail-mind\backend\integration\detected_conflicts\detected_conflicts.json
+=== 11 CONFLICTS LOADED ===
+
+1. [conflict] UNKNOWN (severity: 0.50)
+  Trains: 
+  Stations: 
+  Delays: 
+
+2. [conflict] UNKNOWN (severity: 0.50)
+  Trains: 
+  Stations: 
+  Delays: 
+
+3. [conflict] UNKNOWN (severity: 0.50)
+  Trains: 
+  Stations: 
+  Delays: 
+
+4. [conflict] UNKNOWN (severity: 0.50)
+  Trains: 
+  Stations: 
+  Delays: 
+
+5. [conflict] UNKNOWN (severity: 0.50)
+  Trains: 
+  Stations: 
+  Delays: 
+
+6. [conflict] UNKNOWN (severity: 0.50)
+  Trains: 
+  Stations: 
+  Delays: 
+
+7. [conflict] UNKNOWN (severity: 0.50)
+  Trains: 
+  Stations: 
+  Delays: 
+
+8. [conflict] UNKNOWN (severity: 0.50)
+  Trains: 
+  Stations: 
+  Delays: 
+
+9. [conflict] UNKNOWN (severity: 0.50)
+  Trains: 
+  Stations: 
+  Delays: 
+
+10. [conflict] UNKNOWN (severity: 0.50)
+  Trains: 
+  Stations: 
+  Delays: 
+
+11. [conflict] UNKNOWN (severity: 0.50)
+  Trains: 
+  Stations: 
+  Delays: 
+
+
+[INFO] Loading Lombardy network data...
+   DEBUG: Loading Lombardy data from C:\rail-mind\creating-context\lombardy_simulation_data.json
+   DEBUG: File starts with: '{\n  "trains": [\n    {\n      "train_id": "IC_1539",\n      "train_type": "intercity",\n      "route_id"'
+   DEBUG: Type of loaded data: <class 'dict'>
+   DEBUG: lombardy_data type: <class 'dict'>
+   DEBUG: lombardy_data keys: ['trains', 'stations', 'rails']
+   Loaded 288 trains
+
+[INFO] Loaded 3 historical cases for CBR
+
+⚙️  Config: run_all_solvers=True, quantum=enabled
+
+######################################################################
+# CONFLICT 1/11
+######################################################################
+
+============================================================
+RESOLVING: [conflict] UNKNOWN (severity: 0.50)
+  Trains: 
+  Stations: 
+  Delays: 
+============================================================
+  [DEBUG] Running all solvers...
+    - greedy: fitness=0.000, actions=0, delay=0.0min
+    - lns: fitness=0.000, actions=0, delay=0.0min
+    - simulated_annealing: fitness=0.000, actions=0, delay=0.0min

@@ -109,44 +109,89 @@ def extract_delays_from_metadata(
 
 def convert_conflict(raw: Dict) -> Conflict:
     """
-    Convert a single raw conflict from nour.json format to Conflict dataclass.
+    Convert a raw conflict dictionary to Conflict dataclass.
+    Supports:
+    1. Flat format (nour.json)
+    2. Nested format (detected_conflicts.json from unified API)
     """
-    # Extract basic fields
-    conflict_id = raw.get("conflict_id", f"conflict_{id(raw)}")
-    conflict_type_raw = raw.get("conflict_type", "unknown")
+    # 1. Determine if it's nested
+    is_nested = "metadata" in raw and "conflict" in raw
+    
+    # Extract sub-dicts based on format
+    if is_nested:
+        meta_section = raw.get("metadata", {})
+        conflict_section = raw.get("conflict", {})
+        trains_section = raw.get("affected_trains", [])
+        location = conflict_section.get("location", {})
+        
+        # Conflict ID
+        conflict_id = meta_section.get("conflict_id", f"conflict_{id(raw)}")
+        
+        # Type
+        conflict_type_raw = conflict_section.get("type", "unknown")
+        
+        # Severity
+        severity_raw = conflict_section.get("severity", "medium")
+        
+        # Timestamp
+        timestamp_raw = meta_section.get("timestamp", "")
+        
+        # Train IDs
+        # In nested format, trains are objects. We need to extract IDs.
+        if trains_section and isinstance(trains_section[0], dict):
+            train_ids = [t.get("train_id") for t in trains_section if t.get("train_id")]
+        else:
+            train_ids = trains_section if isinstance(trains_section, list) else []
+            
+        # Metadata for delay calculation
+        # Combine meta and conflict sections
+        metadata = {**meta_section, **conflict_section}
+        
+    else:
+        # Flat format (nour.json)
+        conflict_id = raw.get("conflict_id", f"conflict_{id(raw)}")
+        conflict_type_raw = raw.get("conflict_type", "unknown")
+        severity_raw = raw.get("severity", "medium")
+        timestamp_raw = raw.get("timestamp", "")
+        location = raw.get("location", {})
+        train_ids = raw.get("involved_trains", [])
+        metadata = raw.get("metadata", {})
+
+    # 2. General processing (format independent)
     conflict_type = CONFLICT_TYPE_MAP.get(conflict_type_raw, conflict_type_raw)
     
-    # Parse severity (string -> float)
-    severity_raw = raw.get("severity", "medium")
+    # Parse severity
     if isinstance(severity_raw, str):
         severity = SEVERITY_MAP.get(severity_raw, 0.5)
     else:
         severity = float(severity_raw)
-    
+        
     # Parse timestamp
-    timestamp = parse_timestamp(raw.get("timestamp", ""))
+    timestamp = parse_timestamp(timestamp_raw)
     
-    # Extract location -> stations
-    location = raw.get("location", {})
-    station_ids = extract_stations_from_location(location)
-    
-    # Extract trains
-    train_ids = raw.get("involved_trains", [])
-    
-    # Extract delays from metadata
-    metadata = raw.get("metadata", {})
+    # Extract stations from location
+    if isinstance(location, str):
+        # Handle string location like "STATION_A--STATION_B"
+        station_ids = extract_stations_from_location({"edge_id": location})
+    else:
+        station_ids = extract_stations_from_location(location)
+        
+    # Extract delays (minutes)
     delay_values = extract_delays_from_metadata(train_ids, metadata, conflict_type_raw)
     
-    # Build additional context
+    # Affected rails
     affected_rails = None
-    if location.get("edge_id"):
+    if isinstance(location, str):
+        if "--" in location:
+            affected_rails = [{"edge_id": location}]
+    elif location.get("edge_id"):
         affected_rails = [{"edge_id": location["edge_id"]}]
-    
-    # Determine blocking behavior based on severity
+        
+    # Blocking behavior
     blocking_behavior = "hard" if severity >= 0.75 else "soft"
     
-    # Priority trains (can be enhanced with actual train data)
-    priority_trains = [t for t in train_ids if t.startswith(("FR_", "IC_"))]
+    # Priority trains
+    priority_trains = [t for t in train_ids if isinstance(t, str) and t.startswith(("FR_", "IC_"))]
     
     return Conflict(
         conflict_id=conflict_id,
@@ -156,7 +201,7 @@ def convert_conflict(raw: Dict) -> Conflict:
         timestamp=timestamp,
         severity=severity,
         conflict_type=conflict_type,
-        embedding=None,  # Will be computed by GNN if needed
+        embedding=None,
         affected_rails=affected_rails,
         blocking_behavior=blocking_behavior,
         priority_trains=priority_trains if priority_trains else None,
@@ -165,19 +210,45 @@ def convert_conflict(raw: Dict) -> Conflict:
 
 def load_conflicts_from_json(filepath: str) -> List[Conflict]:
     """
-    Load conflicts from a JSON file in nour.json format.
+    Load conflicts from a JSON file.
+    Supports both a flat list of conflicts (nour.json format)
+    and a dictionary with a "conflicts" key (detected_conflicts.json format).
     Returns list of Conflict objects ready for resolution.
     """
     with open(filepath, 'r', encoding='utf-8') as f:
-        raw_conflicts = json.load(f)
+        data = json.load(f)
+    
+    # Handle different JSON formats
+    if isinstance(data, list):
+        raw_list = data
+    elif isinstance(data, dict):
+        if "conflicts" in data:
+            raw_list = data["conflicts"]
+        elif "detections" in data: # Some variants might use detections
+            raw_list = data["detections"]
+        else:
+            # Maybe it's a single conflict object?
+            if "conflict_id" in data:
+                raw_list = [data]
+            else:
+                print(f"Warning: JSON dictionary at {filepath} has no known conflict keys.")
+                return []
+    else:
+        print(f"Warning: Unexpected data type in {filepath}: {type(data)}")
+        return []
     
     conflicts = []
-    for raw in raw_conflicts:
+    for raw in raw_list:
         try:
+            # Skip if raw is not a dictionary (e.g. if someone put a string in the list)
+            if not isinstance(raw, dict):
+                continue
+                
             conflict = convert_conflict(raw)
             conflicts.append(conflict)
         except Exception as e:
-            print(f"Warning: Failed to convert conflict {raw.get('conflict_id', 'unknown')}: {e}")
+            conflict_id = raw.get('conflict_id', 'unknown') if isinstance(raw, dict) else 'unknown'
+            print(f"Warning: Failed to convert conflict {conflict_id}: {e}")
     
     return conflicts
 

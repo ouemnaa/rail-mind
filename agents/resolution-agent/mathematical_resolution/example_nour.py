@@ -14,7 +14,7 @@ PARENT_DIR = CURRENT_DIR.parent
 if str(PARENT_DIR) not in sys.path:
     sys.path.insert(0, str(PARENT_DIR))
 
-from rail_brain import (
+from mathematical_resolution import (
     Context,
     HistoricalConflict,
     SimilarCase,
@@ -24,7 +24,7 @@ from rail_brain import (
     OrchestratorConfig,
     build_rail_graph,
 )
-from rail_brain.conflict_adapter import (
+from mathematical_resolution.conflict_adapter import (
     load_conflicts_from_json,
     enrich_conflicts_with_train_data,
     summarize_all_conflicts,
@@ -34,9 +34,17 @@ from rail_brain.conflict_adapter import (
 
 def load_lombardy_context():
     """Load the Lombardy simulation data for train context."""
-    json_path = PARENT_DIR / 'lombardy_simulation_data.json'
+    # Data is in creating-context folder
+    PROJECT_ROOT = PARENT_DIR.parent.parent  # Go up to rail-mind root
+    json_path = PROJECT_ROOT / 'creating-context' / 'lombardy_simulation_data.json'
+    print(f"   DEBUG: Loading Lombardy data from {json_path}")
     with open(json_path, 'r', encoding='utf-8') as f:
-        return json.load(f)
+        content = f.read(100)
+        print(f"   DEBUG: File starts with: {content!r}")
+        f.seek(0)
+        data = json.load(f)
+        print(f"   DEBUG: Type of loaded data: {type(data)}")
+        return data
 
 
 def create_operational_context_from_conflict(conflict):
@@ -70,7 +78,7 @@ def create_historical_cases():
     Create sample historical cases for case-based reasoning.
     These represent past successful resolutions.
     """
-    from rail_brain import Conflict
+    from mathematical_resolution import Conflict
     
     # Case 1: Headway violation resolved by holding trailing train
     case1_conflict = Conflict(
@@ -220,9 +228,9 @@ def resolve_single_conflict(conflict, context, similar_cases, lombardy_data, con
 def print_resolution_plan(plan, conflict):
     """Pretty-print a resolution plan with human-readable explanations."""
     # Import the validator for explanation formatting
-    from rail_brain.math import ActionValidator
+    from mathematical_resolution.math import ActionValidator
     
-    print(f"\n🚆 RESOLUTION PLAN (Solver: {plan.solver_used})")
+    print(f"\n[PLAN] RESOLUTION PLAN (Solver: {plan.solver_used})")
     print(f"   Overall Fitness: {plan.overall_fitness:.4f}")
     
     original_delay = sum(conflict.delay_values.values())
@@ -243,17 +251,37 @@ def main():
     print("  RAIL BRAIN - Conflict Resolution from nour.json")
     print("=" * 70)
     
-    # Load conflict data
-    conflicts_path = PARENT_DIR / 'nour.json'
-    print(f"\n📂 Loading conflicts from: {conflicts_path}")
+    # Load conflict data - use detected conflicts from backend or generate sample
+    PROJECT_ROOT = PARENT_DIR.parent.parent
+    #C:\rail-mind\agents\resolution-agent\nour.json
+    conflicts_path = PROJECT_ROOT / 'agents' / 'resolution-agent' / 'nour.json' 
+    if not conflicts_path.exists():
+        # Fallback: try a nour.json if it exists
+        alt_path = PARENT_DIR / 'nour.json'
+        if alt_path.exists():
+            conflicts_path = alt_path
+        else:
+            print(f"\n⚠️ No conflict file found. Please either:")
+            print(f"   1. Run the simulation: python backend/integration/unified_api.py")
+            print(f"   2. Call the /api/simulation/tick endpoint several times")
+            print(f"   3. Create a sample nour.json file in: {PARENT_DIR}")
+            return
+    
+    print(f"\n[DATA] Loading conflicts from: {conflicts_path}")
     
     conflicts = load_conflicts_from_json(str(conflicts_path))
     print(summarize_all_conflicts(conflicts))
     
     # Load Lombardy context for train enrichment
-    print("\n📊 Loading Lombardy network data...")
+    print("\n[INFO] Loading Lombardy network data...")
     lombardy_data = load_lombardy_context()
-    train_data = lombardy_data.get("trains", [])
+    print(f"   DEBUG: lombardy_data type: {type(lombardy_data)}")
+    if isinstance(lombardy_data, dict):
+        print(f"   DEBUG: lombardy_data keys: {list(lombardy_data.keys())}")
+    else:
+        print(f"   DEBUG: lombardy_data is NOT a dict, it is: {lombardy_data[:1] if len(lombardy_data) > 0 else 'empty'}")
+        
+    train_data = lombardy_data.get("trains", []) if isinstance(lombardy_data, dict) else []
     print(f"   Loaded {len(train_data)} trains")
     
     # Enrich conflicts with train priority info
@@ -261,7 +289,7 @@ def main():
     
     # Load historical cases for case-based reasoning
     historical_cases = create_historical_cases()
-    print(f"\n📚 Loaded {len(historical_cases)} historical cases for CBR")
+    print(f"\n[INFO] Loaded {len(historical_cases)} historical cases for CBR")
     
     # Configure orchestrator
     config = OrchestratorConfig(
@@ -327,8 +355,12 @@ def main():
         reduction = (1 - resolved/original) * 100 if original > 0 else 0
         print(f"   {i}. {conflict.conflict_type}: {original:.1f}min → {resolved:.1f}min ({reduction:+.1f}%)")
     
-    print("\n✨ Resolution complete!")
+    print("\n[SUCCESS] Resolution complete!")
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception:
+        import traceback
+        traceback.print_exc()

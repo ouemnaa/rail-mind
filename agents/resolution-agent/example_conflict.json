@@ -1,0 +1,25 @@
+{
+  "conflict_id": "CONF-2026-0129-HEADWAY-MILANO",
+  "conflict_type": "headway",
+  "station_ids": ["MILANO ROGOREDO", "PAVIA"],
+  "train_ids": ["REG_33003", "REG_3053"],
+  "delay_values": {
+    "REG_33003": 2.2,
+    "REG_3053": 2.2
+  },
+  "timestamp": 1738108800.0,
+  "severity": 0.95,
+  "blocking_behavior": "soft",
+  "metadata": {
+    "headway_actual_sec": 50,
+    "headway_required_sec": 180,
+    "edge_id": "MILANO ROGOREDO--PAVIA"
+  },
+  "context": {
+    "time_of_day": 8.5,
+    "day_of_week": 2,
+    "is_peak_hour": true,
+    "weather_condition": "clear",
+    "network_load": 0.82
+  }
+}

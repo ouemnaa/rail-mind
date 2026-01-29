@@ -1,16 +1,23 @@
 # quantum_backend.py
+"""
+Quantum-enhanced solver using Qiskit QAOA.
+Optional dependency - falls back to classical solver if Qiskit not installed.
+"""
 from typing import Dict
 
-from qiskit_aer import Aer
-from qiskit_algorithms.utils import algorithm_globals
-
-# from qiskit.utils import algorithm_globals
-
-from qiskit_algorithms.minimum_eigensolvers import QAOA
-from qiskit_algorithms.optimizers import COBYLA
-
-from qiskit_optimization import QuadraticProgram
-from qiskit_optimization.algorithms import MinimumEigenOptimizer
+# Try to import Qiskit (optional dependency)
+QISKIT_AVAILABLE = False
+try:
+    from qiskit_aer import Aer
+    from qiskit_algorithms.utils import algorithm_globals
+    from qiskit_algorithms.minimum_eigensolvers import QAOA
+    from qiskit_algorithms.optimizers import COBYLA
+    from qiskit_optimization import QuadraticProgram
+    from qiskit_optimization.algorithms import MinimumEigenOptimizer
+    QISKIT_AVAILABLE = True
+except ImportError:
+    # Qiskit not installed - will use classical fallback
+    pass
 
 
 class SimulatedQuantumQUBOSolver:
@@ -21,8 +28,14 @@ class SimulatedQuantumQUBOSolver:
 
     def __init__(self, reps: int = 2, seed: int = 42):
         self.reps = reps
-        algorithm_globals.random_seed = seed
-        self.backend = Aer.get_backend("aer_simulator")
+        if QISKIT_AVAILABLE:
+            algorithm_globals.random_seed = seed
+            try:
+                self.backend = Aer.get_backend("aer_simulator")
+            except Exception:
+                self.backend = None
+        else:
+            self.backend = None
 
     def solve(self, Q: Dict, num_vars: int) -> Dict[int, int]:
         qp = self._qubo_to_quadratic_program(Q, num_vars)
