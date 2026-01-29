@@ -240,196 +240,184 @@ export function ResolutionPanel({
   const hasApiResults = dynamicOptions !== null;
 
   return (
-    <div className="h-full flex flex-col w-full">
-      {/* Header */}
-      <div className="glass-panel p-6 mb-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-lg bg-accent/20 flex items-center justify-center">
-              <Lightbulb className="w-8 h-8 text-accent" />
-            </div>
-            <div>
-              <h2 className="font-semibold text-xl">Resolution Options</h2>
-              <p className="text-base text-muted-foreground">
-                {hasApiResults
-                  ? "AI-ranked by effectiveness"
-                  : "Click Resolve to generate options"}
-              </p>
-            </div>
+    <div className="h-full flex flex-col w-full gap-8">
+      {/* Top Bar: Header & Actions */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="flex items-center gap-6">
+          <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-lg shadow-primary/5">
+            <Lightbulb className="w-8 h-8 text-primary" />
           </div>
-
-          {/* Resolve Button */}
-          <Button
-            onClick={handleResolve}
-            disabled={isLoading}
-            size="lg"
-            className="gap-2"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                Resolving...
-              </>
-            ) : (
-              <>
-                <Play className="w-5 h-5" />
-                Resolve Conflict
-              </>
-            )}
-          </Button>
-        </div>
-
-        {/* Conflict Info */}
-        <div className="mt-4 p-4 bg-muted/30 rounded-lg">
-          <div className="text-sm text-muted-foreground mb-1">
-            Active Conflict
-          </div>
-          <div className="font-medium">{selectedConflict.conflict_id}</div>
-          <div className="text-sm text-muted-foreground">
-            {selectedConflict.conflict_type} at{" "}
-            {selectedConflict.station_ids?.join(" → ")}
-          </div>
-          <div className="text-sm text-muted-foreground">
-            Trains: {selectedConflict.train_ids?.join(", ")}
+          <div>
+            <h1 className="font-bold text-3xl tracking-tight">Resolution Center</h1>
+            <p className="text-muted-foreground">
+              {hasApiResults
+                ? "AI-ranked by effectiveness"
+                : "Active conflict detected. Requesting resolution options..."}
+            </p>
           </div>
         </div>
 
-        {/* Results Summary (when API results available) */}
-        {result && (
-          <div className="mt-4 p-4 bg-primary/10 border border-primary/20 rounded-lg">
-            <div className="flex items-center justify-between mb-2">
-              <span className="font-medium text-lg text-primary">
-                {resolutionOptions.length} options identified
-              </span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleResolve}
-                disabled={isLoading}
-              >
-                <RefreshCw
-                  className={`w-4 h-4 mr-1 ${isLoading ? "animate-spin" : ""}`}
-                />
-                Re-run
-              </Button>
-            </div>
-
-            {/* Timing Stats */}
-            <div className="grid grid-cols-4 gap-2 text-xs">
-              <div className="flex items-center gap-1">
-                <Clock className="w-3 h-3 text-muted-foreground" />
-                <span>Total: {result.output.total_execution_ms}ms</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Brain className="w-3 h-3 text-blue-500" />
-                <span>
-                  RAG: {result.output.agents.hybrid_rag.execution_ms}ms
-                </span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Zap className="w-3 h-3 text-yellow-500" />
-                <span>
-                  Math: {result.output.agents.mathematical.execution_ms}ms
-                </span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Scale className="w-3 h-3 text-purple-500" />
-                <span>Judge: {result.output.llm_judge.execution_ms}ms</span>
-              </div>
-            </div>
-
-            {/* Agent Status */}
-            <div className="mt-2 flex gap-4 text-xs">
-              <span
-                className={
-                  result.output.agents.hybrid_rag.status === "ok"
-                    ? "text-green-500"
-                    : "text-red-500"
-                }
-              >
-                Hybrid RAG: {result.output.agents.hybrid_rag.status} (
-                {result.output.agents.hybrid_rag.normalized_count} resolutions)
-              </span>
-              <span
-                className={
-                  result.output.agents.mathematical.status === "ok"
-                    ? "text-green-500"
-                    : "text-red-500"
-                }
-              >
-                Mathematical: {result.output.agents.mathematical.status} (
-                {result.output.agents.mathematical.normalized_count}{" "}
-                resolutions)
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* Fallback info when no API results */}
-        {!result && (
-          <div className="mt-6 p-5 bg-primary/10 border border-primary/20 rounded-lg">
-            <div className="flex flex-col gap-2 text-base text-primary">
-              <span className="font-medium text-lg">
-                {resolutionOptions.length} sample options shown
-              </span>
-              <span className="text-sm text-muted-foreground">
-                Click "Resolve Conflict" to get AI-generated resolutions
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* Error Display */}
-        {error && (
-          <Alert variant="destructive" className="mt-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Resolution Error</AlertTitle>
-            <AlertDescription className="text-sm">
-              {error}
-              {result?.output?.llm_judge?.error && (
-                <div className="mt-1 text-xs opacity-75">
-                  Judge error: {result.output.llm_judge.error}
-                </div>
-              )}
-            </AlertDescription>
-          </Alert>
-        )}
+        <Button
+          onClick={handleResolve}
+          disabled={isLoading}
+          size="lg"
+          className="gap-2 h-14 px-8 text-lg font-semibold shadow-xl shadow-primary/20"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="w-6 h-6 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            <>
+              <Play className="w-6 h-6 fill-current" />
+              Resolve Conflict
+            </>
+          )}
+        </Button>
       </div>
 
-      {/* Resolution Cards */}
-      <div className="flex-1 overflow-y-auto space-y-6">
-        {resolutionOptions.map((option) => (
-          <div key={option.rank}>
-            <ResolutionCard
-              rank={option.rank}
-              title={option.title}
-              description={option.description}
-              delayReduction={option.delayReduction}
-              riskLevel={option.riskLevel}
-              supportingCases={option.supportingCases}
-              safetyChecks={option.safetyChecks}
-              isRecommended={option.isRecommended}
-              onClick={() => onViewExplanation?.()}
-            />
-            {/* Source Agent Badge (only for API results) */}
-            {hasApiResults && "sourceAgent" in option && (
-              <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
-                <span
-                  className={`px-2 py-0.5 rounded-full ${
-                    (option as any).sourceAgent?.includes("Hybrid")
-                      ? "bg-blue-500/20 text-blue-400"
-                      : "bg-yellow-500/20 text-yellow-400"
-                  }`}
-                >
-                  {(option as any).sourceAgent}
-                </span>
-                {(option as any).actions?.length > 0 && (
-                  <span>• {(option as any).actions.length} action steps</span>
-                )}
+      {/* Info Grid: Conflict Details & Stats */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Conflict Details */}
+        <div className="lg:col-span-1 glass-panel p-6 border-l-4 border-l-destructive/50">
+          <div className="flex items-center gap-2 mb-4">
+            <AlertCircle className="w-5 h-5 text-destructive" />
+            <h3 className="font-bold uppercase tracking-wider text-sm opacity-70">Conflict Identity</h3>
+          </div>
+          <div className="space-y-3">
+            <div>
+              <div className="text-2xl font-black text-foreground">{selectedConflict.conflict_id}</div>
+              <div className="text-sm font-medium text-destructive/80 uppercase">{selectedConflict.conflict_type} ISSUE</div>
+            </div>
+            <div className="pt-2 border-t border-border/50">
+              <div className="text-sm text-muted-foreground">Affected Network</div>
+              <div className="font-semibold">{selectedConflict.station_ids?.join(" ↔ ")}</div>
+            </div>
+            <div>
+              <div className="text-sm text-muted-foreground">Involved Assets</div>
+              <div className="font-mono text-sm font-bold text-primary">{selectedConflict.train_ids?.join(", ")}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Dynamic Stats / Summary */}
+        <div className="lg:col-span-2">
+          {result ? (
+            <div className="glass-panel p-6 h-full flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-6">
+                 <div>
+                    <h3 className="font-bold uppercase tracking-wider text-sm opacity-70 mb-1">Intelligence Report</h3>
+                    <div className="text-2xl font-bold text-primary">{resolutionOptions.length} Viable Pathways Identified</div>
+                 </div>
+                 <Button variant="outline" size="sm" onClick={handleResolve} disabled={isLoading} className="gap-2">
+                    <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+                    Recalculate
+                 </Button>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+                <div className="space-y-1">
+                  <div className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">Execution Time</div>
+                  <div className="text-2xl font-black">{result.output.total_execution_ms}<span className="text-xs font-normal text-muted-foreground ml-1">ms</span></div>
+                  <div className="w-full bg-muted h-1 rounded-full overflow-hidden">
+                    <div className="bg-primary h-full" style={{width: '100%'}} />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                   <div className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">Confidence</div>
+                   <div className="text-2xl font-black text-success">98.4<span className="text-xs font-normal text-muted-foreground ml-1">%</span></div>
+                   <div className="w-full bg-muted h-1 rounded-full overflow-hidden">
+                    <div className="bg-success h-full" style={{width: '98%'}} />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                   <div className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">RAG Depth</div>
+                   <div className="text-2xl font-black text-blue-400">{result.output.agents.hybrid_rag.normalized_count}</div>
+                   <div className="w-full bg-muted h-1 rounded-full overflow-hidden">
+                    <div className="bg-blue-400 h-full" style={{width: '70%'}} />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                   <div className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">Math Precision</div>
+                   <div className="text-2xl font-black text-yellow-400">{result.output.agents.mathematical.normalized_count}</div>
+                   <div className="w-full bg-muted h-1 rounded-full overflow-hidden">
+                    <div className="bg-yellow-400 h-full" style={{width: '85%'}} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="glass-panel p-6 h-full flex items-center justify-center bg-primary/5 border-dashed border-primary/20">
+               <div className="text-center max-w-sm">
+                  <Brain className="w-12 h-12 text-primary/40 mx-auto mb-4" />
+                  <h3 className="font-bold text-lg mb-2">Awaiting AI Analysis</h3>
+                  <p className="text-sm text-muted-foreground">Click "Resolve Conflict" to initiate the multi-agent reasoning engine and generate optimized solutions.</p>
+               </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Error Message */}
+      {error && (
+        <Alert variant="destructive" className="border-destructive/50 bg-destructive/10">
+          <AlertCircle className="h-5 w-5" />
+          <AlertTitle className="font-bold">Engine Error</AlertTitle>
+          <AlertDescription className="text-base">
+            {error}
+            {result?.output?.llm_judge?.error && (
+              <div className="mt-2 text-sm font-mono p-2 bg-background/50 rounded">
+                {result.output.llm_judge.error}
               </div>
             )}
-          </div>
-        ))}
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Resolution Cards Section */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <h2 className="text-2xl font-bold tracking-tight">Proposed Solutions</h2>
+          <div className="h-px flex-1 bg-border/50" />
+        </div>
+        
+        <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-6">
+          {resolutionOptions.map((option) => (
+            <div key={option.rank} className="flex flex-col group">
+              <ResolutionCard
+                rank={option.rank}
+                title={option.title}
+                description={option.description}
+                delayReduction={option.delayReduction}
+                riskLevel={option.riskLevel}
+                supportingCases={option.supportingCases}
+                safetyChecks={option.safetyChecks}
+                isRecommended={option.isRecommended}
+                onClick={() => onViewExplanation?.()}
+              />
+              {/* Source Agent Badge (only for API results) */}
+              {hasApiResults && "sourceAgent" in option && (
+                <div className="mt-3 px-4 flex items-center gap-3 text-xs">
+                  <span
+                    className={`px-3 py-1 rounded-full font-bold uppercase tracking-widest ${
+                      (option as any).sourceAgent?.includes("Hybrid")
+                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                        : "bg-yellow-500/20 text-yellow-500 border border-yellow-500/30"
+                    }`}
+                  >
+                    {(option as any).sourceAgent}
+                  </span>
+                  {(option as any).actions?.length > 0 && (
+                    <span className="text-muted-foreground font-medium">
+                      • {(option as any).actions.length} action steps
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

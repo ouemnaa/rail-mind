@@ -1,9 +1,9 @@
 {
   "file_info": {
     "description": "All detected conflicts from simulation",
-    "last_updated": "2026-01-28T20:08:24.830762",
-    "total_conflicts": 11,
-    "unresolved_count": 11,
+    "last_updated": "2026-01-29T12:01:25.280137",
+    "total_conflicts": 12,
+    "unresolved_count": 12,
     "resolved_count": 0
   },
   "conflicts": [
@@ -3816,6 +3816,305 @@
         ]
       },
       "affected_trains": [],
+      "network_context": {},
+      "status": "unresolved"
+    },
+    {
+      "metadata": {
+        "conflict_id": "ea5d9c64-7e5b-484d-bd4a-a99e721e7999",
+        "timestamp": "2026-01-29T12:01:25.271683",
+        "tick_number": 20,
+        "simulation_time": "2026-01-29T06:20:00.422739"
+      },
+      "conflict": {
+        "type": "edge_capacity_overflow",
+        "severity": "medium",
+        "probability": 1.0,
+        "location": "PADERNO DUGNANO--PALAZZOLO M.SE",
+        "location_type": "edge",
+        "explanation": "🚨 EDGE OVERLOAD at PADERNO DUGNANO--PALAZZOLO M.SE | Trains involved: REG_22613, REG_25821, FR_9752 (+1 more) | Edge PADERNO DUGNANO--PALAZZOLO M.SE has 4 trains but capacity is 3. Overflow ratio: 1.3x",
+        "resolution_suggestions": [
+          "Hold trains at previous station",
+          "Reroute via alternative track",
+          "Reduce speed to create spacing"
+        ]
+      },
+      "affected_trains": [
+        {
+          "train_id": "REG_22613",
+          "train_type": "regional",
+          "current_station": null,
+          "next_station": "PALAZZOLO M.SE",
+          "current_edge": "PADERNO DUGNANO--PALAZZOLO M.SE",
+          "position_km": 2.666666666666667,
+          "speed_kmh": 80,
+          "delay_sec": 0,
+          "status": "en_route",
+          "lat": 45.58905315779093,
+          "lon": 9.159059380670612,
+          "route": [
+            {
+              "station_name": "MILANO BOVISA",
+              "station_order": 1,
+              "lat": 45.502546,
+              "lon": 9.15928,
+              "distance_from_previous_km": 0.0
+            },
+            {
+              "station_name": "M.N. AFFORI",
+              "station_order": 2,
+              "lat": 45.521382,
+              "lon": 9.167436,
+              "distance_from_previous_km": 2.19
+            },
+            {
+              "station_name": "M.N. BRUZZANO",
+              "station_order": 3,
+              "lat": 45.533807,
+              "lon": 9.1724,
+              "distance_from_previous_km": 1.43
+            },
+            {
+              "station_name": "CORMANO-CUSANO MILANINO",
+              "station_order": 4,
+              "lat": 45.545793,
+              "lon": 9.174415,
+              "distance_from_previous_km": 1.34
+            },
+            {
+              "station_name": "PADERNO DUGNANO",
+              "station_order": 5,
+              "lat": 45.565133,
+              "lon": 9.161958,
+              "distance_from_previous_km": 2.36
+            },
+            {
+              "station_name": "PALAZZOLO M.SE",
+              "station_order": 6,
+              "lat": 45.5954518,
+              "lon": 9.158284,
+              "distance_from_previous_km": 3.38
+            },
+            {
+              "station_name": "VAREDO",
+              "station_order": 7,
+              "lat": 45.595667,
+              "lon": 9.15379,
+              "distance_from_previous_km": 0.35
+            },
+            {
+              "station_name": "BOVISIO M. - MOMBELLO",
+              "station_order": 8,
+              "lat": 45.612932,
+              "lon": 9.141506,
+              "distance_from_previous_km": 2.14
+            },
+            {
+              "station_name": "CESANO MADERNO",
+              "station_order": 9,
+              "lat": 45.630862,
+              "lon": 9.142905,
+              "distance_from_previous_km": 2.0
+            },
+            {
+              "station_name": "SEVESO",
+              "station_order": 10,
+              "lat": 45.648187,
+              "lon": 9.140488,
+              "distance_from_previous_km": 1.93
+            }
+          ],
+          "current_stop_index": 4
+        },
+        {
+          "train_id": "REG_25821",
+          "train_type": "regional",
+          "current_station": null,
+          "next_station": "MONZA",
+          "current_edge": "PADERNO DUGNANO--PALAZZOLO M.SE",
+          "position_km": 2.4666666666666672,
+          "speed_kmh": 20,
+          "delay_sec": 0,
+          "status": "en_route",
+          "lat": 45.55966139474764,
+          "lon": 9.256463405826837,
+          "route": [
+            {
+              "station_name": "MILANO PORTA GARIBALDI",
+              "station_order": 1,
+              "lat": 45.484917,
+              "lon": 9.187683,
+              "distance_from_previous_km": 0.0
+            },
+            {
+              "station_name": "MILANO GRECO PIRELLI",
+              "station_order": 2,
+              "lat": 45.51272,
+              "lon": 9.214456,
+              "distance_from_previous_km": 3.984
+            },
+            {
+              "station_name": "SESTO S. GIOVANNI",
+              "station_order": 3,
+              "lat": 45.541087,
+              "lon": 9.23926,
+              "distance_from_previous_km": 3.709
+            },
+            {
+              "station_name": "MONZA",
+              "station_order": 4,
+              "lat": 45.577789,
+              "lon": 9.273253,
+              "distance_from_previous_km": 4.874
+            },
+            {
+              "station_name": "ARCORE",
+              "station_order": 5,
+              "lat": 45.623493,
+              "lon": 9.322798,
+              "distance_from_previous_km": 6.558
+            },
+            {
+              "station_name": "CARNATE USMATE",
+              "station_order": 6,
+              "lat": 45.653072,
+              "lon": 9.375089,
+              "distance_from_previous_km": 5.245
+            },
+            {
+              "station_name": "PADERNO ROBBIATE",
+              "station_order": 7,
+              "lat": 45.678307,
+              "lon": 9.439202,
+              "distance_from_previous_km": 6.074
+            },
+            {
+              "station_name": "CALUSCO",
+              "station_order": 8,
+              "lat": 45.684113,
+              "lon": 9.470646,
+              "distance_from_previous_km": 2.662
+            },
+            {
+              "station_name": "TERNO",
+              "station_order": 9,
+              "lat": 45.688658,
+              "lon": 9.536169,
+              "distance_from_previous_km": 5.127
+            },
+            {
+              "station_name": "PONTE S.PIETRO",
+              "station_order": 10,
+              "lat": 45.69916,
+              "lon": 9.584322,
+              "distance_from_previous_km": 4.057
+            }
+          ],
+          "current_stop_index": 2
+        },
+        {
+          "train_id": "FR_9752",
+          "train_type": "high_speed",
+          "current_station": null,
+          "next_station": "MILANO CENTRALE",
+          "current_edge": "PADERNO DUGNANO--PALAZZOLO M.SE",
+          "position_km": 3.266666666666667,
+          "speed_kmh": 20,
+          "delay_sec": 39,
+          "status": "en_route",
+          "lat": 45.53041325059101,
+          "lon": 10.171113460992908,
+          "route": [
+            {
+              "station_name": "BRESCIA",
+              "station_order": 7,
+              "lat": 45.532315,
+              "lon": 10.212828,
+              "distance_from_previous_km": 42.1
+            },
+            {
+              "station_name": "MILANO CENTRALE",
+              "station_order": 8,
+              "lat": 45.486347,
+              "lon": 9.204528,
+              "distance_from_previous_km": 78.96
+            }
+          ],
+          "current_stop_index": 0
+        },
+        {
+          "train_id": "REG_10207",
+          "train_type": "regional",
+          "current_station": null,
+          "next_station": "VERGIATE",
+          "current_edge": "PADERNO DUGNANO--PALAZZOLO M.SE",
+          "position_km": 4.066666666666667,
+          "speed_kmh": 20,
+          "delay_sec": 0,
+          "status": "en_route",
+          "lat": 45.72043565832029,
+          "lon": 8.669534812206573,
+          "route": [
+            {
+              "station_name": "SESTO CALENDE",
+              "station_order": 14,
+              "lat": 45.726241,
+              "lon": 8.628135,
+              "distance_from_previous_km": 9.98
+            },
+            {
+              "station_name": "VERGIATE",
+              "station_order": 15,
+              "lat": 45.717119,
+              "lon": 8.693187,
+              "distance_from_previous_km": 6.39
+            },
+            {
+              "station_name": "SOMMA LOMBARDO",
+              "station_order": 16,
+              "lat": 45.686423,
+              "lon": 8.712991,
+              "distance_from_previous_km": 9.87
+            },
+            {
+              "station_name": "CASORATE SEMPIONE",
+              "station_order": 17,
+              "lat": 45.675075,
+              "lon": 8.743954,
+              "distance_from_previous_km": 14.71
+            },
+            {
+              "station_name": "GALLARATE",
+              "station_order": 18,
+              "lat": 45.659828,
+              "lon": 8.798243,
+              "distance_from_previous_km": 6.37
+            },
+            {
+              "station_name": "BUSTO ARSIZIO",
+              "station_order": 19,
+              "lat": 45.616164,
+              "lon": 8.865031,
+              "distance_from_previous_km": 3.06
+            },
+            {
+              "station_name": "RHO FIERA MILANO",
+              "station_order": 20,
+              "lat": 45.521157,
+              "lon": 9.088595,
+              "distance_from_previous_km": 3.56
+            },
+            {
+              "station_name": "MILANO PORTA GARIBALDI",
+              "station_order": 21,
+              "lat": 45.484917,
+              "lon": 9.187683,
+              "distance_from_previous_km": 4.27
+            }
+          ],
+          "current_stop_index": 0
+        }
+      ],
       "network_context": {},
       "status": "unresolved"
     }

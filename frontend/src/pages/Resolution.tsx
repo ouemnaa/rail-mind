@@ -18,7 +18,7 @@ const Resolution = () => {
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
 
-        <main className="flex-1 overflow-auto p-6 max-w-3xl mx-auto">
+        <main className="flex-1 overflow-auto p-6 max-w-[1600px] w-full mx-auto">
           {/* Pass conflictId to ResolutionPanel if available */}
           <ResolutionPanel
             onViewExplanation={() => navigate("/explanation")}
