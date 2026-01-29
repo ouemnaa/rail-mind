@@ -10,13 +10,15 @@ import {
   Zap,
   Brain,
   Scale,
+  CheckCircle,
+  CheckCircle2,
 } from "lucide-react";
 import { ResolutionCard } from "./ResolutionCard";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 // API base URL - adjust based on environment
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8002";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 interface OrchestratorOutput {
   status: string;
@@ -100,6 +102,13 @@ export function ResolutionPanel({
   // Use state from location if available (persists when going back), otherwise use passed detection
   const [result, setResult] = useState<ApiResponse | null>(location.state?.resolutionResult || null);
   const [selectedConflict] = useState<any>(detection || location.state?.activeConflict || null);
+  const [approvedResolutionId, setApprovedResolutionId] = useState<string | null>(null);
+
+  const handleApprove = (resolutionId: string) => {
+    setApprovedResolutionId(resolutionId);
+    // Here you would typically also make an API call to save the approval
+    console.log(`Resolution ${resolutionId} approved`);
+  };
 
   // Auto-run resolution if we have a conflict but no results yet
   // useEffect(() => {
@@ -361,39 +370,65 @@ export function ResolutionPanel({
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-6">
-          {resolutionOptions.map((option) => (
-            <div key={option.rank} className="flex flex-col group">
-              <ResolutionCard
-                rank={option.rank}
-                title={option.title}
-                description={option.description}
-                delayReduction={option.delayReduction}
-                riskLevel={option.riskLevel}
-                supportingCases={option.supportingCases}
-                safetyChecks={option.safetyChecks}
-                isRecommended={option.isRecommended}
-                onClick={() => onViewExplanation?.(option, result, selectedConflict)}
-              />
-              {/* Source Agent Badge (only for API results) */}
-              {hasApiResults && "sourceAgent" in option && (
-                <div className="mt-3 px-4 flex items-center gap-3 text-xs">
-                  <span
-                    className={`px-3 py-1 rounded-full font-bold uppercase tracking-widest ${(option as any).sourceAgent?.includes("Hybrid")
-                      ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                      : "bg-yellow-500/20 text-yellow-500 border border-yellow-500/30"
-                      }`}
-                  >
-                    {(option as any).sourceAgent}
-                  </span>
-                  {(option as any).actions?.length > 0 && (
-                    <span className="text-muted-foreground font-medium">
-                      • {(option as any).actions.length} action steps
-                    </span>
+          {resolutionOptions.map((option) => {
+            const isApproved = approvedResolutionId === (option as any).resolution_id || approvedResolutionId === option.title;
+
+            return (
+              <div key={option.rank} className="flex flex-col group">
+                <ResolutionCard
+                  rank={option.rank}
+                  title={option.title}
+                  description={option.description}
+                  delayReduction={option.delayReduction}
+                  riskLevel={option.riskLevel}
+                  supportingCases={option.supportingCases}
+                  safetyChecks={option.safetyChecks}
+                  isRecommended={option.isRecommended}
+                  onClick={() => onViewExplanation?.(option, result, selectedConflict)}
+                />
+
+                <div className="mt-3 px-4 flex flex-col gap-3">
+                  {/* Source Agent Badge (only for API results) */}
+                  {hasApiResults && "sourceAgent" in option && (
+                    <div className="flex items-center gap-3 text-xs">
+                      <span
+                        className={`px-3 py-1 rounded-full font-bold uppercase tracking-widest ${(option as any).sourceAgent?.includes("Hybrid")
+                          ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                          : "bg-yellow-500/20 text-yellow-500 border border-yellow-500/30"
+                          }`}
+                      >
+                        {(option as any).sourceAgent}
+                      </span>
+                      {(option as any).actions?.length > 0 && (
+                        <span className="text-muted-foreground font-medium">
+                          • {(option as any).actions.length} action steps
+                        </span>
+                      )}
+                    </div>
                   )}
+
+                  {/* Approve Button */}
+                  <Button
+                    variant={isApproved ? "default" : "outline"}
+                    className={`w-full gap-2 ${isApproved ? "bg-emerald-600 hover:bg-emerald-700" : ""}`}
+                    onClick={() => handleApprove((option as any).resolution_id || option.title)}
+                  >
+                    {isApproved ? (
+                      <>
+                        <CheckCircle2 className="w-4 h-4" />
+                        Approved Resolution
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="w-4 h-4" />
+                        Approve This Solution
+                      </>
+                    )}
+                  </Button>
                 </div>
-              )}
-            </div>
-          ))}
+              </div>
+            )
+          })}
         </div>
       </div>
     </div>

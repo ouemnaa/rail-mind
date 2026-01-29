@@ -1,0 +1,31 @@
+# .env file - contains sensitive API keys
+# Do not commit this file to version control!
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Output files
+*.json
+*.log
+orchestrator_outputs/
+detected_conflicts/
+
+# OS
+.DS_Store
+Thumbs.db

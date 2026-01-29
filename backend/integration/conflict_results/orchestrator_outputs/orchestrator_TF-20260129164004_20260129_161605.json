@@ -1,0 +1,172 @@
+{
+  "status": "ok",
+  "conflict_id": "TF-20260129164004",
+  "started_at": "2026-01-29T16:15:50.019319+00:00",
+  "finished_at": "2026-01-29T16:16:05.795919+00:00",
+  "total_execution_ms": 15776,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 15195,
+      "raw_result": {
+        "conflict_id": "TF-20260129164004",
+        "conflict_summary": "",
+        "timestamp": "2026-01-29T17:16:05.213840",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [
+          {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Dynamic Reroute & Mobile Maintenance Deployment",
+            "action_steps": [
+              "1. Immediately impose a 30 km/h speed restriction on the Milano Lambrate–Treviglio segment.",
+              "2. Activate the pre‑positioned Mobile Maintenance Unit (MMU) at Milano Lambrate depot and dispatch it within 10 minutes.",
+              "3. Generate an alternative timetable that reroutes all passenger services via the parallel Milano–Bergamo line, using the same routing logic applied in the 2015 Lombardy flood case.",
+              "4. If the AI confidence level for the fault exceeds 70 %, launch a temporary bus‑bridge service for affected regional passengers (historical practice that reduced passenger impact by 40 % in similar incidents).",
+              "5. Push the revised speed limit, reroute plan, and bus‑bridge information to drivers via ETCS and broadcast to passengers through the mobile app and station PA systems.",
+              "6. Upon arrival, the MMU conducts an on‑site inspection; if the defect is deemed critical, halt all traffic on the segment and keep the bus bridge active; if minor, lift the speed restriction after verification and schedule a standard maintenance window.",
+              "7. Update the central traffic management system with the final decision and close the incident record."
+            ],
+            "expected_outcome": "Maintain >70 % of scheduled capacity while safely verifying the defect; passenger‑level service continuity is preserved through the bus bridge and rerouted trains.",
+            "reasoning": "Combines the algorithmic safety‑first speed restriction with the historical success of rapid mobile‑unit deployment and pre‑planned alternative routing. The bus‑bridge element, proven in past Lombardy disruptions, mitigates passenger inconvenience, while the MMU shortens on‑site verification time compared with standard depot‑based crews.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.8280000000000001,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "MAINTENANCE_REQUIRED"
+            ],
+            "estimated_delay_reduction_sec": 900,
+            "side_effects": [
+              "Requires allocation of bus resources and drivers, potentially straining local road traffic.",
+              "Increased load on the parallel Milano–Bergamo line may cause minor congestion.",
+              "Operational complexity in synchronising MMU arrival with timetable changes."
+            ],
+            "feasibility_score": 0.88,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          },
+          {
+            "resolution_id": "hybrid_2",
+            "strategy_name": "Crowd‑Sourced Real‑Time Inspection + Adaptive Speed Management",
+            "action_steps": [
+              "1. Apply a 40 km/h speed restriction on the affected segment.",
+              "2. Send an automatic alert to the next three passing train crews to perform a visual track inspection and submit findings via the onboard tablet (a practice that reduced verification time by 25 % in the 2018 Veneto track‑crack case).",
+              "3. Fuse crew reports with existing sensor and AI data using a Bayesian confidence model to obtain a combined defect probability.",
+              "4. If the combined confidence exceeds 85 %, issue an immediate full halt and dispatch the emergency maintenance team; otherwise, keep the reduced speed limit for a 20‑minute verification window.",
+              "5. During the verification window, apply the historical “buffer‑insertion” timetable adjustment (adding 2‑minute buffers to downstream services) to absorb the expected 1.6‑minute delay.",
+              "6. Communicate the provisional timetable and any subsequent changes to drivers and passengers in real time.",
+              "7. After on‑site confirmation, either lift the restriction or transition to full maintenance mode and close the incident."
+            ],
+            "expected_outcome": "Rapid, high‑confidence verification of the fault without a full line closure, preserving most train movements and limiting delay growth.",
+            "reasoning": "Leverages algorithmic speed control and AI confidence while integrating the historically proven crew‑based visual inspection and Bayesian data fusion. This hybrid reduces reliance on a single detection source, speeds up decision making, and uses proven timetable‑buffer techniques to keep delays minimal.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.786,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "MAINTENANCE_REQUIRED"
+            ],
+            "estimated_delay_reduction_sec": 600,
+            "side_effects": [
+              "Additional workload for train crews during inspection.",
+              "Potential for human error if visual inspection is missed or mis‑reported.",
+              "The buffer insertion may slightly increase travel time for downstream services."
+            ],
+            "feasibility_score": 0.81,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          },
+          {
+            "resolution_id": "algo_1",
+            "strategy_name": "Track fault",
+            "action_steps": [
+              "1. Issue immediate speed restriction (30-50 km/h) on affected segment. 2. Dispatch track inspection team to verify defect. 3. If defect confirmed critical (>70% confidence): halt traffic, reroute trains via alternative paths. 4. For minor defects: maintain reduced speed, schedule maintenance window. 5. Notify control center and update train drivers."
+            ],
+            "expected_outcome": "Resolve the conflict based on algorithm",
+            "reasoning": "Track faults pose direct safety risks. Vision AI provides early detection. Speed restrictions reduce derailment risk while maintaining limited service. Verification confirms AI detection accuracy before major disruptions.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm score: 0.641"
+            ],
+            "confidence_score": 0.529448896,
+            "algorithm_name": "Track fault",
+            "algorithm_reasoning": "Track faults pose direct safety risks. Vision AI provides early detection. Speed restrictions reduce derailment risk while maintaining limited service. Verification confirms AI detection accuracy before major disruptions.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [],
+            "estimated_delay_reduction_sec": null,
+            "side_effects": [],
+            "feasibility_score": 0.0,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        ],
+        "layer1_count": 3,
+        "layer2_refinements": {
+          "historical_cases_found": 10,
+          "algorithm_resolutions": 3,
+          "hybrid_resolutions_generated": 2,
+          "total_candidates_evaluated": 5,
+          "historical_success_rates": {
+            "total_cases": 10,
+            "average_similarity": 0.319787899,
+            "outcome_distribution": {
+              "resolved": 6,
+              "unknown": 4
+            }
+          }
+        },
+        "generation_time_sec": 4.561331
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 2
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 1379,
+      "raw_result": {
+        "solver_used": "nsga2",
+        "overall_fitness": 0.752684396736797,
+        "total_delay_min": 1.4464,
+        "passenger_impact": 433.91999999999996,
+        "propagation_depth": 0,
+        "recovery_smoothness": 1.0,
+        "actions": [
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "MAINTENANCE_REQUIRED",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: TF-20260129164004\nType: track_fault\nSeverity: 0.95\nAffected trains: MAINTENANCE_REQUIRED\nAffected stations: MILANO LAMBRATE--TREVIGLIO\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using nsga2):\n  1. SPEED_ADJUST - Train MAINTENANCE_REQUIRED\n      speed_factor: 1.12\n\nExpected Outcomes:\n  - Total delay: 1.4 minutes\n  - Passenger impact: 434 passenger-minutes\n  - Propagation depth: 0 trains\n  - Recovery smoothness: 1.00\n  - Overall fitness: 0.753"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "error",
+    "execution_ms": 563,
+    "ranked_resolutions": null,
+    "raw_llm_response": null,
+    "error": "Groq API error (RateLimitError): Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kg4gh266e7tscb9zw2hr2rqr` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199999, Requested 1855. Please try again in 13m20.928s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  }
+}

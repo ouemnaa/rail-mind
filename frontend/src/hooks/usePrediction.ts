@@ -17,8 +17,8 @@ import type {
   ConflictType,
 } from '../types/prediction';
 
-const API_BASE_URL = import.meta.env.VITE_PREDICTION_API_URL || 'http://localhost:8002';
-const WS_URL = import.meta.env.VITE_PREDICTION_WS_URL || 'ws://localhost:8002/ws/predictions';
+const API_BASE_URL = import.meta.env.VITE_API_URL
+const WS_URL = import.meta.env.VITE_WS_URL
 
 interface UsePredictionOptions {
   autoConnect?: boolean;
@@ -165,29 +165,29 @@ export function usePrediction(options: UsePredictionOptions = {}): UsePrediction
         throw new Error(`HTTP ${response.status}`);
       }
       const data = await response.json();
-      
+
       // Transform unified API response to BatchPrediction format
       const transformedData: BatchPrediction = {
         timestamp: data.simulation_time,
         predictions: data.trains.map((train: any) => {
           // Find any predictions for this train
-          const trainPrediction = data.predictions?.find((p: any) => 
+          const trainPrediction = data.predictions?.find((p: any) =>
             p.involved_trains?.includes(train.train_id)
           );
-          const trainDetection = data.detections?.find((d: any) => 
+          const trainDetection = data.detections?.find((d: any) =>
             d.involved_trains?.includes(train.train_id)
           );
-          
+
           // Get model_used from prediction
-          const modelUsed = trainPrediction?.model_used ?? 
-                           trainDetection?.model_used ?? 
-                           'xgboost_ensemble';
-          
+          const modelUsed = trainPrediction?.model_used ??
+            trainDetection?.model_used ??
+            'xgboost_ensemble';
+
           const prob = trainDetection?.probability ?? trainPrediction?.probability ?? (train.delay_sec > 120 ? 0.4 : 0.15);
-          const riskLevel = trainDetection ? 'critical' : 
-                          trainPrediction?.severity ?? 
-                          (prob >= 0.5 ? 'high_risk' : prob >= 0.3 ? 'low_risk' : 'safe');
-          
+          const riskLevel = trainDetection ? 'critical' :
+            trainPrediction?.severity ??
+            (prob >= 0.5 ? 'high_risk' : prob >= 0.3 ? 'low_risk' : 'safe');
+
           return {
             train_id: train.train_id,
             probability: prob,
@@ -198,12 +198,12 @@ export function usePrediction(options: UsePredictionOptions = {}): UsePrediction
             contributing_factors: trainPrediction?.resolution_suggestions ?? [],
             confidence: trainPrediction?.probability ?? 0.8,
             model_used: modelUsed,
-            color: riskLevel === 'critical' ? '#dc2626' : 
-                   riskLevel === 'high_risk' ? '#f97316' :
-                   riskLevel === 'low_risk' ? '#f59e0b' : '#10b981',
+            color: riskLevel === 'critical' ? '#dc2626' :
+              riskLevel === 'high_risk' ? '#f97316' :
+                riskLevel === 'low_risk' ? '#f59e0b' : '#10b981',
             emoji: riskLevel === 'critical' ? '🔴' :
-                   riskLevel === 'high_risk' ? '🟠' :
-                   riskLevel === 'low_risk' ? '🟡' : '🟢',
+              riskLevel === 'high_risk' ? '🟠' :
+                riskLevel === 'low_risk' ? '🟡' : '🟢',
           };
         }),
         network_risk_score: Math.min(0.95, (data.predictions?.length ?? 0) / Math.max(1, data.trains?.length ?? 1) * 2),
@@ -213,7 +213,7 @@ export function usePrediction(options: UsePredictionOptions = {}): UsePrediction
         model_used: data.predictions?.[0]?.model_used ?? 'xgboost_ensemble',
         strategy: 'continuous',
       };
-      
+
       setPredictions(transformedData);
       updateAlerts(transformedData);
     } catch (e) {

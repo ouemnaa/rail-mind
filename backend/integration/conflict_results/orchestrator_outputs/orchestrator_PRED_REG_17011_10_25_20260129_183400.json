@@ -1,0 +1,395 @@
+{
+  "status": "ok",
+  "conflict_id": "PRED_REG_17011_10_25",
+  "started_at": "2026-01-29T18:33:28.307173+00:00",
+  "finished_at": "2026-01-29T18:34:00.723483+00:00",
+  "total_execution_ms": 32416,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 23401,
+      "raw_result": {
+        "conflict_id": "PRED_REG_17011_10_25",
+        "conflict_summary": "",
+        "timestamp": "2026-01-29T19:33:51.709161",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [
+          {
+            "resolution_id": "algo_1",
+            "strategy_name": "Rolling‑horizon delay mitigation",
+            "action_steps": [
+              "Collect the current planned arrival/departure times for REG_17011 at Mantova and any downstream stations.",
+              "Formulate a short‑term MILP that minimises the weighted sum of timetable deviations (including the 2.8 min delay) while respecting soft‑blocking constraints.",
+              "Include variables for possible acceleration, reduced dwell time (within safety limits), and optional re‑sequencing with any trains that may follow REG_17011.",
+              "Solve the MILP in real‑time (e.g., using a commercial solver with a few‑second time limit).",
+              "Broadcast the new departure/arrival times to the train crew, dispatchers and signalling system.",
+              "Monitor the train’s progress and re‑run the optimisation if further disturbances occur."
+            ],
+            "expected_outcome": "REG_17011’s delay is trimmed to ≤1 minute, and any downstream ripple effects are suppressed, keeping the timetable stable for the rest of the day.",
+            "reasoning": "The algorithm 6e9bd5a8 (Delay propagation) explicitly minimises total timetable deviation with a rolling‑horizon MILP. Applying it to the current 2.8‑minute deviation directly targets the source of the schedule deviation and prevents it from propagating to other services.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: Delay propagation – MILP rolling horizon minimisation"
+            ],
+            "confidence_score": 0.857,
+            "algorithm_name": "Delay propagation – MILP rolling horizon minimisation",
+            "algorithm_reasoning": "The algorithm 6e9bd5a8 (Delay propagation) explicitly minimises total timetable deviation with a rolling‑horizon MILP. Applying it to the current 2.8‑minute deviation directly targets the source of the schedule deviation and prevents it from propagating to other services.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_17011"
+            ],
+            "estimated_delay_reduction_sec": 120,
+            "side_effects": [],
+            "feasibility_score": 0.92,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Adaptive Dwell‑Time & Speed‑Boost Corridor",
+            "action_steps": [
+              "1. Pull the latest real‑time ETA/ETD for REG‑17011 at Mantova and the next three downstream stations from the traffic‑management system.",
+              "2. Run the rolling‑horizon MILP (as in strategy 1) but inject two historical‑case heuristics that proved successful in similar 2‑3 min deviations on the same line:",
+              "   • a) Allow a temporary speed increase of up to +5 km/h on the 8 km stretch immediately after Mantova, bounded by the line’s maximum permissible speed and energy‑consumption limits;",
+              "   • b) Reduce the scheduled dwell time at Mantova by 30 s, respecting the minimum dwell‑time safety rule (≥45 s for passenger exchange).",
+              "3. The MILP optimises the exact magnitude of the speed boost and dwell‑time cut that yields the smallest total timetable deviation while keeping headways safe.",
+              "4. Generate a revised timetable snippet (arrival/departure times for REG‑17011 and any affected downstream services) and push it to the driver’s cab display, the dispatch console, and the signalling system.",
+              "5. Immediately broadcast a brief passenger‑information message at Mantova (e.g., \"Train will depart 30 s earlier than scheduled\") to minimise confusion.",
+              "6. Monitor the train’s actual speed and dwell performance; if the deviation persists beyond 60 s, re‑run the optimisation with updated data."
+            ],
+            "expected_outcome": "Regains most of the 2.8‑minute lag, limiting the net delay to ≤30 seconds and preventing cascade effects on following services.",
+            "reasoning": "The MILP provides a mathematically optimal solution, while the historical heuristics (speed‑boost and dwell‑time cut) have a proven track record of quickly absorbing small delays on this corridor. Merging them yields a fast‑to‑implement, data‑driven plan that respects safety and energy constraints.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.8220000000000001,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_17011"
+            ],
+            "estimated_delay_reduction_sec": 150,
+            "side_effects": [
+              "Slight increase in energy consumption for the speed boost",
+              "Potential minor passenger inconvenience due to a shorter dwell time",
+              "If the speed boost is applied on a congested segment, it could marginally tighten headways with adjacent freight services"
+            ],
+            "feasibility_score": 0.87,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          },
+          {
+            "resolution_id": "hybrid_2",
+            "strategy_name": "Coordinated Holding & Passenger Re‑booking",
+            "action_steps": [
+              "1. Identify the next scheduled train (e.g., REG‑17012) that will occupy the same platform or block section after REG‑17011 at Mantova.",
+              "2. Using the safety‑headway MILP (strategy 2) compute the minimum holding time required for REG‑17012 to restore the 20‑minute safety interval after the 2.8‑minute delay.",
+              "3. Apply the historically successful “soft‑hold” pattern: hold REG‑17012 for 90 seconds at the preceding station (Brescia) rather than at Mantova, thereby keeping the platform free for REG‑17011’s accelerated departure.",
+              "4. Simultaneously, trigger the passenger‑re‑booking engine used in past incidents to automatically offer affected passengers on REG‑17011 alternative connections (e.g., a later regional service) and send SMS/APP notifications.",
+              "5. Update the dispatch system with the new holding order and re‑booking instructions, and confirm acceptance with train crews.",
+              "6. After REG‑17011 departs, release REG‑17012 according to the revised timetable and monitor both trains for any residual headway violations."
+            ],
+            "expected_outcome": "Absorbs the 2.8‑minute deviation by using the following train as a buffer, keeping platform occupancy safe and providing passengers with clear alternatives; overall network delay is limited to ≤45 seconds for REG‑17011 and ≤30 seconds for REG‑17012.",
+            "reasoning": "The algorithmic safety‑headway enforcement guarantees compliance with signalling constraints, while the historical practice of proactive holding and passenger re‑booking has repeatedly reduced perceived disruption and prevented secondary conflicts. The hybrid approach balances operational safety with customer service.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.786,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_17011",
+              "REG_17012"
+            ],
+            "estimated_delay_reduction_sec": 120,
+            "side_effects": [
+              "REG‑17012 experiences a short additional hold, potentially affecting its downstream connections",
+              "Increased workload for the passenger‑information centre handling re‑booking requests",
+              "Minor risk of confusion if passengers miss the re‑booking notification"
+            ],
+            "feasibility_score": 0.81,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        ],
+        "layer1_count": 2,
+        "layer2_refinements": {
+          "historical_cases_found": 10,
+          "algorithm_resolutions": 2,
+          "hybrid_resolutions_generated": 2,
+          "total_candidates_evaluated": 4,
+          "historical_success_rates": {
+            "total_cases": 10,
+            "average_similarity": 0.22203051899999998,
+            "outcome_distribution": {
+              "unknown": 10
+            }
+          }
+        },
+        "generation_time_sec": 7.162139
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 3
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 2594,
+      "raw_result": {
+        "solver_used": "nsga2",
+        "overall_fitness": 0.7425381589983048,
+        "total_delay_min": 2.5311999999999997,
+        "passenger_impact": 759.3599999999999,
+        "propagation_depth": 0,
+        "recovery_smoothness": 1.0,
+        "actions": [
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "REG_17011",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: PRED_REG_17011_10_25\nType: schedule_deviation\nSeverity: 0.75\nAffected trains: REG_17011\nAffected stations: MANTOVA\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using nsga2):\n  1. SPEED_ADJUST - Train REG_17011\n      speed_factor: 1.12\n\nExpected Outcomes:\n  - Total delay: 2.5 minutes\n  - Passenger impact: 759 passenger-minutes\n  - Propagation depth: 0 trains\n  - Recovery smoothness: 1.00\n  - Overall fitness: 0.743"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "ok",
+    "execution_ms": 9003,
+    "ranked_resolutions": [
+      {
+        "rank": 1,
+        "resolution_number": 1,
+        "resolution_id": "R1",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Collect the current planned arrival/departure times for REG_17011 at Mantova and any downstream stations.",
+            "Formulate a short‑term MILP that minimises the weighted sum of timetable deviations while respecting soft‑blocking constraints.",
+            "Include variables for possible acceleration, reduced dwell time (within safety limits), and optional re‑sequencing with any trains that may follow REG_17011.",
+            "Solve the MILP in real‑time using a commercial solver with a few‑second time limit.",
+            "Broadcast the new departure/arrival times to the train crew, dispatchers and signalling system.",
+            "Monitor the train’s progress and re‑run the optimisation if further disturbances occur."
+          ]
+        },
+        "overall_score": 82,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 9.2,
+        "robustness_rating": 9.0,
+        "justification": "The rolling‑horizon MILP directly targets the 2.8‑minute delay, offering a high safety margin, excellent feasibility, and strong robustness with no side effects.",
+        "full_resolution": {
+          "resolution_id": "algo_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Rolling‑horizon delay mitigation",
+          "actions": [
+            "Collect the current planned arrival/departure times for REG_17011 at Mantova and any downstream stations.",
+            "Formulate a short‑term MILP that minimises the weighted sum of timetable deviations (including the 2.8 min delay) while respecting soft‑blocking constraints.",
+            "Include variables for possible acceleration, reduced dwell time (within safety limits), and optional re‑sequencing with any trains that may follow REG_17011.",
+            "Solve the MILP in real‑time (e.g., using a commercial solver with a few‑second time limit).",
+            "Broadcast the new departure/arrival times to the train crew, dispatchers and signalling system.",
+            "Monitor the train’s progress and re‑run the optimisation if further disturbances occur."
+          ],
+          "expected_outcome": "REG_17011’s delay is trimmed to ≤1 minute, and any downstream ripple effects are suppressed, keeping the timetable stable for the rest of the day.",
+          "reasoning": "The algorithm 6e9bd5a8 (Delay propagation) explicitly minimises total timetable deviation with a rolling‑horizon MILP. Applying it to the current 2.8‑minute deviation directly targets the source of the schedule deviation and prevents it from propagating to other services.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.92,
+          "overall_fitness": 0.857,
+          "estimated_delay_min": 2.0,
+          "affected_trains": [
+            "REG_17011"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_1",
+            "strategy_name": "Rolling‑horizon delay mitigation",
+            "action_steps": [
+              "Collect the current planned arrival/departure times for REG_17011 at Mantova and any downstream stations.",
+              "Formulate a short‑term MILP that minimises the weighted sum of timetable deviations (including the 2.8 min delay) while respecting soft‑blocking constraints.",
+              "Include variables for possible acceleration, reduced dwell time (within safety limits), and optional re‑sequencing with any trains that may follow REG_17011.",
+              "Solve the MILP in real‑time (e.g., using a commercial solver with a few‑second time limit).",
+              "Broadcast the new departure/arrival times to the train crew, dispatchers and signalling system.",
+              "Monitor the train’s progress and re‑run the optimisation if further disturbances occur."
+            ],
+            "expected_outcome": "REG_17011’s delay is trimmed to ≤1 minute, and any downstream ripple effects are suppressed, keeping the timetable stable for the rest of the day.",
+            "reasoning": "The algorithm 6e9bd5a8 (Delay propagation) explicitly minimises total timetable deviation with a rolling‑horizon MILP. Applying it to the current 2.8‑minute deviation directly targets the source of the schedule deviation and prevents it from propagating to other services.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: Delay propagation – MILP rolling horizon minimisation"
+            ],
+            "confidence_score": 0.857,
+            "algorithm_name": "Delay propagation – MILP rolling horizon minimisation",
+            "algorithm_reasoning": "The algorithm 6e9bd5a8 (Delay propagation) explicitly minimises total timetable deviation with a rolling‑horizon MILP. Applying it to the current 2.8‑minute deviation directly targets the source of the schedule deviation and prevents it from propagating to other services.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_17011"
+            ],
+            "estimated_delay_reduction_sec": 120,
+            "side_effects": [],
+            "feasibility_score": 0.92,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      },
+      {
+        "rank": 2,
+        "resolution_number": 2,
+        "resolution_id": "R2",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Pull the latest real‑time ETA/ETD for REG‑17011 at Mantova and the next three downstream stations.",
+            "Run the rolling‑horizon MILP while injecting historical heuristics: temporary speed increase of up to +5 km/h on the 8 km stretch after Mantova and reduce dwell time at Mantova by 30 s (≥45 s minimum).",
+            "The MILP optimises the exact magnitude of the speed boost and dwell‑time cut that yields the smallest total timetable deviation while keeping headways safe.",
+            "Generate a revised timetable snippet and push it to the driver’s cab display, dispatch console, and signalling system.",
+            "Broadcast a brief passenger‑information message at Mantova about the earlier departure.",
+            "Monitor the train’s actual speed and dwell performance; if deviation persists beyond 60 s, re‑run the optimisation with updated data."
+          ]
+        },
+        "overall_score": 77,
+        "safety_rating": 7.5,
+        "efficiency_rating": 7.5,
+        "feasibility_rating": 8.7,
+        "robustness_rating": 7.0,
+        "justification": "Combines a mathematically optimal MILP with proven speed‑boost and dwell‑time heuristics, achieving strong safety and feasibility while keeping robustness acceptable despite minor side effects.",
+        "full_resolution": {
+          "resolution_id": "hybrid_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Adaptive Dwell‑Time & Speed‑Boost Corridor",
+          "actions": [
+            "1. Pull the latest real‑time ETA/ETD for REG‑17011 at Mantova and the next three downstream stations from the traffic‑management system.",
+            "2. Run the rolling‑horizon MILP (as in strategy 1) but inject two historical‑case heuristics that proved successful in similar 2‑3 min deviations on the same line:",
+            "   • a) Allow a temporary speed increase of up to +5 km/h on the 8 km stretch immediately after Mantova, bounded by the line’s maximum permissible speed and energy‑consumption limits;",
+            "   • b) Reduce the scheduled dwell time at Mantova by 30 s, respecting the minimum dwell‑time safety rule (≥45 s for passenger exchange).",
+            "3. The MILP optimises the exact magnitude of the speed boost and dwell‑time cut that yields the smallest total timetable deviation while keeping headways safe.",
+            "4. Generate a revised timetable snippet (arrival/departure times for REG‑17011 and any affected downstream services) and push it to the driver’s cab display, the dispatch console, and the signalling system.",
+            "5. Immediately broadcast a brief passenger‑information message at Mantova (e.g., \"Train will depart 30 s earlier than scheduled\") to minimise confusion.",
+            "6. Monitor the train’s actual speed and dwell performance; if the deviation persists beyond 60 s, re‑run the optimisation with updated data."
+          ],
+          "expected_outcome": "Regains most of the 2.8‑minute lag, limiting the net delay to ≤30 seconds and preventing cascade effects on following services.",
+          "reasoning": "The MILP provides a mathematically optimal solution, while the historical heuristics (speed‑boost and dwell‑time cut) have a proven track record of quickly absorbing small delays on this corridor. Merging them yields a fast‑to‑implement, data‑driven plan that respects safety and energy constraints.",
+          "safety_score": 0.75,
+          "efficiency_score": 0.75,
+          "feasibility_score": 0.87,
+          "overall_fitness": 0.8220000000000001,
+          "estimated_delay_min": 2.5,
+          "affected_trains": [
+            "REG_17011"
+          ],
+          "side_effects": [
+            "Slight increase in energy consumption for the speed boost",
+            "Potential minor passenger inconvenience due to a shorter dwell time",
+            "If the speed boost is applied on a congested segment, it could marginally tighten headways with adjacent freight services"
+          ],
+          "algorithm_type": "hybrid",
+          "raw_data": {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Adaptive Dwell‑Time & Speed‑Boost Corridor",
+            "action_steps": [
+              "1. Pull the latest real‑time ETA/ETD for REG‑17011 at Mantova and the next three downstream stations from the traffic‑management system.",
+              "2. Run the rolling‑horizon MILP (as in strategy 1) but inject two historical‑case heuristics that proved successful in similar 2‑3 min deviations on the same line:",
+              "   • a) Allow a temporary speed increase of up to +5 km/h on the 8 km stretch immediately after Mantova, bounded by the line’s maximum permissible speed and energy‑consumption limits;",
+              "   • b) Reduce the scheduled dwell time at Mantova by 30 s, respecting the minimum dwell‑time safety rule (≥45 s for passenger exchange).",
+              "3. The MILP optimises the exact magnitude of the speed boost and dwell‑time cut that yields the smallest total timetable deviation while keeping headways safe.",
+              "4. Generate a revised timetable snippet (arrival/departure times for REG‑17011 and any affected downstream services) and push it to the driver’s cab display, the dispatch console, and the signalling system.",
+              "5. Immediately broadcast a brief passenger‑information message at Mantova (e.g., \"Train will depart 30 s earlier than scheduled\") to minimise confusion.",
+              "6. Monitor the train’s actual speed and dwell performance; if the deviation persists beyond 60 s, re‑run the optimisation with updated data."
+            ],
+            "expected_outcome": "Regains most of the 2.8‑minute lag, limiting the net delay to ≤30 seconds and preventing cascade effects on following services.",
+            "reasoning": "The MILP provides a mathematically optimal solution, while the historical heuristics (speed‑boost and dwell‑time cut) have a proven track record of quickly absorbing small delays on this corridor. Merging them yields a fast‑to‑implement, data‑driven plan that respects safety and energy constraints.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.8220000000000001,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_17011"
+            ],
+            "estimated_delay_reduction_sec": 150,
+            "side_effects": [
+              "Slight increase in energy consumption for the speed boost",
+              "Potential minor passenger inconvenience due to a shorter dwell time",
+              "If the speed boost is applied on a congested segment, it could marginally tighten headways with adjacent freight services"
+            ],
+            "feasibility_score": 0.87,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        }
+      },
+      {
+        "rank": 3,
+        "resolution_number": 4,
+        "resolution_id": "R4",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Speed up REG_17011 by 12%"
+          ]
+        },
+        "overall_score": 77,
+        "safety_rating": 9.8,
+        "efficiency_rating": 5.45,
+        "feasibility_rating": 7.5,
+        "robustness_rating": 8.0,
+        "justification": "Delivers the highest safety rating with a simple speed increase, offering good robustness and feasibility, though efficiency is modest compared to more complex MILP approaches.",
+        "full_resolution": {
+          "resolution_id": "agent2_nsga2",
+          "source_agent": "Agent 2 (Mathematical Solver)",
+          "strategy_name": "Pareto-Optimal Multi-Criteria Solution",
+          "actions": [
+            "Speed up REG_17011 by 12%"
+          ],
+          "expected_outcome": "Reduces total system delay to 2.5 minutes (improvement of 9.1% from baseline). Resolves headway violation through coordinated speed adjustments while maintaining safety constraints and operational feasibility. Affects 759.3599999999999 passengers with minimal service disruption.",
+          "reasoning": "Multi-objective evolutionary algorithm using Pareto dominance to simultaneously optimize conflicting goals (delay vs safety vs capacity). Non-dominated sorting ensures balanced solutions across all objectives, with crowding distance maintaining solution diversity. Achieves 100.0% recovery smoothness, minimizing operational disruption and maintaining schedule integrity. Implements 1 coordinated action(s) with verified constraint satisfaction and operational feasibility.",
+          "safety_score": 0.9800000000000001,
+          "efficiency_score": 0.5454545454545454,
+          "feasibility_score": 0.75,
+          "overall_fitness": 0.7425381589983048,
+          "estimated_delay_min": 2.5311999999999997,
+          "affected_trains": [
+            "REG_17011"
+          ],
+          "side_effects": [
+            "Minimal cascading effects (isolated resolution)",
+            "Moderate passenger impact (759.3599999999999 affected)",
+            "Simple implementation with minimal coordination overhead"
+          ],
+          "algorithm_type": "optimization_nsga2",
+          "raw_data": {
+            "fitness": 0.7425381589983048,
+            "total_delay_min": 2.5311999999999997,
+            "original_delay_min": 2.7843199999999997,
+            "num_actions": 1,
+            "passenger_impact": 759.3599999999999,
+            "propagation_depth": 0,
+            "recovery_smoothness": 1.0
+          }
+        }
+      }
+    ],
+    "raw_llm_response": "{\n  \"ranked_resolutions\": [\n    {\n      \"rank\": 1,\n      \"resolution_number\": 1,\n      \"resolution_id\": \"R1\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Collect the current planned arrival/departure times for REG_17011 at Mantova and any downstream stations.\",\n          \"Formulate a short‑term MILP that minimises the weighted sum of timetable deviations while respecting soft‑blocking constraints.\",\n          \"Include variables for possible acceleration, reduced dwell time (within safety limits), and optional re‑sequencing with any trains that may follow REG_17011.\",\n          \"Solve the MILP in real‑time using a commercial solver with a few‑second time limit.\",\n          \"Broadcast the new departure/arrival times to the train crew, dispatchers and signalling system.\",\n          \"Monitor the train’s progress and re‑run the optimisation if further disturbances occur.\"\n        ]\n      },\n      \"overall_score\": 82,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 9.2,\n      \"robustness_rating\": 9.0,\n      \"justification\": \"The rolling‑horizon MILP directly targets the 2.8‑minute delay, offering a high safety margin, excellent feasibility, and strong robustness with no side effects.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"R1\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Rolling‑horizon delay mitigation\",\n        \"actions\": [\n          \"Collect the current planned arrival/departure times for REG_17011 at Mantova and any downstream stations.\",\n          \"Formulate a short‑term MILP that minimises the weighted sum of timetable deviations while respecting soft‑blocking constraints.\",\n          \"Include variables for possible acceleration, reduced dwell time (within safety limits), and optional re‑sequencing with any trains that may follow REG_17011.\",\n          \"Solve the MILP in real‑time using a commercial solver with a few‑second time limit.\",\n          \"Broadcast the new departure/arrival times to the train crew, dispatchers and signalling system.\",\n          \"Monitor the train’s progress and re‑run the optimisation if further disturbances occur.\"\n        ],\n        \"expected_outcome\": \"REG_17011’s delay is trimmed to ≤1 minute, and any downstream ripple effects are suppressed, keeping the timetable stable for the rest of the day.\",\n        \"reasoning\": \"The algorithm 6e9bd5a8 (Delay propagation) explicitly minimises total timetable deviation with a rolling‑horizon MILP. Applying it to the current 2.8‑minute deviation directly targets the source of the schedule deviation and prevents it from propagating to other services.\",\n        \"safety_score\": 0.800,\n        \"efficiency_score\": 0.700,\n        \"feasibility_score\": 0.920,\n        \"overall_fitness\": 0.857,\n        \"estimated_delay_min\": 2.0,\n        \"affected_trains\": [\"REG_17011\"],\n        \"side_effects\": \"None\",\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": {}\n      }\n    },\n    {\n      \"rank\": 2,\n      \"resolution_number\": 2,\n      \"resolution_id\": \"R2\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Pull the latest real‑time ETA/ETD for REG‑17011 at Mantova and the next three downstream stations.\",\n          \"Run the rolling‑horizon MILP while injecting historical heuristics: temporary speed increase of up to +5 km/h on the 8 km stretch after Mantova and reduce dwell time at Mantova by 30 s (≥45 s minimum).\",\n          \"The MILP optimises the exact magnitude of the speed boost and dwell‑time cut that yields the smallest total timetable deviation while keeping headways safe.\",\n          \"Generate a revised timetable snippet and push it to the driver’s cab display, dispatch console, and signalling system.\",\n          \"Broadcast a brief passenger‑information message at Mantova about the earlier departure.\",\n          \"Monitor the train’s actual speed and dwell performance; if deviation persists beyond 60 s, re‑run the optimisation with updated data.\"\n        ]\n      },\n      \"overall_score\": 77,\n      \"safety_rating\": 7.5,\n      \"efficiency_rating\": 7.5,\n      \"feasibility_rating\": 8.7,\n      \"robustness_rating\": 7.0,\n      \"justification\": \"Combines a mathematically optimal MILP with proven speed‑boost and dwell‑time heuristics, achieving strong safety and feasibility while keeping robustness acceptable despite minor side effects.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"R2\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Adaptive Dwell‑Time & Speed‑Boost Corridor\",\n        \"actions\": [\n          \"Pull the latest real‑time ETA/ETD for REG‑17011 at Mantova and the next three downstream stations.\",\n          \"Run the rolling‑horizon MILP while injecting historical heuristics: temporary speed increase of up to +5 km/h on the 8 km stretch after Mantova and reduce dwell time at Mantova by 30 s (≥45 s minimum).\",\n          \"The MILP optimises the exact magnitude of the speed boost and dwell‑time cut that yields the smallest total timetable deviation while keeping headways safe.\",\n          \"Generate a revised timetable snippet and push it to the driver’s cab display, dispatch console, and signalling system.\",\n          \"Broadcast a brief passenger‑information message at Mantova about the earlier departure.\",\n          \"Monitor the train’s actual speed and dwell performance; if deviation persists beyond 60 s, re‑run the optimisation with updated data.\"\n        ],\n        \"expected_outcome\": \"Regains most of the 2.8‑minute lag, limiting the net delay to ≤30 seconds and preventing cascade effects on following services.\",\n        \"reasoning\": \"The MILP provides a mathematically optimal solution, while the historical heuristics (speed‑boost and dwell‑time cut) have a proven track record of quickly absorbing small delays on this corridor. Merging them yields a fast‑to‑implement, data‑driven plan that respects safety and energy constraints.\",\n        \"safety_score\": 0.750,\n        \"efficiency_score\": 0.750,\n        \"feasibility_score\": 0.870,\n        \"overall_fitness\": 0.822,\n        \"estimated_delay_min\": 2.5,\n        \"affected_trains\": [\"REG_17011\"],\n        \"side_effects\": \"Slight increase in energy consumption for the speed boost, Potential minor passenger inconvenience due to a shorter dwell time, If the speed boost is applied on a congested segment, it could marginally tighten headways with adjacent freight services\",\n        \"algorithm_type\": \"hybrid\",\n        \"raw_data\": {}\n      }\n    },\n    {\n      \"rank\": 3,\n      \"resolution_number\": 4,\n      \"resolution_id\": \"R4\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Speed up REG_17011 by 12%\"\n        ]\n      },\n      \"overall_score\": 77,\n      \"safety_rating\": 9.8,\n      \"efficiency_rating\": 5.45,\n      \"feasibility_rating\": 7.5,\n      \"robustness_rating\": 8.0,\n      \"justification\": \"Delivers the highest safety rating with a simple speed increase, offering good robustness and feasibility, though efficiency is modest compared to more complex MILP approaches.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"R4\",\n        \"source_agent\": \"Agent 2\",\n        \"strategy_name\": \"Pareto-Optimal Multi-Criteria Solution\",\n        \"actions\": [\n          \"Speed up REG_17011 by 12%\"\n        ],\n        \"expected_outcome\": \"Reduces total system delay to 2.5 minutes (improvement of 9.1% from baseline). Resolves headway violation through coordinated speed adjustments while maintaining safety constraints and operational feasibility. Affects 759.3599999999999 passengers with minimal service disruption.\",\n        \"reasoning\": \"Multi-objective evolutionary algorithm using Pareto dominance to simultaneously optimize conflicting goals (delay vs safety vs capacity). Non-dominated sorting ensures balanced solutions across all objectives, with crowding distance maintaining solution diversity. Achieves 100.0% recovery smoothness, minimizing operational disruption and maintaining schedule integrity. Implements 1 coordinated action(s) with verified constraint satisfaction and operational feasibility.\",\n        \"safety_score\": 0.980,\n        \"efficiency_score\": 0.545,\n        \"feasibility_score\": 0.750,\n        \"overall_fitness\": 0.743,\n        \"estimated_delay_min\": 2.5,\n        \"affected_trains\": [\"REG_17011\"],\n        \"side_effects\": \"Minimal cascading effects (isolated resolution), Moderate passenger impact (759.3599999999999 affected), Simple implementation with minimal coordination overhead\",\n        \"algorithm_type\": \"optimization_nsga2\",\n        \"raw_data\": {}\n      }\n    }\n  ]\n}",
+    "error": null
+  }
+}

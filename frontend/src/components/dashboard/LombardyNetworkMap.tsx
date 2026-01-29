@@ -257,7 +257,7 @@ export function LombardyNetworkMap({
     // Update station risk levels based on predictions
     setStations((prev) => {
       const newMap = new Map(prev);
-      
+
       // Reset all stations
       newMap.forEach((station) => {
         station.riskLevel = 'safe';
@@ -291,23 +291,23 @@ export function LombardyNetworkMap({
         prev.map((train) => {
           // Calculate new progress
           const newProgress = train.progress + 0.005; // Slower, smoother movement
-          
+
           if (newProgress >= 1) {
             // Train arrived at next station - move to next segment
             const currentStationIdx = Array.from(stations.keys()).indexOf(train.currentStation);
             const nextStationIdx = Array.from(stations.keys()).indexOf(train.nextStation || '');
-            
+
             // For now, loop back
             return {
               ...train,
               progress: 0,
             };
           }
-          
+
           // Interpolate position between current and next station
           const currentStation = stations.get(train.currentStation);
           const nextStation = stations.get(train.nextStation || '');
-          
+
           if (currentStation && nextStation) {
             return {
               ...train,
@@ -318,7 +318,7 @@ export function LombardyNetworkMap({
               },
             };
           }
-          
+
           return {
             ...train,
             progress: newProgress,
@@ -371,7 +371,7 @@ export function LombardyNetworkMap({
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-bold text-white">Lombardy Rail Network</h2>
-            
+
           </div>
           <div className="flex gap-2">
             {/* Stats badges */}
@@ -427,10 +427,10 @@ export function LombardyNetworkMap({
                   predictions.network_risk_score > 0.6
                     ? RISK_COLORS.critical
                     : predictions.network_risk_score > 0.4
-                    ? RISK_COLORS.high_risk
-                    : predictions.network_risk_score > 0.2
-                    ? RISK_COLORS.low_risk
-                    : RISK_COLORS.safe,
+                      ? RISK_COLORS.high_risk
+                      : predictions.network_risk_score > 0.2
+                        ? RISK_COLORS.low_risk
+                        : RISK_COLORS.safe,
               }}
             >
               {(predictions.network_risk_score * 100).toFixed(0)}%
@@ -445,10 +445,10 @@ export function LombardyNetworkMap({
                   predictions.network_risk_score > 0.6
                     ? RISK_COLORS.critical
                     : predictions.network_risk_score > 0.4
-                    ? RISK_COLORS.high_risk
-                    : predictions.network_risk_score > 0.2
-                    ? RISK_COLORS.low_risk
-                    : RISK_COLORS.safe,
+                      ? RISK_COLORS.high_risk
+                      : predictions.network_risk_score > 0.2
+                        ? RISK_COLORS.low_risk
+                        : RISK_COLORS.safe,
               }}
             />
           </div>
