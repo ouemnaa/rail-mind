@@ -1,0 +1,77 @@
+{
+  "rank": 1,
+  "resolution_number": 1,
+  "resolution_id": "Dynamic Speed Harmonization with MILP Optimization",
+  "bullet_resolution_actions": {
+    "actions": [
+      "Activate MILP model for speed adjustments",
+      "Implement ETCS-enforced speed restrictions",
+      "Extend dwell time at Pavia",
+      "Update TMS with real-time rescheduling"
+    ]
+  },
+  "overall_score": 85,
+  "safety_rating": 7.5,
+  "efficiency_rating": 9.0,
+  "feasibility_rating": 8.5,
+  "robustness_rating": 7.0,
+  "justification": "Optimal balance of low delay (1.7min), high feasibility (ETCS enforcement), and controlled side effects. MILP optimization ensures safety compliance while minimizing operational disruption through recoverable speed/dwell adjustments.",
+  "full_resolution": {
+    "resolution_id": "hybrid_1",
+    "source_agent": "Agent 1 (Hybrid/Historical)",
+    "strategy_name": "Dynamic Speed Harmonization with MILP Optimization",
+    "actions": [
+      "Activate MILP model to calculate optimal speed adjustments for REG_3053 (reduce speed by 15-20%) while slightly accelerating REG_33003 where track conditions permit",
+      "Implement temporary speed restriction zones using ETCS Level 2 enforcement",
+      "Apply calculated dwell time extensions at Pavia station for REG_3053 using built-in recovery time buffers",
+      "Update TMS with revised predicted times using real-time rolling horizon rescheduling"
+    ],
+    "expected_outcome": "Achieves 180s headway within 8km without full stoppage, limiting REG_3053 delay to ≤90s",
+    "reasoning": "Combines MILP's constraint-based safety with dynamic speed control historically effective in Lombardy region.",
+    "safety_score": 0.75,
+    "efficiency_score": 0.75,
+    "feasibility_score": 0.85,
+    "overall_fitness": 0.972,
+    "estimated_delay_min": 1.6666666666666667,
+    "affected_trains": [
+      "REG_3053"
+    ],
+    "side_effects": [
+      "Temporary capacity reduction on adjacent tracks",
+      "Potential knock-on delays ≤3min for following services"
+    ],
+    "algorithm_type": "hybrid",
+    "raw_data": {
+      "resolution_id": "hybrid_1",
+      "strategy_name": "Dynamic Speed Harmonization with MILP Optimization",
+      "action_steps": [
+        "Activate MILP model to calculate optimal speed adjustments for REG_3053 (reduce speed by 15-20%) while slightly accelerating REG_33003 where track conditions permit",
+        "Implement temporary speed restriction zones using ETCS Level 2 enforcement",
+        "Apply calculated dwell time extensions at Pavia station for REG_3053 using built-in recovery time buffers",
+        "Update TMS with revised predicted times using real-time rolling horizon rescheduling"
+      ],
+      "expected_outcome": "Achieves 180s headway within 8km without full stoppage, limiting REG_3053 delay to ≤90s",
+      "reasoning": "Combines MILP's constraint-based safety with dynamic speed control historically effective in Lombardy region. Speed harmonization prevents emergency braking while leveraging Milan's ETCS infrastructure for precise control.",
+      "source_type": "hybrid",
+      "source_references": [
+        "Combined algorithm and historical insights"
+      ],
+      "confidence_score": 0.972,
+      "algorithm_name": null,
+      "algorithm_reasoning": null,
+      "similar_cases": [],
+      "historical_success_rate": null,
+      "affected_trains": [
+        "REG_3053"
+      ],
+      "estimated_delay_reduction_sec": 100,
+      "side_effects": [
+        "Temporary capacity reduction on adjacent tracks",
+        "Potential knock-on delays ≤3min for following services"
+      ],
+      "feasibility_score": 0.85,
+      "safety_score": 0.75,
+      "efficiency_score": 0.75
+    }
+  }
+}
