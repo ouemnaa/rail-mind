@@ -96,17 +96,17 @@ export function ResolutionPanel({
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Use state from location if available (persists when going back), otherwise use passed detection
   const [result, setResult] = useState<ApiResponse | null>(location.state?.resolutionResult || null);
   const [selectedConflict] = useState<any>(detection || location.state?.activeConflict || null);
 
   // Auto-run resolution if we have a conflict but no results yet
-  useEffect(() => {
-    if (selectedConflict && !result && !isLoading) {
-      handleResolve();
-    }
-  }, [selectedConflict]);
+  // useEffect(() => {
+  //   if (selectedConflict && !result && !isLoading) {
+  //     handleResolve();
+  //   }
+  // }, [selectedConflict]);
 
   // Convert orchestrator result to display format
   const getResolutionOptions = () => {
@@ -143,6 +143,13 @@ export function ResolutionPanel({
         isRecommended: r.rank === 1,
         sourceAgent: fullRes?.source_agent || "Unknown",
         actions,
+        overallScore: r.overall_score,
+        safetyRating: r.safety_rating,
+        efficiencyRating: r.efficiency_rating,
+        feasibilityRating: r.feasibility_rating,
+        sideEffects: fullRes?.side_effects || [],
+        reasoning: fullRes?.reasoning || "",
+        affectedTrains: fullRes?.affected_trains || [],
       };
     });
   };
@@ -277,14 +284,14 @@ export function ResolutionPanel({
           {result ? (
             <div className="glass-panel p-6 h-full flex flex-col justify-between">
               <div className="flex items-center justify-between mb-6">
-                 <div>
-                    <h3 className="font-bold uppercase tracking-wider text-sm opacity-70 mb-1">Intelligence Report</h3>
-                    <div className="text-2xl font-bold text-primary">{resolutionOptions.length} Viable Pathways Identified</div>
-                 </div>
-                 <Button variant="outline" size="sm" onClick={handleResolve} disabled={isLoading} className="gap-2">
-                    <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
-                    Recalculate
-                 </Button>
+                <div>
+                  <h3 className="font-bold uppercase tracking-wider text-sm opacity-70 mb-1">Intelligence Report</h3>
+                  <div className="text-2xl font-bold text-primary">{resolutionOptions.length} Viable Pathways Identified</div>
+                </div>
+                <Button variant="outline" size="sm" onClick={handleResolve} disabled={isLoading} className="gap-2">
+                  <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+                  Recalculate
+                </Button>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
@@ -292,39 +299,39 @@ export function ResolutionPanel({
                   <div className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">Execution Time</div>
                   <div className="text-2xl font-black">{result.output.total_execution_ms}<span className="text-xs font-normal text-muted-foreground ml-1">ms</span></div>
                   <div className="w-full bg-muted h-1 rounded-full overflow-hidden">
-                    <div className="bg-primary h-full" style={{width: '100%'}} />
+                    <div className="bg-primary h-full" style={{ width: '100%' }} />
                   </div>
                 </div>
                 <div className="space-y-1">
-                   <div className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">Confidence</div>
-                   <div className="text-2xl font-black text-success">98.4<span className="text-xs font-normal text-muted-foreground ml-1">%</span></div>
-                   <div className="w-full bg-muted h-1 rounded-full overflow-hidden">
-                    <div className="bg-success h-full" style={{width: '98%'}} />
+                  <div className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">Confidence</div>
+                  <div className="text-2xl font-black text-success">98.4<span className="text-xs font-normal text-muted-foreground ml-1">%</span></div>
+                  <div className="w-full bg-muted h-1 rounded-full overflow-hidden">
+                    <div className="bg-success h-full" style={{ width: '98%' }} />
                   </div>
                 </div>
                 <div className="space-y-1">
-                   <div className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">RAG Depth</div>
-                   <div className="text-2xl font-black text-blue-400">{result.output.agents.hybrid_rag.normalized_count}</div>
-                   <div className="w-full bg-muted h-1 rounded-full overflow-hidden">
-                    <div className="bg-blue-400 h-full" style={{width: '70%'}} />
+                  <div className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">RAG Depth</div>
+                  <div className="text-2xl font-black text-blue-400">{result.output.agents.hybrid_rag.normalized_count}</div>
+                  <div className="w-full bg-muted h-1 rounded-full overflow-hidden">
+                    <div className="bg-blue-400 h-full" style={{ width: '70%' }} />
                   </div>
                 </div>
                 <div className="space-y-1">
-                   <div className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">Math Precision</div>
-                   <div className="text-2xl font-black text-yellow-400">{result.output.agents.mathematical.normalized_count}</div>
-                   <div className="w-full bg-muted h-1 rounded-full overflow-hidden">
-                    <div className="bg-yellow-400 h-full" style={{width: '85%'}} />
+                  <div className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">Math Precision</div>
+                  <div className="text-2xl font-black text-yellow-400">{result.output.agents.mathematical.normalized_count}</div>
+                  <div className="w-full bg-muted h-1 rounded-full overflow-hidden">
+                    <div className="bg-yellow-400 h-full" style={{ width: '85%' }} />
                   </div>
                 </div>
               </div>
             </div>
           ) : (
             <div className="glass-panel p-6 h-full flex items-center justify-center bg-primary/5 border-dashed border-primary/20">
-               <div className="text-center max-w-sm">
-                  <Brain className="w-12 h-12 text-primary/40 mx-auto mb-4" />
-                  <h3 className="font-bold text-lg mb-2">Awaiting AI Analysis</h3>
-                  <p className="text-sm text-muted-foreground">Click "Resolve Conflict" to initiate the multi-agent reasoning engine and generate optimized solutions.</p>
-               </div>
+              <div className="text-center max-w-sm">
+                <Brain className="w-12 h-12 text-primary/40 mx-auto mb-4" />
+                <h3 className="font-bold text-lg mb-2">Awaiting AI Analysis</h3>
+                <p className="text-sm text-muted-foreground">Click "Resolve Conflict" to initiate the multi-agent reasoning engine and generate optimized solutions.</p>
+              </div>
             </div>
           )}
         </div>
@@ -352,7 +359,7 @@ export function ResolutionPanel({
           <h2 className="text-2xl font-bold tracking-tight">Proposed Solutions</h2>
           <div className="h-px flex-1 bg-border/50" />
         </div>
-        
+
         <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-6">
           {resolutionOptions.map((option) => (
             <div key={option.rank} className="flex flex-col group">
@@ -371,11 +378,10 @@ export function ResolutionPanel({
               {hasApiResults && "sourceAgent" in option && (
                 <div className="mt-3 px-4 flex items-center gap-3 text-xs">
                   <span
-                    className={`px-3 py-1 rounded-full font-bold uppercase tracking-widest ${
-                      (option as any).sourceAgent?.includes("Hybrid")
-                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                        : "bg-yellow-500/20 text-yellow-500 border border-yellow-500/30"
-                    }`}
+                    className={`px-3 py-1 rounded-full font-bold uppercase tracking-widest ${(option as any).sourceAgent?.includes("Hybrid")
+                      ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                      : "bg-yellow-500/20 text-yellow-500 border border-yellow-500/30"
+                      }`}
                   >
                     {(option as any).sourceAgent}
                   </span>

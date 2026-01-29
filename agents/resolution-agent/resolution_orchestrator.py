@@ -73,20 +73,19 @@ class OrchestratorOutput:
 def run_hybrid_rag_agent(conflict: Dict[str, Any], context: Dict[str, Any], timeout: float) -> AgentResult:
     """
     Run the Hybrid RAG agent (Agent 1).
-    Returns raw output unchanged.
+    Returns raw output with 3 ranked resolutions.
     """
     start_time = time.perf_counter()
     
     try:
         # Import the resolution generator
-        from agent.resolution_generator import TwoLayerResolutionGenerator
+        from agent.resolution_generator import ResolutionGenerationSystem
         from qdrant_client import QdrantClient
         
-        # Get API key from environment or use default
-        api_key = "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"
+        GROQ_API_KEY = "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" 
         
         # Initialize Qdrant client (use local or cloud based on env)
-        qdrant_url = " https://cf323744-546a-492d-b614-8542cb3ce423.us-east-1-1.aws.cloud.qdrant.io"
+        qdrant_url = "https://cf323744-546a-492d-b614-8542cb3ce423.us-east-1-1.aws.cloud.qdrant.io"
         qdrant_api_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.fI89vclTejMkRnUs-MbAmV-O4PwoQcYE1DO_fN6l7LM"
         
         if qdrant_api_key:
@@ -94,24 +93,39 @@ def run_hybrid_rag_agent(conflict: Dict[str, Any], context: Dict[str, Any], time
         else:
             qdrant_client = QdrantClient(url=qdrant_url)
         
-        # Initialize generator
-        generator = TwoLayerResolutionGenerator(
-            qdrant_client=qdrant_client,
-            llm_api_key=api_key
+        # Initialize generator with Groq API key
+        generator = ResolutionGenerationSystem(
+            qdrant_url=qdrant_url,
+            qdrant_api_key=qdrant_api_key,
+            llm_api_key=GROQ_API_KEY,
+            llm_model="openai/gpt-oss-120b"
         )
         
-        # Generate resolutions
-        report = generator.generate_resolution_report(
+        # Generate resolutions (returns ResolutionReport with ranked resolutions)
+        report = generator.generate_resolutions(
             conflict=conflict,
             context=context
         )
         
         execution_ms = int((time.perf_counter() - start_time) * 1000)
         
+        # Convert report to dict - includes conflict_id, resolutions, and metadata
+        raw_result = report.to_dict() if hasattr(report, 'to_dict') else report
+        
+        # Ensure we have resolutions in the output
+        if isinstance(raw_result, dict) and 'resolutions' in raw_result:
+            # Verify we have up to 3 resolutions
+            if isinstance(raw_result['resolutions'], list) and len(raw_result['resolutions']) > 0:
+                return AgentResult(
+                    status="ok",
+                    execution_ms=execution_ms,
+                    raw_result=raw_result
+                )
+        
         return AgentResult(
             status="ok",
             execution_ms=execution_ms,
-            raw_result=report.to_dict() if hasattr(report, 'to_dict') else report
+            raw_result=raw_result
         )
         
     except ImportError as e:
@@ -256,54 +270,56 @@ def run_mathematical_agent(conflict: Dict[str, Any], context: Dict[str, Any], ti
 def normalize_agent1_output(raw_result: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     Normalize Agent 1 (Hybrid RAG) output to NormalizedResolution format.
-    Uses existing ResolutionNormalizer from llm_judge_fair.py.
+    Extracts resolutions from the ResolutionReport and normalizes each one.
     """
-    try:
-        from llm_judge_v2 import ResolutionNormalizer, NormalizedResolution
-        
-        normalizer = ResolutionNormalizer()
-        normalized = []
-        
-        # Handle both direct resolution list and wrapped format
-        resolutions = raw_result.get('resolutions', [])
-        if not resolutions and isinstance(raw_result, list):
-            resolutions = raw_result
-        
-        for res in resolutions:
-            try:
-                norm = normalizer.normalize_agent1_resolution(res)
-                normalized.append(asdict(norm))
-            except Exception as e:
-                print(f"⚠️ Failed to normalize Agent 1 resolution: {e}")
-                continue
-        
-        return normalized
-        
-    except ImportError:
-        # Fallback: manual normalization
-        normalized = []
-        resolutions = raw_result.get('resolutions', [])
-        
-        for res in resolutions:
-            normalized.append({
-                'resolution_id': res.get('resolution_id', 'unknown'),
+    # Extract resolutions from report structure
+    resolutions = raw_result.get('resolutions', [])
+    
+    # If resolutions is a dict (from to_dict()), convert to list
+    if isinstance(resolutions, dict):
+        resolutions = list(resolutions.values())
+    
+    if not resolutions:
+        print("⚠️ No resolutions found in Agent 1 output")
+        return []
+    
+    normalized = []
+    
+    for res in resolutions:
+        try:
+            # Handle both dict and object formats
+            if isinstance(res, dict):
+                res_dict = res
+            else:
+                res_dict = res.to_dict() if hasattr(res, 'to_dict') else res.__dict__
+            
+            # Create normalized resolution
+            normalized_res = {
+                'resolution_id': res_dict.get('resolution_id', 'unknown'),
                 'source_agent': 'Agent 1 (Hybrid/Historical)',
-                'strategy_name': res.get('strategy_name', 'Unknown'),
-                'actions': res.get('action_steps', []),
-                'expected_outcome': res.get('expected_outcome', ''),
-                'reasoning': res.get('reasoning', ''),
-                'safety_score': res.get('safety_score', 0.5),
-                'efficiency_score': res.get('efficiency_score', 0.5),
-                'feasibility_score': res.get('feasibility_score', 0.5),
-                'overall_fitness': res.get('confidence_score', 0.5),
-                'estimated_delay_min': abs(res.get('estimated_delay_reduction_sec', 0)) / 60.0,
-                'affected_trains': res.get('affected_trains', []),
-                'side_effects': res.get('side_effects', []),
-                'algorithm_type': res.get('source_type', 'hybrid'),
-                'raw_data': res
-            })
-        
-        return normalized
+                'strategy_name': res_dict.get('strategy_name', 'Unknown'),
+                'actions': res_dict.get('action_steps', []),
+                'expected_outcome': res_dict.get('expected_outcome', ''),
+                'reasoning': res_dict.get('reasoning', ''),
+                'safety_score': float(res_dict.get('safety_score', 0.5)),
+                'efficiency_score': float(res_dict.get('efficiency_score', 0.5)),
+                'feasibility_score': float(res_dict.get('feasibility_score', 0.5)),
+                'overall_fitness': float(res_dict.get('confidence_score', 0.5)),
+                'estimated_delay_min': abs(res_dict.get('estimated_delay_reduction_sec', 0)) / 60.0,
+                'affected_trains': res_dict.get('affected_trains', []),
+                'side_effects': res_dict.get('side_effects', []),
+                'algorithm_type': res_dict.get('source_type', 'hybrid'),
+                'raw_data': res_dict
+            }
+            normalized.append(normalized_res)
+        except Exception as e:
+            print(f"⚠️ Failed to normalize Agent 1 resolution: {e}")
+            continue
+    
+    if not normalized:
+        print("⚠️ No resolutions were successfully normalized from Agent 1 output")
+    
+    return normalized
 
 
 def normalize_agent2_output(raw_result: Dict[str, Any], conflict_data: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -761,10 +777,14 @@ def orchestrate(
             hybrid_result.parser_status = "ok"
             all_normalized.extend(normalized_1)
             print(f"    Agent 1: {len(normalized_1)} resolutions normalized")
+            if len(normalized_1) == 0:
+                print("    ⚠️ Warning: Agent 1 returned no normalized resolutions")
         except Exception as e:
             hybrid_result.parser_status = "error"
             hybrid_result.parser_error = str(e)
             print(f"    Agent 1: Parser error - {e}")
+            import traceback
+            traceback.print_exc()
     
     # Normalize Agent 2 output
     if math_result.status == "ok" and math_result.raw_result:

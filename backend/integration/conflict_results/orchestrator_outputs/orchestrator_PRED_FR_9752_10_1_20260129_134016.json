@@ -1,0 +1,421 @@
+{
+  "status": "ok",
+  "conflict_id": "PRED_FR_9752_10_1",
+  "started_at": "2026-01-29T13:39:47.353897+00:00",
+  "finished_at": "2026-01-29T13:40:16.752939+00:00",
+  "total_execution_ms": 29399,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 18843,
+      "raw_result": {
+        "conflict_id": "PRED_FR_9752_10_1",
+        "conflict_summary": "",
+        "timestamp": "2026-01-29T14:40:06.191746",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [
+          {
+            "resolution_id": "algo_1",
+            "strategy_name": "Priority‑based FCFS with upstream hold",
+            "action_steps": [
+              "1. Verify the arrival order of FR_9752 at Brescia and any other pending arrivals (if any).",
+              "2. Apply FCFS – allow FR_9752 to occupy the platform first because it is already on‑track.",
+              "3. If another train is scheduled to arrive within the next 5 minutes, hold that train at the preceding signal until the platform is free.",
+              "4. Reduce the dwell time of FR_9752 by 1‑2 minutes (e.g., limit boarding/alighting procedures) while maintaining safety margins.",
+              "5. Communicate the temporary hold to the upstream dispatcher and update the train‑control system."
+            ],
+            "expected_outcome": "FR_9752 clears the platform promptly, preventing a cascade of further platform requests and eliminating the soft block. Up‑stream hold avoids platform over‑capacity.",
+            "reasoning": "The conflict is a classic platform‑congestion case. Algorithm *platform_congestion_resolution_1* prescribes FCFS with priority overrides and upstream holding, which directly matches a soft‑blocking situation involving a single delayed train.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: platform_congestion_resolution_1"
+            ],
+            "confidence_score": 0.857,
+            "algorithm_name": "platform_congestion_resolution_1",
+            "algorithm_reasoning": "The conflict is a classic platform‑congestion case. Algorithm *platform_congestion_resolution_1* prescribes FCFS with priority overrides and upstream holding, which directly matches a soft‑blocking situation involving a single delayed train.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_9752"
+            ],
+            "estimated_delay_reduction_sec": 5,
+            "side_effects": [],
+            "feasibility_score": 0.92,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Dynamic Platform Switchover + Predictive Up‑stream Hold (Hybrid MILP‑Historical)",
+            "action_steps": [
+              "1. Pull the last 30 minutes of arrival/departure logs for Brescia and the adjacent station (Desenzano) to identify any historically used “overflow” platforms.",
+              "2. Run the short‑term MILP (as in the algorithmic solution) but add a constraint that allows FR‑9752 to be reassigned to the overflow platform at Desenzano if the MILP‑derived release time exceeds 3 minutes.",
+              "3. Simultaneously, apply the historical “up‑stream hold” rule that was successful in a 2018 Brescia‑Verona incident: hold the next scheduled train at the preceding signal for a maximum of 4 minutes, using the predictive arrival estimate from the MILP.",
+              "4. Issue a coordinated dispatch order: ",
+              "   a. If the MILP selects the overflow platform, route FR‑9752 to Desenzano via the existing cross‑track (no passenger transfer needed). ",
+              "   b. If the MILP keeps FR‑9752 on the original platform, enforce a 1‑minute dwell‑time compression and release the platform at the MILP‑recommended time.",
+              "5. Update the traffic management system with the new platform assignment and hold instructions, and broadcast a passenger information message about the temporary platform change.",
+              "6. Monitor the actual arrival of the following train; if the upstream hold exceeds the predicted 4 minutes, trigger the fallback MILP re‑run with updated data."
+            ],
+            "expected_outcome": "FR‑9752 clears the congested platform within 2–3 minutes, preventing a cascade of delays; the next train is held only as long as necessary, keeping overall network delay under 6 minutes.",
+            "reasoning": "The MILP provides an optimal, data‑driven release time, while the historical overflow‑platform practice offers a proven safety net when the optimal solution would still cause a bottleneck. Adding the proven upstream‑hold rule ensures that any downstream impact is bounded, creating a resilient hybrid that adapts in real time.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.8280000000000001,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_9752"
+            ],
+            "estimated_delay_reduction_sec": 210,
+            "side_effects": [
+              "Possible passenger inconvenience due to platform change at Desenzano",
+              "Minor increase in crew workload for coordinating the overflow move"
+            ],
+            "feasibility_score": 0.88,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          },
+          {
+            "resolution_id": "hybrid_2",
+            "strategy_name": "Adaptive Dwell Compression + Real‑time Passenger Flow Management (Hybrid FCFS‑Historical)",
+            "action_steps": [
+              "1. Retrieve the passenger‑boarding/alighting statistics for FR‑9752 at Brescia from the past 6 months (average dwell = 4 min, peak = 5 min).",
+              "2. Deploy the FCFS‑priority rule to keep FR‑9752 first on the platform, but augment it with a dynamic dwell‑time reduction based on real‑time passenger‑flow sensors (as used in the 2021 Milan hub case).",
+              "3. Activate station staff to open additional doors and use pre‑board announcements to accelerate boarding, targeting a 30‑second dwell reduction per 100 passengers present.",
+              "4. Simultaneously, set a soft upstream hold for any train scheduled to arrive within the next 5 minutes, limiting the hold to 2 minutes while the dwell compression is in effect.",
+              "5. Log the actual dwell time achieved; if the reduction reaches ≥ 1 minute, cancel the upstream hold early and release the platform.",
+              "6. Communicate the adjusted dwell plan to the train crew via the driver‑machine interface and update the central traffic control system."
+            ],
+            "expected_outcome": "FR‑9752 departs up to 90 seconds earlier than its original schedule, freeing the platform for the following service and limiting the upstream hold to a maximum of 2 minutes, thereby containing total delay growth.",
+            "reasoning": "FCFS guarantees fairness, while the historical success of sensor‑driven dwell compression (seen in high‑traffic Italian stations) provides a practical method to shave time off the current delay. The limited upstream hold, borrowed from past soft‑blocking resolutions, ensures that any residual delay does not propagate further.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.786,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_9752"
+            ],
+            "estimated_delay_reduction_sec": 90,
+            "side_effects": [
+              "Increased pressure on boarding passengers; risk of missed connections if dwell is cut too aggressively",
+              "Additional staff deployment required for door‑opening assistance"
+            ],
+            "feasibility_score": 0.81,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        ],
+        "layer1_count": 3,
+        "layer2_refinements": {
+          "historical_cases_found": 10,
+          "algorithm_resolutions": 3,
+          "hybrid_resolutions_generated": 2,
+          "total_candidates_evaluated": 5,
+          "historical_success_rates": {
+            "total_cases": 10,
+            "average_similarity": 0.194564562,
+            "outcome_distribution": {
+              "resolved": 3,
+              "unknown": 7
+            }
+          }
+        },
+        "generation_time_sec": 15.15812
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 3
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 828,
+      "raw_result": {
+        "solver_used": "nsga2",
+        "overall_fitness": 0.7225307763806121,
+        "total_delay_min": 4.8816,
+        "passenger_impact": 1464.48,
+        "propagation_depth": 1,
+        "recovery_smoothness": 1.0,
+        "actions": [
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "FR_9752",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: PRED_FR_9752_10_1\nType: platform_conflict\nSeverity: 0.75\nAffected trains: FR_9752\nAffected stations: BRESCIA\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using nsga2):\n  1. SPEED_ADJUST - Train FR_9752\n      speed_factor: 1.12\n\nExpected Outcomes:\n  - Total delay: 4.9 minutes\n  - Passenger impact: 1464 passenger-minutes\n  - Propagation depth: 1 trains\n  - Recovery smoothness: 1.00\n  - Overall fitness: 0.723"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "ok",
+    "execution_ms": 10545,
+    "ranked_resolutions": [
+      {
+        "rank": 1,
+        "resolution_number": 1,
+        "resolution_id": "R1",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Verify the arrival order of FR_9752 at Brescia and any other pending arrivals (if any).",
+            "Apply FCFS – allow FR_9752 to occupy the platform first because it is already on‑track.",
+            "If another train is scheduled to arrive within the next 5 minutes, hold that train at the preceding signal until the platform is free.",
+            "Reduce the dwell time of FR_9752 by 1‑2 minutes (e.g., limit boarding/alighting procedures) while maintaining safety margins.",
+            "Communicate the temporary hold to the upstream dispatcher and update the train‑control system."
+          ]
+        },
+        "overall_score": 81,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 9.2,
+        "robustness_rating": 8.5,
+        "justification": "The solution quickly clears the platform using a simple FCFS rule and short upstream hold, preserving safety while incurring minimal delay.",
+        "full_resolution": {
+          "resolution_id": "algo_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Priority‑based FCFS with upstream hold",
+          "actions": [
+            "1. Verify the arrival order of FR_9752 at Brescia and any other pending arrivals (if any).",
+            "2. Apply FCFS – allow FR_9752 to occupy the platform first because it is already on‑track.",
+            "3. If another train is scheduled to arrive within the next 5 minutes, hold that train at the preceding signal until the platform is free.",
+            "4. Reduce the dwell time of FR_9752 by 1‑2 minutes (e.g., limit boarding/alighting procedures) while maintaining safety margins.",
+            "5. Communicate the temporary hold to the upstream dispatcher and update the train‑control system."
+          ],
+          "expected_outcome": "FR_9752 clears the platform promptly, preventing a cascade of further platform requests and eliminating the soft block. Up‑stream hold avoids platform over‑capacity.",
+          "reasoning": "The conflict is a classic platform‑congestion case. Algorithm *platform_congestion_resolution_1* prescribes FCFS with priority overrides and upstream holding, which directly matches a soft‑blocking situation involving a single delayed train.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.92,
+          "overall_fitness": 0.857,
+          "estimated_delay_min": 0.08333333333333333,
+          "affected_trains": [
+            "FR_9752"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_1",
+            "strategy_name": "Priority‑based FCFS with upstream hold",
+            "action_steps": [
+              "1. Verify the arrival order of FR_9752 at Brescia and any other pending arrivals (if any).",
+              "2. Apply FCFS – allow FR_9752 to occupy the platform first because it is already on‑track.",
+              "3. If another train is scheduled to arrive within the next 5 minutes, hold that train at the preceding signal until the platform is free.",
+              "4. Reduce the dwell time of FR_9752 by 1‑2 minutes (e.g., limit boarding/alighting procedures) while maintaining safety margins.",
+              "5. Communicate the temporary hold to the upstream dispatcher and update the train‑control system."
+            ],
+            "expected_outcome": "FR_9752 clears the platform promptly, preventing a cascade of further platform requests and eliminating the soft block. Up‑stream hold avoids platform over‑capacity.",
+            "reasoning": "The conflict is a classic platform‑congestion case. Algorithm *platform_congestion_resolution_1* prescribes FCFS with priority overrides and upstream holding, which directly matches a soft‑blocking situation involving a single delayed train.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: platform_congestion_resolution_1"
+            ],
+            "confidence_score": 0.857,
+            "algorithm_name": "platform_congestion_resolution_1",
+            "algorithm_reasoning": "The conflict is a classic platform‑congestion case. Algorithm *platform_congestion_resolution_1* prescribes FCFS with priority overrides and upstream holding, which directly matches a soft‑blocking situation involving a single delayed train.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_9752"
+            ],
+            "estimated_delay_reduction_sec": 5,
+            "side_effects": [],
+            "feasibility_score": 0.92,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      },
+      {
+        "rank": 2,
+        "resolution_number": 2,
+        "resolution_id": "R2",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Pull the last 30 minutes of arrival/departure logs for Brescia and the adjacent station (Desenzano) to identify any historically used “overflow” platforms.",
+            "Run the short‑term MILP (as in the algorithmic solution) but add a constraint that allows FR‑9752 to be reassigned to the overflow platform at Desenzano if the MILP‑derived release time exceeds 3 minutes.",
+            "Simultaneously, apply the historical “up‑stream hold” rule that was successful in a 2018 Brescia‑Verona incident: hold the next scheduled train at the preceding signal for a maximum of 4 minutes, using the predictive arrival estimate from the MILP.",
+            "Issue a coordinated dispatch order: If the MILP selects the overflow platform, route FR‑9752 to Desenzano via the existing cross‑track (no passenger transfer needed). If the MILP keeps FR‑9752 on the original platform, enforce a 1‑minute dwell‑time compression and release the platform at the MILP‑recommended time.",
+            "Update the traffic management system with the new platform assignment and hold instructions, and broadcast a passenger information message about the temporary platform change.",
+            "Monitor the actual arrival of the following train; if the upstream hold exceeds the predicted 4 minutes, trigger the fallback MILP re‑run with updated data."
+          ]
+        },
+        "overall_score": 78,
+        "safety_rating": 7.5,
+        "efficiency_rating": 7.5,
+        "feasibility_rating": 8.8,
+        "robustness_rating": 7.0,
+        "justification": "Combining MILP optimization with an overflow platform provides a balanced safety‑efficient response, though passenger inconvenience and added coordination lower its robustness.",
+        "full_resolution": {
+          "resolution_id": "hybrid_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Dynamic Platform Switchover + Predictive Up‑stream Hold (Hybrid MILP‑Historical)",
+          "actions": [
+            "1. Pull the last 30 minutes of arrival/departure logs for Brescia and the adjacent station (Desenzano) to identify any historically used “overflow” platforms.",
+            "2. Run the short‑term MILP (as in the algorithmic solution) but add a constraint that allows FR‑9752 to be reassigned to the overflow platform at Desenzano if the MILP‑derived release time exceeds 3 minutes.",
+            "3. Simultaneously, apply the historical “up‑stream hold” rule that was successful in a 2018 Brescia‑Verona incident: hold the next scheduled train at the preceding signal for a maximum of 4 minutes, using the predictive arrival estimate from the MILP.",
+            "4. Issue a coordinated dispatch order: ",
+            "   a. If the MILP selects the overflow platform, route FR‑9752 to Desenzano via the existing cross‑track (no passenger transfer needed). ",
+            "   b. If the MILP keeps FR‑9752 on the original platform, enforce a 1‑minute dwell‑time compression and release the platform at the MILP‑recommended time.",
+            "5. Update the traffic management system with the new platform assignment and hold instructions, and broadcast a passenger information message about the temporary platform change.",
+            "6. Monitor the actual arrival of the following train; if the upstream hold exceeds the predicted 4 minutes, trigger the fallback MILP re‑run with updated data."
+          ],
+          "expected_outcome": "FR‑9752 clears the congested platform within 2–3 minutes, preventing a cascade of delays; the next train is held only as long as necessary, keeping overall network delay under 6 minutes.",
+          "reasoning": "The MILP provides an optimal, data‑driven release time, while the historical overflow‑platform practice offers a proven safety net when the optimal solution would still cause a bottleneck. Adding the proven upstream‑hold rule ensures that any downstream impact is bounded, creating a resilient hybrid that adapts in real time.",
+          "safety_score": 0.75,
+          "efficiency_score": 0.75,
+          "feasibility_score": 0.88,
+          "overall_fitness": 0.8280000000000001,
+          "estimated_delay_min": 3.5,
+          "affected_trains": [
+            "FR_9752"
+          ],
+          "side_effects": [
+            "Possible passenger inconvenience due to platform change at Desenzano",
+            "Minor increase in crew workload for coordinating the overflow move"
+          ],
+          "algorithm_type": "hybrid",
+          "raw_data": {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Dynamic Platform Switchover + Predictive Up‑stream Hold (Hybrid MILP‑Historical)",
+            "action_steps": [
+              "1. Pull the last 30 minutes of arrival/departure logs for Brescia and the adjacent station (Desenzano) to identify any historically used “overflow” platforms.",
+              "2. Run the short‑term MILP (as in the algorithmic solution) but add a constraint that allows FR‑9752 to be reassigned to the overflow platform at Desenzano if the MILP‑derived release time exceeds 3 minutes.",
+              "3. Simultaneously, apply the historical “up‑stream hold” rule that was successful in a 2018 Brescia‑Verona incident: hold the next scheduled train at the preceding signal for a maximum of 4 minutes, using the predictive arrival estimate from the MILP.",
+              "4. Issue a coordinated dispatch order: ",
+              "   a. If the MILP selects the overflow platform, route FR‑9752 to Desenzano via the existing cross‑track (no passenger transfer needed). ",
+              "   b. If the MILP keeps FR‑9752 on the original platform, enforce a 1‑minute dwell‑time compression and release the platform at the MILP‑recommended time.",
+              "5. Update the traffic management system with the new platform assignment and hold instructions, and broadcast a passenger information message about the temporary platform change.",
+              "6. Monitor the actual arrival of the following train; if the upstream hold exceeds the predicted 4 minutes, trigger the fallback MILP re‑run with updated data."
+            ],
+            "expected_outcome": "FR‑9752 clears the congested platform within 2–3 minutes, preventing a cascade of delays; the next train is held only as long as necessary, keeping overall network delay under 6 minutes.",
+            "reasoning": "The MILP provides an optimal, data‑driven release time, while the historical overflow‑platform practice offers a proven safety net when the optimal solution would still cause a bottleneck. Adding the proven upstream‑hold rule ensures that any downstream impact is bounded, creating a resilient hybrid that adapts in real time.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.8280000000000001,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_9752"
+            ],
+            "estimated_delay_reduction_sec": 210,
+            "side_effects": [
+              "Possible passenger inconvenience due to platform change at Desenzano",
+              "Minor increase in crew workload for coordinating the overflow move"
+            ],
+            "feasibility_score": 0.88,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        }
+      },
+      {
+        "rank": 3,
+        "resolution_number": 3,
+        "resolution_id": "R3",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Retrieve the passenger‑boarding/alighting statistics for FR_9752 at Brescia from the past 6 months (average dwell = 4 min, peak = 5 min).",
+            "Deploy the FCFS‑priority rule to keep FR_9752 first on the platform, but augment it with a dynamic dwell‑time reduction based on real‑time passenger‑flow sensors (as used in the 2021 Milan hub case).",
+            "Activate station staff to open additional doors and use pre‑board announcements to accelerate boarding, targeting a 30‑second dwell reduction per 100 passengers present.",
+            "Simultaneously, set a soft upstream hold for any train scheduled to arrive within the next 5 minutes, limiting the hold to 2 minutes while the dwell compression is in effect.",
+            "Log the actual dwell time achieved; if the reduction reaches ≥ 1 minute, cancel the upstream hold early and release the platform.",
+            "Communicate the adjusted dwell plan to the train crew via the driver‑machine interface and update the central traffic control system."
+          ]
+        },
+        "overall_score": 75,
+        "safety_rating": 7.5,
+        "efficiency_rating": 7.5,
+        "feasibility_rating": 8.1,
+        "robustness_rating": 6.5,
+        "justification": "Dynamic dwell compression accelerates departure with modest upstream hold, but reliance on staff and aggressive boarding reductions reduces robustness.",
+        "full_resolution": {
+          "resolution_id": "hybrid_2",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Adaptive Dwell Compression + Real‑time Passenger Flow Management (Hybrid FCFS‑Historical)",
+          "actions": [
+            "1. Retrieve the passenger‑boarding/alighting statistics for FR‑9752 at Brescia from the past 6 months (average dwell = 4 min, peak = 5 min).",
+            "2. Deploy the FCFS‑priority rule to keep FR‑9752 first on the platform, but augment it with a dynamic dwell‑time reduction based on real‑time passenger‑flow sensors (as used in the 2021 Milan hub case).",
+            "3. Activate station staff to open additional doors and use pre‑board announcements to accelerate boarding, targeting a 30‑second dwell reduction per 100 passengers present.",
+            "4. Simultaneously, set a soft upstream hold for any train scheduled to arrive within the next 5 minutes, limiting the hold to 2 minutes while the dwell compression is in effect.",
+            "5. Log the actual dwell time achieved; if the reduction reaches ≥ 1 minute, cancel the upstream hold early and release the platform.",
+            "6. Communicate the adjusted dwell plan to the train crew via the driver‑machine interface and update the central traffic control system."
+          ],
+          "expected_outcome": "FR‑9752 departs up to 90 seconds earlier than its original schedule, freeing the platform for the following service and limiting the upstream hold to a maximum of 2 minutes, thereby containing total delay growth.",
+          "reasoning": "FCFS guarantees fairness, while the historical success of sensor‑driven dwell compression (seen in high‑traffic Italian stations) provides a practical method to shave time off the current delay. The limited upstream hold, borrowed from past soft‑blocking resolutions, ensures that any residual delay does not propagate further.",
+          "safety_score": 0.75,
+          "efficiency_score": 0.75,
+          "feasibility_score": 0.81,
+          "overall_fitness": 0.786,
+          "estimated_delay_min": 1.5,
+          "affected_trains": [
+            "FR_9752"
+          ],
+          "side_effects": [
+            "Increased pressure on boarding passengers; risk of missed connections if dwell is cut too aggressively",
+            "Additional staff deployment required for door‑opening assistance"
+          ],
+          "algorithm_type": "hybrid",
+          "raw_data": {
+            "resolution_id": "hybrid_2",
+            "strategy_name": "Adaptive Dwell Compression + Real‑time Passenger Flow Management (Hybrid FCFS‑Historical)",
+            "action_steps": [
+              "1. Retrieve the passenger‑boarding/alighting statistics for FR‑9752 at Brescia from the past 6 months (average dwell = 4 min, peak = 5 min).",
+              "2. Deploy the FCFS‑priority rule to keep FR‑9752 first on the platform, but augment it with a dynamic dwell‑time reduction based on real‑time passenger‑flow sensors (as used in the 2021 Milan hub case).",
+              "3. Activate station staff to open additional doors and use pre‑board announcements to accelerate boarding, targeting a 30‑second dwell reduction per 100 passengers present.",
+              "4. Simultaneously, set a soft upstream hold for any train scheduled to arrive within the next 5 minutes, limiting the hold to 2 minutes while the dwell compression is in effect.",
+              "5. Log the actual dwell time achieved; if the reduction reaches ≥ 1 minute, cancel the upstream hold early and release the platform.",
+              "6. Communicate the adjusted dwell plan to the train crew via the driver‑machine interface and update the central traffic control system."
+            ],
+            "expected_outcome": "FR‑9752 departs up to 90 seconds earlier than its original schedule, freeing the platform for the following service and limiting the upstream hold to a maximum of 2 minutes, thereby containing total delay growth.",
+            "reasoning": "FCFS guarantees fairness, while the historical success of sensor‑driven dwell compression (seen in high‑traffic Italian stations) provides a practical method to shave time off the current delay. The limited upstream hold, borrowed from past soft‑blocking resolutions, ensures that any residual delay does not propagate further.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.786,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_9752"
+            ],
+            "estimated_delay_reduction_sec": 90,
+            "side_effects": [
+              "Increased pressure on boarding passengers; risk of missed connections if dwell is cut too aggressively",
+              "Additional staff deployment required for door‑opening assistance"
+            ],
+            "feasibility_score": 0.81,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        }
+      }
+    ],
+    "raw_llm_response": "{\n  \"ranked_resolutions\": [\n    {\n      \"rank\": 1,\n      \"resolution_number\": 1,\n      \"resolution_id\": \"R1\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Verify the arrival order of FR_9752 at Brescia and any other pending arrivals (if any).\",\n          \"Apply FCFS – allow FR_9752 to occupy the platform first because it is already on‑track.\",\n          \"If another train is scheduled to arrive within the next 5 minutes, hold that train at the preceding signal until the platform is free.\",\n          \"Reduce the dwell time of FR_9752 by 1‑2 minutes (e.g., limit boarding/alighting procedures) while maintaining safety margins.\",\n          \"Communicate the temporary hold to the upstream dispatcher and update the train‑control system.\"\n        ]\n      },\n      \"overall_score\": 81,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 9.2,\n      \"robustness_rating\": 8.5,\n      \"justification\": \"The solution quickly clears the platform using a simple FCFS rule and short upstream hold, preserving safety while incurring minimal delay.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"R1\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Priority‑based FCFS with upstream hold\",\n        \"actions\": [\n          \"Verify the arrival order of FR_9752 at Brescia and any other pending arrivals (if any).\",\n          \"Apply FCFS – allow FR_9752 to occupy the platform first because it is already on‑track.\",\n          \"If another train is scheduled to arrive within the next 5 minutes, hold that train at the preceding signal until the platform is free.\",\n          \"Reduce the dwell time of FR_9752 by 1‑2 minutes (e.g., limit boarding/alighting procedures) while maintaining safety margins.\",\n          \"Communicate the temporary hold to the upstream dispatcher and update the train‑control system.\"\n        ],\n        \"expected_outcome\": \"FR_9752 clears the platform promptly, preventing a cascade of further platform requests and eliminating the soft block. Up‑stream hold avoids platform over‑capacity.\",\n        \"reasoning\": \"The conflict is a classic platform‑congestion case. Algorithm platform_congestion_resolution_1 prescribes FCFS with priority overrides and upstream holding, which directly matches a soft‑blocking situation involving a single delayed train.\",\n        \"safety_score\": 0.800,\n        \"efficiency_score\": 0.700,\n        \"feasibility_score\": 0.920,\n        \"overall_fitness\": 0.857,\n        \"estimated_delay_min\": 0.1,\n        \"affected_trains\": [\"FR_9752\"],\n        \"side_effects\": \"None\",\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 2,\n      \"resolution_number\": 2,\n      \"resolution_id\": \"R2\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Pull the last 30 minutes of arrival/departure logs for Brescia and the adjacent station (Desenzano) to identify any historically used “overflow” platforms.\",\n          \"Run the short‑term MILP (as in the algorithmic solution) but add a constraint that allows FR‑9752 to be reassigned to the overflow platform at Desenzano if the MILP‑derived release time exceeds 3 minutes.\",\n          \"Simultaneously, apply the historical “up‑stream hold” rule that was successful in a 2018 Brescia‑Verona incident: hold the next scheduled train at the preceding signal for a maximum of 4 minutes, using the predictive arrival estimate from the MILP.\",\n          \"Issue a coordinated dispatch order: If the MILP selects the overflow platform, route FR‑9752 to Desenzano via the existing cross‑track (no passenger transfer needed). If the MILP keeps FR‑9752 on the original platform, enforce a 1‑minute dwell‑time compression and release the platform at the MILP‑recommended time.\",\n          \"Update the traffic management system with the new platform assignment and hold instructions, and broadcast a passenger information message about the temporary platform change.\",\n          \"Monitor the actual arrival of the following train; if the upstream hold exceeds the predicted 4 minutes, trigger the fallback MILP re‑run with updated data.\"\n        ]\n      },\n      \"overall_score\": 78,\n      \"safety_rating\": 7.5,\n      \"efficiency_rating\": 7.5,\n      \"feasibility_rating\": 8.8,\n      \"robustness_rating\": 7.0,\n      \"justification\": \"Combining MILP optimization with an overflow platform provides a balanced safety‑efficient response, though passenger inconvenience and added coordination lower its robustness.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"R2\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Dynamic Platform Switchover + Predictive Up‑stream Hold\",\n        \"actions\": [\n          \"Pull the last 30 minutes of arrival/departure logs for Brescia and the adjacent station (Desenzano) to identify any historically used “overflow” platforms.\",\n          \"Run the short‑term MILP (as in the algorithmic solution) but add a constraint that allows FR‑9752 to be reassigned to the overflow platform at Desenzano if the MILP‑derived release time exceeds 3 minutes.\",\n          \"Simultaneously, apply the historical “up‑stream hold” rule that was successful in a 2018 Brescia‑Verona incident: hold the next scheduled train at the preceding signal for a maximum of 4 minutes, using the predictive arrival estimate from the MILP.\",\n          \"Issue a coordinated dispatch order: If the MILP selects the overflow platform, route FR‑9752 to Desenzano via the existing cross‑track (no passenger transfer needed). If the MILP keeps FR‑9752 on the original platform, enforce a 1‑minute dwell‑time compression and release the platform at the MILP‑recommended time.\",\n          \"Update the traffic management system with the new platform assignment and hold instructions, and broadcast a passenger information message about the temporary platform change.\",\n          \"Monitor the actual arrival of the following train; if the upstream hold exceeds the predicted 4 minutes, trigger the fallback MILP re‑run with updated data.\"\n        ],\n        \"expected_outcome\": \"FR_9752 clears the congested platform within 2–3 minutes, preventing a cascade of delays; the next train is held only as long as necessary, keeping overall network delay under 6 minutes.\",\n        \"reasoning\": \"The MILP provides an optimal, data‑driven release time, while the historical overflow‑platform practice offers a proven safety net when the optimal solution would still cause a bottleneck. Adding the proven upstream‑hold rule ensures that any downstream impact is bounded, creating a resilient hybrid that adapts in real time.\",\n        \"safety_score\": 0.750,\n        \"efficiency_score\": 0.750,\n        \"feasibility_score\": 0.880,\n        \"overall_fitness\": 0.828,\n        \"estimated_delay_min\": 3.5,\n        \"affected_trains\": [\"FR_9752\"],\n        \"side_effects\": \"Possible passenger inconvenience due to platform change at Desenzano, Minor increase in crew workload for coordinating the overflow move\",\n        \"algorithm_type\": \"hybrid\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 3,\n      \"resolution_number\": 3,\n      \"resolution_id\": \"R3\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Retrieve the passenger‑boarding/alighting statistics for FR_9752 at Brescia from the past 6 months (average dwell = 4 min, peak = 5 min).\",\n          \"Deploy the FCFS‑priority rule to keep FR_9752 first on the platform, but augment it with a dynamic dwell‑time reduction based on real‑time passenger‑flow sensors (as used in the 2021 Milan hub case).\",\n          \"Activate station staff to open additional doors and use pre‑board announcements to accelerate boarding, targeting a 30‑second dwell reduction per 100 passengers present.\",\n          \"Simultaneously, set a soft upstream hold for any train scheduled to arrive within the next 5 minutes, limiting the hold to 2 minutes while the dwell compression is in effect.\",\n          \"Log the actual dwell time achieved; if the reduction reaches ≥ 1 minute, cancel the upstream hold early and release the platform.\",\n          \"Communicate the adjusted dwell plan to the train crew via the driver‑machine interface and update the central traffic control system.\"\n        ]\n      },\n      \"overall_score\": 75,\n      \"safety_rating\": 7.5,\n      \"efficiency_rating\": 7.5,\n      \"feasibility_rating\": 8.1,\n      \"robustness_rating\": 6.5,\n      \"justification\": \"Dynamic dwell compression accelerates departure with modest upstream hold, but reliance on staff and aggressive boarding reductions reduces robustness.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"R3\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Adaptive Dwell Compression + Real‑time Passenger Flow Management\",\n        \"actions\": [\n          \"Retrieve the passenger‑boarding/alighting statistics for FR_9752 at Brescia from the past 6 months (average dwell = 4 min, peak = 5 min).\",\n          \"Deploy the FCFS‑priority rule to keep FR_9752 first on the platform, but augment it with a dynamic dwell‑time reduction based on real‑time passenger‑flow sensors (as used in the 2021 Milan hub case).\",\n          \"Activate station staff to open additional doors and use pre‑board announcements to accelerate boarding, targeting a 30‑second dwell reduction per 100 passengers present.\",\n          \"Simultaneously, set a soft upstream hold for any train scheduled to arrive within the next 5 minutes, limiting the hold to 2 minutes while the dwell compression is in effect.\",\n          \"Log the actual dwell time achieved; if the reduction reaches ≥ 1 minute, cancel the upstream hold early and release the platform.\",\n          \"Communicate the adjusted dwell plan to the train crew via the driver‑machine interface and update the central traffic control system.\"\n        ],\n        \"expected_outcome\": \"FR_9752 departs up to 90 seconds earlier than its original schedule, freeing the platform for the following service and limiting the upstream hold to a maximum of 2 minutes, thereby containing total delay growth.\",\n        \"reasoning\": \"FCFS guarantees fairness, while the historical success of sensor‑driven dwell compression (seen in high‑traffic Italian stations) provides a practical method to shave time off the current delay. The limited upstream hold, borrowed from past soft‑blocking resolutions, ensures that any residual delay does not propagate further.\",\n        \"safety_score\": 0.750,\n        \"efficiency_score\": 0.750,\n        \"feasibility_score\": 0.810,\n        \"overall_fitness\": 0.786,\n        \"estimated_delay_min\": 1.5,\n        \"affected_trains\": [\"FR_9752\"],\n        \"side_effects\": \"Increased pressure on boarding passengers; risk of missed connections if dwell is cut too aggressively, Additional staff deployment required for door‑opening assistance\",\n        \"algorithm_type\": \"hybrid\",\n        \"raw_data\": null\n      }\n    }\n  ]\n}",
+    "error": null
+  }
+}
