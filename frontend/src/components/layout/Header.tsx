@@ -1,8 +1,10 @@
 
-import { Bell, User, Clock } from 'lucide-react';
+import { Bell, User, Clock, Train } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export function Header() {
+  const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -25,6 +27,17 @@ export function Header() {
       </div>
 
       <div className="flex items-center gap-4">
+        {/* Passenger View Button */}
+        <button 
+          onClick={() => navigate('/user')}
+          className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 hover:bg-primary/20 
+                     text-primary text-sm font-medium rounded-lg transition-colors"
+          title="Open Passenger View"
+        >
+          <Train className="w-4 h-4" />
+          <span className="hidden sm:inline">Passenger View</span>
+        </button>
+        
         <button className="relative p-2 hover:bg-muted rounded-lg transition-colors">
           <Bell className="w-5 h-5 text-muted-foreground" />
           <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full" />

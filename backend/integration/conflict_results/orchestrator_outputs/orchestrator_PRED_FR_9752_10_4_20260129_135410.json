@@ -1,0 +1,32 @@
+{
+  "status": "error",
+  "conflict_id": "PRED_FR_9752_10_4",
+  "started_at": "2026-01-29T13:52:07.290743+00:00",
+  "finished_at": "2026-01-29T13:54:10.780180+00:00",
+  "total_execution_ms": 123489,
+  "agents": {
+    "hybrid_rag": {
+      "status": "timeout",
+      "execution_ms": 90000,
+      "raw_result": null,
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 0
+    },
+    "mathematical": {
+      "status": "timeout",
+      "execution_ms": 90000,
+      "raw_result": null,
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 0
+    }
+  },
+  "llm_judge": {
+    "status": "skipped",
+    "execution_ms": 0,
+    "ranked_resolutions": null,
+    "raw_llm_response": null,
+    "error": "No candidates to judge"
+  }
+}
