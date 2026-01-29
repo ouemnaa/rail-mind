@@ -1,0 +1,169 @@
+{
+  "status": "ok",
+  "conflict_id": "TF-20260129173846",
+  "started_at": "2026-01-29T16:38:54.422002+00:00",
+  "finished_at": "2026-01-29T16:39:29.504018+00:00",
+  "total_execution_ms": 35082,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 33835,
+      "raw_result": {
+        "conflict_id": "TF-20260129173846",
+        "conflict_summary": "",
+        "timestamp": "2026-01-29T17:39:28.252466",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [
+          {
+            "resolution_id": "algo_1",
+            "strategy_name": "Vision-based Track Fault Resolution",
+            "action_steps": [
+              "Issue immediate speed restriction (30-50 km/h) on affected segment",
+              "Dispatch track inspection team to verify defect",
+              "If defect confirmed critical (>70% confidence): halt traffic, reroute trains via alternative paths",
+              "For minor defects: maintain reduced speed, schedule maintenance window",
+              "Notify control center and update train drivers"
+            ],
+            "expected_outcome": "Prevent potential derailment and ensure safe passage of trains",
+            "reasoning": "The conflict is a track fault, which poses a direct safety risk. The algorithm provides a step-by-step approach to address the issue, from initial speed restriction to verification and potential rerouting.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: track_fault_vision_detection_1"
+            ],
+            "confidence_score": 0.875,
+            "algorithm_name": "track_fault_vision_detection_1",
+            "algorithm_reasoning": "The conflict is a track fault, which poses a direct safety risk. The algorithm provides a step-by-step approach to address the issue, from initial speed restriction to verification and potential rerouting.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "MAINTENANCE_REQUIRED"
+            ],
+            "estimated_delay_reduction_sec": 1620,
+            "side_effects": [],
+            "feasibility_score": 0.95,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Hybrid Track Fault Mitigation",
+            "action_steps": [
+              "Issue immediate speed restriction (30-50 km/h) on affected segment",
+              "Dispatch track inspection team to verify defect within 30 minutes",
+              "Cross-reference with visual inspection data and sensor readings",
+              "If critical (>70% confidence): halt traffic, arrange bus bridge, and reroute trains via alternative paths",
+              "If minor: maintain speed restriction, schedule maintenance window, and notify control center"
+            ],
+            "expected_outcome": "Reduced risk of accidents and minimized delays",
+            "reasoning": "This hybrid approach combines the immediate speed restriction from the Vision-based Track Fault Resolution with the sensor-based verification from the Sensor-based Track Defect Resolution, ensuring a comprehensive and efficient response to the track fault.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.8520000000000001,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "MAINTENANCE_REQUIRED"
+            ],
+            "estimated_delay_reduction_sec": 5400,
+            "side_effects": [
+              "Potential disruption to passenger schedules",
+              "Increased workload for track inspection team"
+            ],
+            "feasibility_score": 0.92,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          },
+          {
+            "resolution_id": "algo_2",
+            "strategy_name": "Sensor-based Track Defect Resolution",
+            "action_steps": [
+              "Automatically flag segment for inspection",
+              "Apply precautionary speed limit",
+              "Cross-reference with visual inspection data",
+              "If multiple sensors confirm: escalate to emergency maintenance",
+              "Prepare contingency timetable with reduced capacity on affected route"
+            ],
+            "expected_outcome": "Prevent accidents and minimize delays by addressing potential track defects",
+            "reasoning": "The algorithm complements visual inspection with sensor-based detection, providing a comprehensive approach to addressing track defects.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: track_fault_sensor_detection_1"
+            ],
+            "confidence_score": 0.845,
+            "algorithm_name": "track_fault_sensor_detection_1",
+            "algorithm_reasoning": "The algorithm complements visual inspection with sensor-based detection, providing a comprehensive approach to addressing track defects.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "MAINTENANCE_REQUIRED"
+            ],
+            "estimated_delay_reduction_sec": 1440,
+            "side_effects": [],
+            "feasibility_score": 0.9,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        ],
+        "layer1_count": 3,
+        "layer2_refinements": {
+          "historical_cases_found": 10,
+          "algorithm_resolutions": 3,
+          "hybrid_resolutions_generated": 2,
+          "total_candidates_evaluated": 5,
+          "historical_success_rates": {
+            "total_cases": 10,
+            "average_similarity": 0.319787899,
+            "outcome_distribution": {
+              "resolved": 6,
+              "unknown": 4
+            }
+          }
+        },
+        "generation_time_sec": 9.066433
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 3
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 1109,
+      "raw_result": {
+        "solver_used": "nsga2",
+        "overall_fitness": 0.7433601762167078,
+        "total_delay_min": 2.4408,
+        "passenger_impact": 732.24,
+        "propagation_depth": 0,
+        "recovery_smoothness": 1.0,
+        "actions": [
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "MAINTENANCE_REQUIRED",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: TF-20260129173846\nType: track_fault\nSeverity: 0.95\nAffected trains: MAINTENANCE_REQUIRED\nAffected stations: MILANO LAMBRATE--TREVIGLIO\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using nsga2):\n  1. SPEED_ADJUST - Train MAINTENANCE_REQUIRED\n      speed_factor: 1.12\n\nExpected Outcomes:\n  - Total delay: 2.4 minutes\n  - Passenger impact: 732 passenger-minutes\n  - Propagation depth: 0 trains\n  - Recovery smoothness: 1.00\n  - Overall fitness: 0.743"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "error",
+    "execution_ms": 1226,
+    "ranked_resolutions": null,
+    "raw_llm_response": null,
+    "error": "Groq API error (BadRequestError): Error code: 400 - {'error': {'message': '`reasoning_effort` is not supported with this model', 'type': 'invalid_request_error'}}"
+  }
+}

@@ -1,0 +1,185 @@
+{
+  "status": "ok",
+  "conflict_id": "TEST-001",
+  "started_at": "2026-01-29T14:44:43.531724+00:00",
+  "finished_at": "2026-01-29T14:45:17.069151+00:00",
+  "total_execution_ms": 33537,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 32808,
+      "raw_result": {
+        "conflict_id": "TEST-001",
+        "conflict_summary": "",
+        "timestamp": "2026-01-29T15:45:16.336785",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [
+          {
+            "resolution_id": "algo_1",
+            "strategy_name": "Immediate speed‑reduction & hold (segment‑specific)",
+            "action_steps": [
+              "1. Detect that REG_001 entered the Milano Centrale‑Pavia segment 50 s after FR_002 (minimum headway = 180 s).",
+              "2. Issue an immediate Caution (yellow) aspect to the driver of REG_001.",
+              "3. Enforce a speed limit of 60 km/h for REG_001 until it reaches the Pavia signal box.",
+              "4. Hold REG_001 at the Pavia signal until the time gap to FR_002 reaches ≥ 180 s.",
+              "5. Once the safe headway is restored, clear REG_001 to normal speed and resume its schedule.",
+              "6. Log the event and launch a root‑cause investigation (dispatch error vs driver error).",
+              "7. Adjust the departure time of the next REG service from Milano Centrale to re‑establish the normal headway pattern."
+            ],
+            "expected_outcome": "Creates a safety buffer instantly, prevents a rear‑end collision, and restores the required 180 s separation with minimal additional delay.",
+            "reasoning": "The algorithm *synthetic_headway_rogoredo_pavia* deals with the exact same corridor (Milano‑Rogoredo‑Pavia) and prescribes speed reduction plus a hold at the next signal to re‑establish headway. The same physical constraints and signaling rules apply to the Milano Centrale‑Pavia segment, making the prescription directly transferable.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: synthetic_headway_rogoredo_pavia"
+            ],
+            "confidence_score": 0.857,
+            "algorithm_name": "synthetic_headway_rogoredo_pavia",
+            "algorithm_reasoning": "The algorithm *synthetic_headway_rogoredo_pavia* deals with the exact same corridor (Milano‑Rogoredo‑Pavia) and prescribes speed reduction plus a hold at the next signal to re‑establish headway. The same physical constraints and signaling rules apply to the Milano Centrale‑Pavia segment, making the prescription directly transferable.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_001",
+              "FR_002"
+            ],
+            "estimated_delay_reduction_sec": 30,
+            "side_effects": [],
+            "feasibility_score": 0.92,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "algo_2",
+            "strategy_name": "Generic headway‑violation mitigation",
+            "action_steps": [
+              "1. Issue an immediate caution order to the following train (REG_001).",
+              "2. Reduce REG_001’s speed to a value that guarantees a safe braking distance (e.g., 70 km/h).",
+              "3. Hold REG_001 at the next signal (Pavia) until the headway reaches the minimum required 180 s.",
+              "4. After clearance, restore REG_001 to its planned speed profile.",
+              "5. Conduct a quick diagnostic of signal status, driver acknowledgement, and timetable alignment.",
+              "6. Update the departure schedule of subsequent REG services to incorporate a buffer that prevents recurrence."
+            ],
+            "expected_outcome": "Restores the required separation safely and updates the timetable to avoid future violations, with a modest delay to the following train only.",
+            "reasoning": "The *headway_violation_resolution_1* algorithm provides a universally accepted set of steps for any headway breach: caution, speed reduction, hold, investigation, and timetable adjustment. It applies directly to the REG_001‑FR_002 conflict regardless of line specifics.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: headway_violation_resolution_1"
+            ],
+            "confidence_score": 0.821,
+            "algorithm_name": "headway_violation_resolution_1",
+            "algorithm_reasoning": "The *headway_violation_resolution_1* algorithm provides a universally accepted set of steps for any headway breach: caution, speed reduction, hold, investigation, and timetable adjustment. It applies directly to the REG_001‑FR_002 conflict regardless of line specifics.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_001",
+              "FR_002"
+            ],
+            "estimated_delay_reduction_sec": 45,
+            "side_effects": [],
+            "feasibility_score": 0.86,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Predictive Adaptive Speed‑Harmonisation with Dynamic Holding",
+            "action_steps": [
+              "1. The Traffic Management Center (TMC) runs the synthetic_headway_rogoredo_pavia algorithm in real‑time to calculate the exact speed‑reduction curve that will bring REG_001 to the required 180 s headway exactly at the Pavia signal.",
+              "2. Simultaneously, the TMC pulls the historical‑case pattern of “early‑warning speed‑trim” used on the Milan‑Rogoredo corridor (a proven tactic that reduced average recovery time by 12 s).",
+              "3. Issue a Caution (yellow) aspect to REG_001 and automatically upload the calculated speed‑trim profile (e.g., 65 km/h for the next 3 km, then 55 km/h for the following 2 km) via the on‑board ETCS Level 2 system.",
+              "4. At the Pavia signal box, enable a dynamic hold that releases REG_001 the instant the headway reaches ≥180 s, rather than waiting for a fixed block clearance.",
+              "5. Broadcast a brief passenger information message (PA) on REG_001 indicating a short speed‑adjustment delay, mitigating perceived inconvenience.",
+              "6. Log the event, update the headway buffer in the timetable for the next 30 min, and feed the outcome back into the machine‑learning model that predicts future headway breaches.",
+              "7. If the headway is not achieved within the pre‑computed margin (e.g., 20 s), automatically trigger the secondary Rule II re‑routing option to the auxiliary track as a fallback."
+            ],
+            "expected_outcome": "REG_001 regains the required 180 s headway with a minimal stop‑time, keeping the overall delay under 45 seconds and preserving the downstream schedule for both trains.",
+            "reasoning": "The hybrid merges the precise, segment‑specific speed‑reduction logic of the synthetic algorithm with the proven early‑warning speed‑trim practice observed in historical Milan‑Rogoredo incidents. By using a dynamic hold rather than a fixed stop, the solution adapts to real‑time train positions, cutting unnecessary dwell time while still guaranteeing safety.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.8160000000000001,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_001",
+              "FR_002"
+            ],
+            "estimated_delay_reduction_sec": 45,
+            "side_effects": [
+              "Slight increase in energy consumption for REG_001 due to speed‑profile changes",
+              "Potential minor passenger discomfort from speed fluctuations",
+              "Additional workload on TMC operators to monitor dynamic hold release"
+            ],
+            "feasibility_score": 0.86,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        ],
+        "layer1_count": 3,
+        "layer2_refinements": {
+          "historical_cases_found": 10,
+          "algorithm_resolutions": 3,
+          "hybrid_resolutions_generated": 2,
+          "total_candidates_evaluated": 5,
+          "historical_success_rates": {
+            "total_cases": 10,
+            "average_similarity": 0.116559712,
+            "outcome_distribution": {
+              "resolved": 9,
+              "unknown": 1
+            }
+          }
+        },
+        "generation_time_sec": 11.110956
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 3
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 776,
+      "raw_result": {
+        "solver_used": "greedy",
+        "overall_fitness": 1.0,
+        "total_delay_min": 0,
+        "passenger_impact": 0,
+        "propagation_depth": 0,
+        "recovery_smoothness": 1.0,
+        "actions": [
+          {
+            "action_type": "hold",
+            "target_train_id": "FR_002",
+            "parameters": {
+              "hold_minutes": 2.5
+            }
+          },
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "REG_001",
+            "parameters": {
+              "speed_factor": 1.1
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: TEST-001\nType: headway\nSeverity: 0.75\nAffected trains: REG_001, FR_002\nAffected stations: MILANO CENTRALE, PAVIA\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using greedy):\n  1. HOLD - Train FR_002\n      hold_minutes: 2.50\n  2. SPEED_ADJUST - Train REG_001\n      speed_factor: 1.10\n\nExpected Outcomes:\n  - Total delay: 0.0 minutes\n  - Passenger impact: 0 passenger-minutes\n  - Propagation depth: 0 trains\n  - Recovery smoothness: 1.00\n  - Overall fitness: 1.000"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "error",
+    "execution_ms": 719,
+    "ranked_resolutions": null,
+    "raw_llm_response": null,
+    "error": "Groq API error (RateLimitError): Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kg4gh266e7tscb9zw2hr2rqr` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199932, Requested 2222. Please try again in 15m30.528s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  }
+}

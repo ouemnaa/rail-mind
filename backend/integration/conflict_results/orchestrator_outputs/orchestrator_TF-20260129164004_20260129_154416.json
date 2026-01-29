@@ -1,0 +1,167 @@
+{
+  "status": "ok",
+  "conflict_id": "TF-20260129164004",
+  "started_at": "2026-01-29T15:44:00.694519+00:00",
+  "finished_at": "2026-01-29T15:44:16.219725+00:00",
+  "total_execution_ms": 15525,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 14922,
+      "raw_result": {
+        "conflict_id": "TF-20260129164004",
+        "conflict_summary": "",
+        "timestamp": "2026-01-29T16:44:15.627419",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [
+          {
+            "resolution_id": "algo_1",
+            "strategy_name": "Vision‑Based Immediate Speed Restriction & Inspection",
+            "action_steps": [
+              "Impose a precautionary speed limit of 30‑50 km/h on the Milano Lambrate‑Treviglio segment.",
+              "Broadcast the restriction to all train drivers and update the control‑center display.",
+              "Dispatch a track‑inspection crew to the affected location within 15 minutes.",
+              "On‑site team verifies the defect severity and reports back.",
+              "If the defect is confirmed critical (AI confidence >70 %): halt all traffic on the segment and prepare an alternative bus bridge or reroute via parallel line.",
+              "If the defect is minor: maintain the reduced speed, schedule a maintenance window during off‑peak hours, and lift the restriction after clearance."
+            ],
+            "expected_outcome": "Maintains limited train service while eliminating derailment risk; prevents a full line shutdown and limits passenger delay.",
+            "reasoning": "The conflict is a track‑fault detected by a vision system. Algorithm track_fault_vision_detection_1 directly prescribes speed restriction, rapid inspection, and conditional halt, matching the soft‑blocking behavior and high severity of this event.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: track_fault_vision_detection_1"
+            ],
+            "confidence_score": 0.869,
+            "algorithm_name": "track_fault_vision_detection_1",
+            "algorithm_reasoning": "The conflict is a track‑fault detected by a vision system. Algorithm track_fault_vision_detection_1 directly prescribes speed restriction, rapid inspection, and conditional halt, matching the soft‑blocking behavior and high severity of this event.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "MAINTENANCE_REQUIRED"
+            ],
+            "estimated_delay_reduction_sec": 60,
+            "side_effects": [],
+            "feasibility_score": 0.94,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "algo_2",
+            "strategy_name": "Sensor‑Triggered Precautionary Speed Limit & Cross‑Check",
+            "action_steps": [
+              "Automatically flag the Milano Lambrate‑Treviglio segment for inspection in the monitoring system.",
+              "Apply a precautionary speed limit of 40 km/h to all trains entering the segment.",
+              "Cross‑reference the sensor alarm with any available visual‑inspection data.",
+              "If multiple sensors (vibration, strain, temperature) confirm the anomaly, elevate to emergency maintenance status.",
+              "Prepare a contingency timetable that reduces capacity on the route but keeps trains moving under the speed restriction."
+            ],
+            "expected_outcome": "Provides a data‑driven safety margin, allowing trains to continue at reduced speed while confirming the fault, thereby avoiding an unnecessary full stop.",
+            "reasoning": "Algorithm track_fault_sensor_detection_1 addresses sensor‑based detections of track defects. Although the current conflict originates from a vision alert, applying the sensor‑based precautionary steps adds redundancy and is appropriate for a soft‑blocking fault with high severity.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: track_fault_sensor_detection_1"
+            ],
+            "confidence_score": 0.845,
+            "algorithm_name": "track_fault_sensor_detection_1",
+            "algorithm_reasoning": "Algorithm track_fault_sensor_detection_1 addresses sensor‑based detections of track defects. Although the current conflict originates from a vision alert, applying the sensor‑based precautionary steps adds redundancy and is appropriate for a soft‑blocking fault with high severity.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "MAINTENANCE_REQUIRED"
+            ],
+            "estimated_delay_reduction_sec": 45,
+            "side_effects": [],
+            "feasibility_score": 0.9,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "algo_3",
+            "strategy_name": "Rapid Verification & Conditional Reroute (Synthetic Vision)",
+            "action_steps": [
+              "Immediately enforce a 50 km/h speed restriction on the affected segment.",
+              "Notify drivers and update the dispatch system with the restriction.",
+              "Deploy an inspection team to the site within 30 minutes.",
+              "If on‑site inspection confirms a critical defect (AI confidence >70 %): halt all traffic, activate a bus‑bridge or reroute trains via an alternate corridor.",
+              "If the defect is deemed minor: keep the speed restriction in place, schedule maintenance during the next planned window, and lift the restriction after clearance."
+            ],
+            "expected_outcome": "Ensures safety through swift verification; if the defect is minor, service continues with limited speed, minimizing passenger impact.",
+            "reasoning": "The synthetic_track_fault_lodi algorithm describes the same workflow for a vision‑detected defect on a nearby corridor. Its steps are applicable to the Milano Lambrate‑Treviglio fault, though the confidence is slightly lower because the AI model was trained on a different segment.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: synthetic_track_fault_lodi"
+            ],
+            "confidence_score": 0.7729999999999999,
+            "algorithm_name": "synthetic_track_fault_lodi",
+            "algorithm_reasoning": "The synthetic_track_fault_lodi algorithm describes the same workflow for a vision‑detected defect on a nearby corridor. Its steps are applicable to the Milano Lambrate‑Treviglio fault, though the confidence is slightly lower because the AI model was trained on a different segment.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "MAINTENANCE_REQUIRED"
+            ],
+            "estimated_delay_reduction_sec": 30,
+            "side_effects": [],
+            "feasibility_score": 0.78,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        ],
+        "layer1_count": 3,
+        "layer2_refinements": {
+          "historical_cases_found": 10,
+          "algorithm_resolutions": 3,
+          "hybrid_resolutions_generated": 0,
+          "total_candidates_evaluated": 3,
+          "historical_success_rates": {
+            "total_cases": 10,
+            "average_similarity": 0.319787899,
+            "outcome_distribution": {
+              "resolved": 6,
+              "unknown": 4
+            }
+          }
+        },
+        "generation_time_sec": 5.502645
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 3
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 1554,
+      "raw_result": {
+        "solver_used": "nsga2",
+        "overall_fitness": 0.752684396736797,
+        "total_delay_min": 1.4464,
+        "passenger_impact": 433.91999999999996,
+        "propagation_depth": 0,
+        "recovery_smoothness": 1.0,
+        "actions": [
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "MAINTENANCE_REQUIRED",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: TF-20260129164004\nType: track_fault\nSeverity: 0.95\nAffected trains: MAINTENANCE_REQUIRED\nAffected stations: MILANO LAMBRATE--TREVIGLIO\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using nsga2):\n  1. SPEED_ADJUST - Train MAINTENANCE_REQUIRED\n      speed_factor: 1.12\n\nExpected Outcomes:\n  - Total delay: 1.4 minutes\n  - Passenger impact: 434 passenger-minutes\n  - Propagation depth: 0 trains\n  - Recovery smoothness: 1.00\n  - Overall fitness: 0.753"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "error",
+    "execution_ms": 577,
+    "ranked_resolutions": null,
+    "raw_llm_response": null,
+    "error": "Groq API error (RateLimitError): Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kg4gh266e7tscb9zw2hr2rqr` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199463, Requested 1814. Please try again in 9m11.664s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  }
+}

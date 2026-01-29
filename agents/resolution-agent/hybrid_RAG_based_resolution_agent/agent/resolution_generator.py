@@ -91,13 +91,15 @@ class AlgorithmResolutionExtractor:
         qdrant_client: QdrantClient,
         collection_name: str = "railway_algorithms",
         llm_api_key: Optional[str] = None,
-        llm_model: str = "mixtral-8x7b-32768"
+        llm_model: str = "llama-3.3-70b-versatile",
+        embedder: Optional[Any] = None
     ):
         self.client = qdrant_client
         self.collection_name = collection_name
         self.llm_api_key = llm_api_key
         self.llm_model = llm_model
         self.groq_client = Groq(api_key=llm_api_key) if llm_api_key else None
+        self._embedder = embedder  # Reuse pre-loaded embedder from system level
     
     def extract_algorithm_resolutions(
         self,
@@ -143,10 +145,9 @@ class AlgorithmResolutionExtractor:
     def _search_algorithms(self, query: str, top_k: int) -> List[Dict[str, Any]]:
         """Search for relevant algorithms in Qdrant"""
         try:
-            from sentence_transformers import SentenceTransformer
-            
-            # Generate embedding for the query
-            if not hasattr(self, '_embedder'):
+            # Use pre-loaded embedder if available, otherwise load now
+            if self._embedder is None:
+                from sentence_transformers import SentenceTransformer
                 self._embedder = SentenceTransformer('all-MiniLM-L6-v2')
             
             query_vector = self._embedder.encode(query).tolist()
@@ -346,13 +347,15 @@ class HistoricalResolutionRefiner:
         qdrant_client: QdrantClient,
         collection_name: str = "historical_incidents",
         llm_api_key: Optional[str] = None,
-        llm_model: str = "mixtral-8x7b-32768"
+        llm_model: str = "llama-3.3-70b-versatile",
+        embedder: Optional[Any] = None
     ):
         self.client = qdrant_client
         self.collection_name = collection_name
         self.llm_api_key = llm_api_key
         self.llm_model = llm_model
         self.groq_client = Groq(api_key=llm_api_key) if llm_api_key else None
+        self._embedder = embedder  # Reuse pre-loaded embedder from system level
     
     def refine_and_rank(
         self,
@@ -420,10 +423,9 @@ class HistoricalResolutionRefiner:
         query_text = f"{conflict.get('conflict_type', '')} {conflict.get('explanation', '')}"
         
         try:
-            from sentence_transformers import SentenceTransformer
-            
-            # Generate embedding for the query
-            if not hasattr(self, '_embedder'):
+            # Use pre-loaded embedder if available, otherwise load now
+            if self._embedder is None:
+                from sentence_transformers import SentenceTransformer
                 self._embedder = SentenceTransformer('all-MiniLM-L6-v2')
             
             query_vector = self._embedder.encode(query_text).tolist()
@@ -784,7 +786,7 @@ class ResolutionGenerationSystem:
         algorithm_collection: str = "railway_algorithms",
         historical_collection: str = "rail_incidents",
         llm_api_key: Optional[str] = None,
-        llm_model: str = "openai/gpt-oss-120b"
+        llm_model: str = "llama-3.3-70b-versatile"
     ):
         # Initialize Qdrant client
         if qdrant_api_key:
@@ -792,19 +794,31 @@ class ResolutionGenerationSystem:
         else:
             self.client = QdrantClient(url=qdrant_url)
         
-        # Initialize layers
+        # ✨ Load embedder ONCE at system level
+        print("⚡ Loading embedding model (cached for reuse)...")
+        try:
+            from sentence_transformers import SentenceTransformer
+            self.embedder = SentenceTransformer('all-MiniLM-L6-v2')
+            print("✓ Embedding model loaded\n")
+        except Exception as e:
+            print(f"⚠️ Failed to load embedding model: {e}")
+            self.embedder = None
+        
+        # Initialize layers (passing shared embedder)
         self.layer1 = AlgorithmResolutionExtractor(
             qdrant_client=self.client,
             collection_name=algorithm_collection,
             llm_api_key=llm_api_key,
-            llm_model=llm_model
+            llm_model=llm_model,
+            embedder=self.embedder
         )
         
         self.layer2 = HistoricalResolutionRefiner(
             qdrant_client=self.client,
             collection_name=historical_collection,
             llm_api_key=llm_api_key,
-            llm_model=llm_model
+            llm_model=llm_model,
+            embedder=self.embedder
         )
     
     def generate_resolutions(

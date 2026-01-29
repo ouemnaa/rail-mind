@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AlertTriangle, MapPin, ChevronDown, ChevronUp, CheckCircle2, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import type { UnifiedConflict } from '../../hooks/useUnifiedSimulation';
+
+// API base URL for image requests
+const API_BASE_URL = import.meta.env.VITE_PREDICTION_API_URL || 'http://localhost:8002';
 
 interface UnifiedAlertPanelProps {
   predictions: UnifiedConflict[];
@@ -111,10 +114,57 @@ function ConflictCard({
               {conflict.explanation}
             </div>
           )}
+
+          {/* Track Fault Image - Vision AI Detection */}
+          {conflict.image_url && conflict.conflict_type === 'track_fault' && (
+            <div className="mt-3 space-y-2">
+              <div className="flex items-center gap-2 text-xs font-semibold text-purple-400 uppercase tracking-wider">
+                <span>📷</span>
+                <span>Vision AI Detection</span>
+              </div>
+              <div className="relative rounded-lg overflow-hidden border-2 border-red-500/50 bg-slate-900/50">
+                <img
+                  src={`${API_BASE_URL}${conflict.image_url}`}
+                  alt="Defective track detected by Vision AI"
+                  className="w-full h-auto object-cover"
+                  onError={(e) => {
+                    // Fallback if image fails to load
+                    console.error('Failed to load track image:', `${API_BASE_URL}${conflict.image_url}`);
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+                <div className="absolute top-2 left-2 bg-red-600/90 text-white text-xs font-bold px-2 py-1 rounded">
+                  🚨 TRACK DEFECTIVE
+                </div>
+                <div className="absolute bottom-2 right-2 bg-slate-900/90 text-white text-xs px-2 py-1 rounded">
+                  Confidence: {Math.round(conflict.probability * 100)}%
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Resolution Suggestions */}
+          {conflict.resolution_suggestions && conflict.resolution_suggestions.length > 0 && (
+            <div className="mt-3 space-y-1">
+              <div className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">
+                💡 Suggested Resolutions
+              </div>
+              <div className="space-y-1">
+                {conflict.resolution_suggestions.map((suggestion, idx) => (
+                  <div key={idx} className="text-xs text-slate-300 bg-slate-800/30 px-2 py-1 rounded flex items-start gap-2">
+                    <span className="text-emerald-500 mt-0.5">→</span>
+                    <span className="flex-1">{suggestion}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Resolution Button */}
           <div className="mt-2 flex justify-end">
             <Button
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent card from collapsing
                 const severityMap = {
                   low: 0.25,
                   medium: 0.5,
@@ -172,6 +222,22 @@ export function UnifiedAlertPanel({
   const highRiskPredictions = sortedPredictions.filter(p => p.probability >= 0.5);
   const otherPredictions = sortedPredictions.filter(p => p.probability < 0.5);
   const displayPredictions = showAllPredictions ? sortedPredictions.slice(0, 15) : highRiskPredictions.slice(0, 5);
+
+  // Keep expanded state only if the conflict still exists in the current data
+  useEffect(() => {
+    if (expandedDetection && !detections.find(d => d.conflict_id === expandedDetection)) {
+      setExpandedDetection(null);
+    }
+  }, [detections, expandedDetection]);
+
+  useEffect(() => {
+    if (expandedPrediction && !displayPredictions.find(p => p.conflict_id === expandedPrediction)) {
+      // Only clear if the conflict doesn't exist in the full sorted list
+      if (!sortedPredictions.find(p => p.conflict_id === expandedPrediction)) {
+        setExpandedPrediction(null);
+      }
+    }
+  }, [displayPredictions, expandedPrediction, sortedPredictions]);
 
   return (
     <div className="glass-panel p-4 h-full flex flex-col">

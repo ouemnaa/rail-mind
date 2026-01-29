@@ -6,6 +6,7 @@ Normalizes outputs from both agents before evaluation to ensure objective rankin
 import json
 import re
 import os
+from pathlib import Path
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, asdict
 from groq import Groq
@@ -360,7 +361,7 @@ class LLMJudge:
     Fair LLM-based judge that evaluates normalized resolutions using Groq
     """
     
-    def __init__(self, api_key: str, model: str = "openai/gpt-oss-120b"):
+    def __init__(self, api_key: str, model: str = "llama-3.3-70b-versatile"):
         self.api_key = api_key
         self.model = model
         self.client = Groq(api_key=self.api_key)
@@ -661,17 +662,16 @@ def main():
     print("FAIR LLM-AS-A-JUDGE: RAILWAY CONFLICT RESOLUTION RANKING")
     print("="*70 + "\n")
     
-    # Example data (replace with actual inputs)
     # ⚠️ IMPORTANT: Replace this with your actual Groq API key!
     GROQ_API_KEY = "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"
-    GROQ_MODEL = "openai/gpt-oss-120b"
+    GROQ_MODEL = "llama-3.3-70b-versatile"
     
     if GROQ_API_KEY == "YOUR_API_KEY_HERE":
         print("❌ ERROR: Please set your Groq API key in the script!")
         return 1
     
     # Agent 1 resolutions (from JSON file)
-    agent1_json_path = "agent1_output.json"
+    agent1_json_path = "./agent1_output.json"
     
     # Agent 2 resolution (from console output)
     agent2_data = {
@@ -701,25 +701,33 @@ def main():
         }
     }
     
-    # Step 1: Normalize resolutions
-    print("Step 1: Normalizing resolutions from both agents...\n")
+    # Step 1: Load Agent 1 resolutions (with user-friendly error handling)
+    print("Step 1: Loading Agent 1 resolutions...\n")
     
     normalizer = ResolutionNormalizer()
     normalized_resolutions = []
     
     # Load and normalize Agent 1 resolutions
-    try:
-        with open(agent1_json_path, 'r') as f:
-            agent1_data = json.load(f)
+    if Path(agent1_json_path).exists():
+        print(f"✓ Found {agent1_json_path}")
+        try:
+            with open(agent1_json_path, 'r') as f:
+                agent1_data = json.load(f)
+            
+            for res in agent1_data['resolutions']:
+                normalized = normalizer.normalize_agent1_resolution(res)
+                normalized_resolutions.append(normalized)
+                print(f"✓ Normalized: {normalized.strategy_name} (Agent 1)")
         
-        for res in agent1_data['resolutions']:
-            normalized = normalizer.normalize_agent1_resolution(res)
-            normalized_resolutions.append(normalized)
-            print(f"✓ Normalized: {normalized.strategy_name} (Agent 1)")
-    
-    except FileNotFoundError:
-        print(f"⚠️  Agent 1 JSON file '{agent1_json_path}' not found!")
-        return 1
+        except Exception as e:
+            print(f"⚠️  Error reading {agent1_json_path}: {e}")
+            print("   Continuing with Agent 2 only...\n")
+    else:
+        print(f"⚠️  Agent 1 output file '{agent1_json_path}' not found!")
+        print("   To generate it, run: python test_integration.py")
+        print("   This will create agent1_output.json")
+        print("   Then re-run this script.\n")
+        print("   Continuing with Agent 2 resolutions only...\n")
     
     # Normalize Agent 2 resolution
     agent2_normalized = normalizer.normalize_agent2_resolution(
@@ -733,9 +741,14 @@ def main():
     
     print(f"\nTotal resolutions to evaluate: {len(normalized_resolutions)}\n")
     
+    # Check we have at least one resolution
+    if len(normalized_resolutions) == 0:
+        print("❌ No resolutions to evaluate!")
+        return 1
+    
     # Step 2: Judge and rank
     print("="*70)
-    print("Step 2: LLM Judge Evaluation")
+    print("Step 2: LLM Judge Evaluation (Groq Cloud)")
     print("="*70 + "\n")
     
     judge = LLMJudge(api_key=GROQ_API_KEY, model=GROQ_MODEL)
@@ -768,7 +781,7 @@ def main():
         print()
     
     # Save rankings
-    output_file = "ranked_resolutions.json"
+    output_file = "./ranked_resolutions.json"
     with open(output_file, 'w') as f:
         json.dump(rankings, f, indent=2)
     

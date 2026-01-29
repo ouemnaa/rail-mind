@@ -150,7 +150,7 @@ interface UseUnifiedSimulationReturn {
 // Hook Implementation
 // =============================================================================
 
-const DEFAULT_API_URL = 'http://localhost:8002';
+const DEFAULT_API_URL = import.meta.env.VITE_API_URL
 
 export function useUnifiedSimulation(
   options: UseUnifiedSimulationOptions = {}
@@ -173,7 +173,7 @@ export function useUnifiedSimulation(
   const tick = useCallback(async () => {
     try {
       abortControllerRef.current = new AbortController();
-      
+
       const response = await fetch(`${apiUrl}/api/simulation/tick`, {
         signal: abortControllerRef.current.signal,
       });
@@ -198,7 +198,7 @@ export function useUnifiedSimulation(
     try {
       setIsLoading(true);
       const response = await fetch(`${apiUrl}/api/simulation/multi-tick/${count}`);
-      
+
       if (!response.ok) {
         throw new Error(`API error: ${response.status}`);
       }
@@ -242,7 +242,7 @@ export function useUnifiedSimulation(
   // Start continuous simulation
   const start = useCallback(() => {
     if (isRunning) return;
-    
+
     setIsRunning(true);
     intervalRef.current = setInterval(() => {
       tick();
@@ -297,8 +297,8 @@ export function useUnifiedSimulation(
   // Helper: get conflicts for a station
   const getConflictsForStation = useCallback((stationId: string): UnifiedConflict[] => {
     const allConflicts = [...(state?.predictions || []), ...(state?.detections || [])];
-    return allConflicts.filter(c => 
-      c.location === stationId || 
+    return allConflicts.filter(c =>
+      c.location === stationId ||
       c.location.toUpperCase().includes(stationId.toUpperCase())
     );
   }, [state]);
