@@ -1,81 +1,361 @@
-# RailMind
+# 🚄 RailMind - Project Overview
 
-RailMind is a memory-driven system for real-time rail conflict detection and resolution built on Italy's real rail network data. It combines deterministic algorithms and safety rules, graph-based network models, and a vector memory store (Qdrant) to predict, detect, and resolve operational conflicts with explainable actions.
+> AI-Powered Railway Conflict Detection & Resolution System for Italy's Lombardy Rail Network
 
-<img width="1871" height="869" alt="rail_img_front" src="https://github.com/user-attachments/assets/8d64dbec-9495-41e2-bf0e-4f6f45ab420a" />
+[![Python](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![React](https://img.shields.io/badge/react-18.3+-61dafb.svg)](https://reactjs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-009688.svg)](https://fastapi.tiangolo.com/)
 
+---
 
-## What this project does
+## 🌐 Platform Link
 
-- Detects platform and routing conflicts in real time
-- Forecasts short-term (3–10 minute) risks using historical cases
-- Stores and retrieves past conflict cases in a vector database for similarity-based prediction
-- Suggests constraint-aware resolution actions (holds, reroutes, priority changes)
-- Provides explainability by linking decisions to triggers and similar historical events
+Live Demo: [https://rail-mind-production.up.railway.app/](https://rail-mind-production.up.railway.app/)
 
-## Tech Stack
-- Python (simulation & data processing)
-- NetworkX (railway network graph)
-- Qdrant (vector database for semantic search)
-- Other dependencies: pandas, datetime, etc.
+---
 
-## Setup & Run
-   ```bash
-   git clone <repo_url>
-   cd <repo_folder>
-   cd frontend
-   npm install
-   npm run
-  ```
-## Data Pipeline
-<div align="center">
-  <img width="240" height="664" alt="image" src="https://github.com/user-attachments/assets/e2160f09-0b7a-48e8-8c52-7dbe5841e7a0" />
-</div>
+## 🎯 Project Overview & Objectives
 
-## High-level architecture
-<div align="center">
-  <img width="276" height="333" alt="image" src="https://github.com/user-attachments/assets/99047d2f-00e4-439c-82ac-e85f2a9a6219" />
-</div>
+**RailMind** is an AI-powered platform for railway conflict detection and resolution, designed for Italy's Lombardy rail network. The system leverages machine learning, quantum optimization, and real-time simulation to:
 
-## Key components
+- Predict and detect operational conflicts before they occur
+- Recommend optimal resolutions using hybrid mathematical and LLM agents
+- Archive and retrieve historical incidents and resolutions for explainable AI
+- Provide a live dashboard for monitoring and feedback
 
-- **Sensor Simulation** — synthesizes train positions, station occupancy and rail utilization for testing
-- **Network Context** — graph model of stations (nodes) and rails (edges), enriched with constraints and historical metrics
-- **Deterministic Detection** — rule-based checks for headways, capacity, directional conflicts
-- **Predictive Detection** — finds similar past states and forecasts emerging conflicts
-- **Resolution Agent** — proposes actions that respect infrastructure, train capabilities and policies and updates the new Qdrant database
-- **Explainability** — each action links to triggers, constraints, and historical analogues for operator trust
+---
 
-## Project layout
+## 🏗️ Project Hierarchy & Architecture
+
+### Overall Architecture
+
+![Overall Architecture](image-4.png)
+
+### Technical Architecture
+
+![Technical Architecture](image.png)
+
+### High-Level Flow
+
+![Flow](image-5.png)
+
+---
+
+### Project Structure
 
 ```
-railmind/
-├── data/              # preprocessing, train CSVs, network graph
-├── simulation/        # sensor simulation and scenario runners
-├── detection/         # deterministic and predictive detection engines
-├── resolution/        # action planners and policy logic
-├── explainability/    # trace and audit helpers
-├── frontend/          # operator UI and visualization
-└── docs/              # diagrams and component READMEs
+rail-mind/
+├── agents/
+│   ├── detection-agent/
+│   ├── resolution-agent/
+│   └── simulator-agent/
+├── backend/integration/
+├── data-preprocessing/
+├── creating-context/
+└── frontend/
 ```
 
-## Simulation & testing
+---
 
-Supports synthetic timetable generation, load/stress tests, failure injection, and comparative evaluation of resolution strategies (what-if scenarios).
+## 🛠️ Technologies Used
 
-## Safety, privacy and transparency
+- **Python** 3.9+
+- **React** 18.3+
+- **FastAPI** 0.104+
+- **Qdrant** (vector database, cloud/local)
+- **SentenceTransformer** (all-MiniLM-L6-v2)
+- **XGBoost** (ML prediction)
+- **NetworkX** (graph building)
+- **Groq API** (LLM agent)
+- **Ultralytics YOLOv8** (vision-based detection)
+- **TypeScript** (frontend)
+- **TailwindCSS** (frontend styling)
 
-- No personal data is used in this project
-- Decisions are auditable and accompanied by explanations
-- Historical bias is monitored and documented
+---
 
-## Next steps / roadmap
+### 1. Detection Agent
 
-- Add multimodal inputs (weather, maintenance logs)
-- Develop learning-based resolution policies with human-in-the-loop validation
-- Integrate real sensor feeds for near real-time operation
+![Detection Agent Architecture](image-1.png)
 
-## authors 
+**Components:**
 
-Emna Ouertani - Ela Sarhani - Nour Mustapha - Farah Baraket - Asma Raies
+- **ML Prediction**: XGBoost (87% AUROC, 72 features, StandardScaler, <10ms inference)
+- **Rule Engine**: 17 deterministic safety rules (capacity, headway, deadlock, cascade)
+- **Vector Memory**: Qdrant similarity search (384D embeddings, all-MiniLM-L6-v2)
+- **Vision Module**: YOLOv8n for track fault detection (640×640, experimental)
 
+**Triggers:** Train arrival/departure, delay threshold, station capacity changes
+
+---
+
+## 🗄️ Qdrant Integration Details
+
+Qdrant is used as a vector database to store and retrieve high-dimensional embeddings for railway incidents, resolutions, and feedback. This enables semantic search and hybrid reasoning in the resolution agent.
+
+**Integration Workflow:**
+
+- Embeddings are generated using SentenceTransformer (all-MiniLM-L6-v2)
+- Data (conflicts, resolutions, feedback) is upserted into Qdrant collections (e.g., rail_incidents)
+- The resolution agent queries Qdrant for similar historical cases to inform LLM-based hybrid solutions
+- Qdrant is accessed via the qdrant-client Python library and REST API
+
+**Benefits:**
+
+- Fast, scalable semantic search for similar cases
+- Supports explainable AI by linking new decisions to historical data
+- Enables hybrid RAG (Retrieval-Augmented Generation) workflows
+
+**Example Usage:**
+
+```python
+from qdrant_client import QdrantClient
+from sentence_transformers import SentenceTransformer
+
+model = SentenceTransformer("all-MiniLM-L6-v2")
+embedding = model.encode("conflict description").tolist()
+client = QdrantClient(url="<QDRANT_URL>", api_key="<QDRANT_API_KEY>")
+client.upsert(
+    collection_name="rail_incidents",
+    points=[{"id": 123, "vector": embedding, "payload": {"conflict_id": "C1"}}]
+)
+results = client.search(
+    collection_name="rail_incidents",
+    query_vector=embedding,
+    limit=5
+)
+```
+
+---
+
+### 3. Simulator Agent
+
+**Components:**
+
+- **Physics Engine**: Train positions, velocities, station occupancy, delay propagation
+- **State Management**: Track conflicts, signal states, schedule adherence
+- **WebSocket**: Real-time broadcast to frontend (configurable update rate)
+
+---
+
+![Data Preprocessing Architecture](image-3.png)
+
+### Pipeline Stages
+
+**1. Preprocessing** (`data-preprocessing-pipeline/`)
+
+- Clean, enrich, calculate delays/times
+- Add temporal features (holidays, rush hours)
+- Extract resolution types from text
+- **Output**: Enriched CSVs/JSONs
+
+**2. Network Graph** (`railway-network-graph/`)
+
+- Build NetworkX graph (50+ stations, 26+ routes)
+- Enrich with capacity, distance, utilization
+- **Output**: `network_graph.json`
+
+**3. Vector Embedding** (`vector-database/`)
+
+- **Step 1**: Enrich data (GPS, timestamps, resolution extraction)
+- **Step 2**: 80/20 time-based train/test split
+- **Step 3**: Generate 384D embeddings (sentence-transformers/all-MiniLM-L6-v2)
+- **Step 4**: Ingest to Qdrant `rail_incidents` collection (cosine distance)
+- **Step 5**: Validation queries and similarity tests
+- **Runner**: `run_pipeline.py` (executes all steps sequentially)
+
+**Raw Data:**
+
+- 113 incidents
+- 2,975 stations
+- 12,173 route segments
+- 2.6M train operations
+
+---
+
+## ⚙️ Setup & Installation Instructions
+
+### Installation
+
+```bash
+# 1. Clone repo
+git clone <repo-url> && cd rail-mind
+
+# 2. Backend setup
+python -m venv venv && source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r backend/requirements.txt
+# Key packages: fastapi uvicorn numpy pandas scikit-learn xgboost
+#               sentence-transformers qdrant-client networkx groq qiskit ultralytics
+
+# 3. Qdrant setup (choose one)
+docker run -p 6333:6333 qdrant/qdrant  # Local
+# OR use Qdrant Cloud: https://cloud.qdrant.io/
+
+# 4. Environment variables
+echo "OPENROUTER_API_KEY=your-key" > .env
+echo "QDRANT_URL=http://localhost:6333" >> .env
+
+# 5. Run data pipeline
+cd data-preprocessing/data-preprocessing-pipeline && python preprocess_all_data.py
+cd ../railway-network-graph && python run_graph.py
+cd ../vector-database && python run_pipeline.py
+
+# 6. Frontend setup
+cd frontend && npm install
+echo "VITE_API_URL=http://localhost:8002" > .env
+```
+
+## 🚦 Usage Examples
+
+### Running the System
+
+```bash
+# Terminal 1: Backend
+cd backend/integration && python unified_api.py  # Port 8002
+
+# Terminal 2: Frontend
+cd frontend && npm run dev
+
+# Terminal 3: Qdrant (if local)
+docker run -p 6333:6333 qdrant/qdrant
+```
+
+---
+
+## 🚀 Deployment
+
+### Backend: GitHub Actions → Railway (Container Hosting)
+
+- Code is pushed to GitHub; a GitHub Actions workflow builds a Docker image.
+- The built image is pushed to Railway's container registry.
+- Railway runs the backend service from the latest image, exposing port `8002`.
+- Environment variables configured in Railway: `OPENROUTER_API_KEY`, `QDRANT_URL`, optional `PORT`.
+
+Example CI (simplified):
+
+```yaml
+name: Backend CI
+on:
+    push:
+        branches: [ main ]
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: docker/setup-buildx-action@v3
+            - uses: docker/login-action@v3
+                with:
+                    registry: ${{ secrets.RAILWAY_REGISTRY }}
+                    username: ${{ secrets.RAILWAY_USER }}
+                    password: ${{ secrets.RAILWAY_TOKEN }}
+            - uses: docker/build-push-action@v6
+                with:
+                    context: .
+                    file: ./Dockerfile
+                    push: true
+                    tags: ${{ secrets.RAILWAY_REGISTRY }}/railmind-backend:latest
+```
+
+### Frontend: Railway GitHub Deployment
+
+- The frontend is connected directly to Railway via the GitHub repository.
+- Railway builds the app and hosts the static `dist/` output.
+- `VITE_API_URL` in Railway env points to the backend public URL (e.g., `https://rail-mind-production.up.railway.app/api`).
+
+### Deployment Architecture
+
+```mermaid
+flowchart LR
+    subgraph GitHub
+        BE[Backend Repo] --> CI[GitHub Actions]
+        FE[Frontend Repo]
+    end
+
+    CI --> IMG[Docker Image]
+    IMG --> REG[Railway Container Registry]
+    REG --> SVC[Railway Backend Service (port 8002)]
+
+    subgraph Railway
+        FE --> FE_SVC[Railway Frontend Service]
+    end
+
+    SVC --> API[(Public API /ws /api)]
+    FE_SVC --> UI[React PWA]
+    UI --> API
+
+    QDRANT[(Qdrant Cloud)]
+    SVC --> QDRANT
+```
+
+### Notes
+
+- Backend runs as a container with ASGI (`uvicorn`) behind Railway's ingress.
+- Frontend served as static assets; ensure CORS and `VITE_API_URL` are correctly set.
+- Secrets are managed in Railway; no secrets stored in the repo.
+
+---
+
+## 📦 Requirements & Dependencies
+
+- All dependencies are listed in:
+  - backend/requirements.txt (Python backend)
+  - frontend/package.json (React frontend)
+
+---
+
+**Base URL**: `http://localhost:8002/api`  
+**Docs**: `http://localhost:8002/docs`  
+**WebSocket**: `ws://localhost:8002/ws`
+
+### Key Endpoints
+
+```bash
+# Simulation
+POST /simulation/start
+POST /simulation/tick      # Advance 1 minute
+GET  /simulation/state
+
+# Detection
+POST /api/detect            # Run XGBoost + rules on current state
+GET  /api/conflicts         # List active conflicts
+
+# Resolution
+POST /api/resolve           # Generate solutions (Math + LLM agents)
+POST /api/apply/{action}    # Apply specific resolution action
+
+# Feedback
+POST /api/feedback          # Submit rating & comments
+GET  /api/feedback/{conflict_id}  # Retrieve feedback
+
+# Vector Search
+POST /api/qdrant/search     # Semantic search rail_incidents
+```
+
+---
+
+## 👥 TEAM
+
+- **Emna Ouertani** - Project Lead & Deployment
+- **Ela Sarhani** - Hybrid-RAG & Integration
+- **Nour Mustapha** - Algorithms & Quantum
+- **Farah Baraket** - Backend & Data Engineering
+- **Asma Raies** - Frontend & Integration
+
+---
+
+## 📚 Documentation
+
+- [README.md](README.md) - Main documentation
+- [TECHNICAL_ARCHITECTURE.md](TECHNICAL_ARCHITECTURE.md) - Full tech stack
+- [DEPLOYMENT.md](DEPLOYMENT.md) - Railway.com deployment
+- [backend/integration/CONFLICT_WORKFLOW.md](backend/integration/CONFLICT_WORKFLOW.md) - Conflict workflow
+
+---
+
+<div align="center">
+
+**Built with ❤️ for safer railway operations**
+
+[GitHub](https://github.com/ouemnaa/rail-mind/)
+
+</div>
