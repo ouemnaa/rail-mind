@@ -8,6 +8,11 @@
 
 ---
 
+<img width="1902" height="865" alt="image" src="https://github.com/user-attachments/assets/34321fc6-9dc3-418a-8254-11925d841151" />
+<img width="1898" height="866" alt="image" src="https://github.com/user-attachments/assets/29b352e5-4198-4b50-8193-4dc6451081e1" />
+<img width="1897" height="870" alt="image" src="https://github.com/user-attachments/assets/e30b9614-df47-431c-a0fe-2dcf98073c5f" />
+
+
 ## 🌐 Platform Link
 
 Live Demo: [https://rail-mind-production.up.railway.app/](https://rail-mind-production.up.railway.app/)
