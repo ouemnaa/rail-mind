@@ -1,7 +1,16 @@
-import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Lightbulb, Settings, Activity, Menu, Construction, Upload, Download } from 'lucide-react';
-import { useInstallPrompt } from '@/hooks/use-install-prompt';
+import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import {
+  LayoutDashboard,
+  Lightbulb,
+  Settings,
+  Activity,
+  Menu,
+  Construction,
+  Upload,
+  Download,
+} from "lucide-react";
+import { useInstallPrompt } from "@/hooks/use-install-prompt";
 
 interface NavItem {
   path: string;
@@ -10,10 +19,9 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { path: '/', label: 'Network Overview', icon: LayoutDashboard },
-  { path: '/resolution', label: 'Resolution Options', icon: Lightbulb },
-  { path: '/maintenance', label: 'Maintenance', icon: Construction },
-  { path: '/documentation', label: 'Documentation', icon: Upload },
+  { path: "/", label: "Network Overview", icon: LayoutDashboard },
+  { path: "/resolution", label: "Resolution Options", icon: Lightbulb },
+  { path: "/documentation", label: "Documentation", icon: Upload },
 ];
 
 export function Sidebar() {
@@ -23,7 +31,9 @@ export function Sidebar() {
   const { isInstallable, installApp } = useInstallPrompt();
 
   return (
-    <div className={`h-full bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 ${isOpen ? 'w-64' : 'w-16'}`}>
+    <div
+      className={`h-full bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 ${isOpen ? "w-64" : "w-16"}`}
+    >
       {/* Logo & Toggle */}
       <div className="p-4 border-b border-sidebar-border flex items-center justify-between">
         {isOpen && (
@@ -37,7 +47,10 @@ export function Sidebar() {
             </div>
           </div>
         )}
-        <button onClick={() => setIsOpen(!isOpen)} className="p-2 rounded hover:bg-muted transition-colors">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="p-2 rounded hover:bg-muted transition-colors"
+        >
           <Menu className="w-5 h-5 text-muted-foreground" />
         </button>
       </div>
@@ -54,11 +67,13 @@ export function Sidebar() {
                   onClick={() => navigate(item.path)}
                   className={`flex items-center gap-3 w-full px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
                     isActive
-                      ? 'bg-primary/10 text-primary border border-primary/20'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                      ? "bg-primary/10 text-primary border border-primary/20"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   }`}
                 >
-                  <Icon className={`w-5 h-5 ${isActive ? 'text-primary' : ''}`} />
+                  <Icon
+                    className={`w-5 h-5 ${isActive ? "text-primary" : ""}`}
+                  />
                   {isOpen && item.label}
                 </button>
               </li>
@@ -70,18 +85,18 @@ export function Sidebar() {
       {/* Footer */}
       <div className="p-4 border-t border-sidebar-border">
         {isInstallable && (
-          <button 
+          <button
             onClick={installApp}
             className="flex items-center gap-3 w-full px-4 py-3 mb-2 rounded-lg text-sm font-medium text-primary bg-primary/10 hover:bg-primary/20 transition-colors"
           >
             <Download className="w-5 h-5" />
-            {isOpen && 'Install App'}
+            {isOpen && "Install App"}
           </button>
         )}
 
         <button className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
           <Settings className="w-5 h-5" />
-          {isOpen && 'Settings'}
+          {isOpen && "Settings"}
         </button>
 
         {isOpen && (

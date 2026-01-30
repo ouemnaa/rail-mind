@@ -14,8 +14,10 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { ResolutionCard } from "./ResolutionCard";
+import { FeedbackForm } from "./FeedbackForm";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { toast } from "sonner";
 
 // API base URL - adjust based on environment
 const API_BASE_URL = import.meta.env.VITE_API_URL;
@@ -85,7 +87,11 @@ interface ApiResponse {
 }
 
 interface ResolutionPanelProps {
-  onViewExplanation?: (resolution: any, result: ApiResponse | null, activeConflict: any) => void;
+  onViewExplanation?: (
+    resolution: any,
+    result: ApiResponse | null,
+    activeConflict: any,
+  ) => void;
   conflictId?: string;
   detection?: any;
 }
@@ -100,14 +106,34 @@ export function ResolutionPanel({
   const [error, setError] = useState<string | null>(null);
 
   // Use state from location if available (persists when going back), otherwise use passed detection
-  const [result, setResult] = useState<ApiResponse | null>(location.state?.resolutionResult || null);
-  const [selectedConflict] = useState<any>(detection || location.state?.activeConflict || null);
-  const [approvedResolutionId, setApprovedResolutionId] = useState<string | null>(null);
+  const [result, setResult] = useState<ApiResponse | null>(
+    location.state?.resolutionResult || null,
+  );
+  const [selectedConflict] = useState<any>(
+    detection || location.state?.activeConflict || null,
+  );
+  const [approvedResolutionId, setApprovedResolutionId] = useState<
+    string | null
+  >(null);
 
   const handleApprove = (resolutionId: string) => {
     setApprovedResolutionId(resolutionId);
-    // Here you would typically also make an API call to save the approval
     console.log(`Resolution ${resolutionId} approved`);
+
+    // Show feedback notification
+    toast.custom(
+      (t) => (
+        <FeedbackForm
+          resolutionId={resolutionId}
+          onSuccess={() => toast.dismiss(t)}
+          onCancel={() => toast.dismiss(t)}
+        />
+      ),
+      {
+        duration: Infinity,
+        position: "bottom-right",
+      },
+    );
   };
 
   // Auto-run resolution if we have a conflict but no results yet
@@ -213,11 +239,18 @@ export function ResolutionPanel({
         <div className="w-24 h-24 rounded-3xl bg-primary/5 flex items-center justify-center mb-8 border border-primary/10 shadow-2xl shadow-primary/5">
           <AlertCircle className="w-12 h-12 text-primary/40" />
         </div>
-        <h2 className="text-3xl font-bold tracking-tight mb-4">No Active Conflict Selected</h2>
+        <h2 className="text-3xl font-bold tracking-tight mb-4">
+          No Active Conflict Selected
+        </h2>
         <p className="text-muted-foreground max-w-md mx-auto mb-8 text-lg">
-          The resolution engine requires a specific conflict context to generate optimal routing solutions.
+          The resolution engine requires a specific conflict context to generate
+          optimal routing solutions.
         </p>
-        <Button onClick={() => navigate("/")} size="lg" className="gap-2 px-8 h-14 text-lg">
+        <Button
+          onClick={() => navigate("/")}
+          size="lg"
+          className="gap-2 px-8 h-14 text-lg"
+        >
           Return to Dashboard
         </Button>
       </div>
@@ -233,7 +266,9 @@ export function ResolutionPanel({
             <Lightbulb className="w-8 h-8 text-primary" />
           </div>
           <div>
-            <h1 className="font-bold text-3xl tracking-tight">Resolution Center</h1>
+            <h1 className="font-bold text-3xl tracking-tight">
+              Resolution Center
+            </h1>
             <p className="text-muted-foreground">
               {hasApiResults
                 ? "AI-ranked by effectiveness"
@@ -268,21 +303,35 @@ export function ResolutionPanel({
         <div className="lg:col-span-1 glass-panel p-6 border-l-4 border-l-destructive/50">
           <div className="flex items-center gap-2 mb-4">
             <AlertCircle className="w-5 h-5 text-destructive" />
-            <h3 className="font-bold uppercase tracking-wider text-sm opacity-70">Conflict Identity</h3>
+            <h3 className="font-bold uppercase tracking-wider text-sm opacity-70">
+              Conflict Identity
+            </h3>
           </div>
           <div className="space-y-3">
             <div>
-              <div className="text-2xl font-black text-foreground">{selectedConflict.conflict_id}</div>
-              <div className="text-sm font-medium text-destructive/80 uppercase">{selectedConflict.conflict_type} ISSUE</div>
+              <div className="text-2xl font-black text-foreground">
+                {selectedConflict.conflict_id}
+              </div>
+              <div className="text-sm font-medium text-destructive/80 uppercase">
+                {selectedConflict.conflict_type} ISSUE
+              </div>
             </div>
             <div className="pt-2 border-t border-border/50">
-              <div className="text-sm text-muted-foreground">Affected Network</div>
-              <div className="font-semibold">{selectedConflict.station_ids?.join(" ↔ ") || selectedConflict.location}</div>
+              <div className="text-sm text-muted-foreground">
+                Affected Network
+              </div>
+              <div className="font-semibold">
+                {selectedConflict.station_ids?.join(" ↔ ") ||
+                  selectedConflict.location}
+              </div>
             </div>
             <div>
-              <div className="text-sm text-muted-foreground">Involved Assets</div>
+              <div className="text-sm text-muted-foreground">
+                Involved Assets
+              </div>
               <div className="font-mono text-sm font-bold text-primary">
-                {selectedConflict.train_ids?.join(", ") || selectedConflict.involved_trains?.join(", ")}
+                {selectedConflict.train_ids?.join(", ") ||
+                  selectedConflict.involved_trains?.join(", ")}
               </div>
             </div>
           </div>
@@ -294,42 +343,88 @@ export function ResolutionPanel({
             <div className="glass-panel p-6 h-full flex flex-col justify-between">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="font-bold uppercase tracking-wider text-sm opacity-70 mb-1">Intelligence Report</h3>
-                  <div className="text-2xl font-bold text-primary">{resolutionOptions.length} Viable Pathways Identified</div>
+                  <h3 className="font-bold uppercase tracking-wider text-sm opacity-70 mb-1">
+                    Intelligence Report
+                  </h3>
+                  <div className="text-2xl font-bold text-primary">
+                    {resolutionOptions.length} Viable Pathways Identified
+                  </div>
                 </div>
-                <Button variant="outline" size="sm" onClick={handleResolve} disabled={isLoading} className="gap-2">
-                  <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleResolve}
+                  disabled={isLoading}
+                  className="gap-2"
+                >
+                  <RefreshCw
+                    className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
+                  />
                   Recalculate
                 </Button>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
                 <div className="space-y-1">
-                  <div className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">Execution Time</div>
-                  <div className="text-2xl font-black">{result.output.total_execution_ms}<span className="text-xs font-normal text-muted-foreground ml-1">ms</span></div>
+                  <div className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">
+                    Execution Time
+                  </div>
+                  <div className="text-2xl font-black">
+                    {result.output.total_execution_ms}
+                    <span className="text-xs font-normal text-muted-foreground ml-1">
+                      ms
+                    </span>
+                  </div>
                   <div className="w-full bg-muted h-1 rounded-full overflow-hidden">
-                    <div className="bg-primary h-full" style={{ width: '100%' }} />
+                    <div
+                      className="bg-primary h-full"
+                      style={{ width: "100%" }}
+                    />
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">Confidence</div>
-                  <div className="text-2xl font-black text-success">98.4<span className="text-xs font-normal text-muted-foreground ml-1">%</span></div>
+                  <div className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">
+                    Confidence
+                  </div>
+                  <div className="text-2xl font-black text-success">
+                    98.4
+                    <span className="text-xs font-normal text-muted-foreground ml-1">
+                      %
+                    </span>
+                  </div>
                   <div className="w-full bg-muted h-1 rounded-full overflow-hidden">
-                    <div className="bg-success h-full" style={{ width: '98%' }} />
+                    <div
+                      className="bg-success h-full"
+                      style={{ width: "98%" }}
+                    />
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">RAG Depth</div>
-                  <div className="text-2xl font-black text-blue-400">{result.output.agents.hybrid_rag.normalized_count}</div>
+                  <div className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">
+                    RAG Depth
+                  </div>
+                  <div className="text-2xl font-black text-blue-400">
+                    {result.output.agents.hybrid_rag.normalized_count}
+                  </div>
                   <div className="w-full bg-muted h-1 rounded-full overflow-hidden">
-                    <div className="bg-blue-400 h-full" style={{ width: '70%' }} />
+                    <div
+                      className="bg-blue-400 h-full"
+                      style={{ width: "70%" }}
+                    />
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">Math Precision</div>
-                  <div className="text-2xl font-black text-yellow-400">{result.output.agents.mathematical.normalized_count}</div>
+                  <div className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">
+                    Math Precision
+                  </div>
+                  <div className="text-2xl font-black text-yellow-400">
+                    {result.output.agents.mathematical.normalized_count}
+                  </div>
                   <div className="w-full bg-muted h-1 rounded-full overflow-hidden">
-                    <div className="bg-yellow-400 h-full" style={{ width: '85%' }} />
+                    <div
+                      className="bg-yellow-400 h-full"
+                      style={{ width: "85%" }}
+                    />
                   </div>
                 </div>
               </div>
@@ -339,7 +434,10 @@ export function ResolutionPanel({
               <div className="text-center max-w-sm">
                 <Brain className="w-12 h-12 text-primary/40 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Awaiting AI Analysis</h3>
-                <p className="text-sm text-muted-foreground">Click "Resolve Conflict" to initiate the multi-agent reasoning engine and generate optimized solutions.</p>
+                <p className="text-sm text-muted-foreground">
+                  Click "Resolve Conflict" to initiate the multi-agent reasoning
+                  engine and generate optimized solutions.
+                </p>
               </div>
             </div>
           )}
@@ -348,7 +446,10 @@ export function ResolutionPanel({
 
       {/* Error Message */}
       {error && (
-        <Alert variant="destructive" className="border-destructive/50 bg-destructive/10">
+        <Alert
+          variant="destructive"
+          className="border-destructive/50 bg-destructive/10"
+        >
           <AlertCircle className="h-5 w-5" />
           <AlertTitle className="font-bold">Engine Error</AlertTitle>
           <AlertDescription className="text-base">
@@ -365,13 +466,17 @@ export function ResolutionPanel({
       {/* Resolution Cards Section */}
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <h2 className="text-2xl font-bold tracking-tight">Proposed Solutions</h2>
+          <h2 className="text-2xl font-bold tracking-tight">
+            Proposed Solutions
+          </h2>
           <div className="h-px flex-1 bg-border/50" />
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-6">
           {resolutionOptions.map((option) => {
-            const isApproved = approvedResolutionId === (option as any).resolution_id || approvedResolutionId === option.title;
+            const isApproved =
+              approvedResolutionId === (option as any).resolution_id ||
+              approvedResolutionId === option.title;
 
             return (
               <div key={option.rank} className="flex flex-col group">
@@ -384,7 +489,9 @@ export function ResolutionPanel({
                   supportingCases={option.supportingCases}
                   safetyChecks={option.safetyChecks}
                   isRecommended={option.isRecommended}
-                  onClick={() => onViewExplanation?.(option, result, selectedConflict)}
+                  onClick={() =>
+                    onViewExplanation?.(option, result, selectedConflict)
+                  }
                 />
 
                 <div className="mt-3 px-4 flex flex-col gap-3">
@@ -392,10 +499,11 @@ export function ResolutionPanel({
                   {hasApiResults && "sourceAgent" in option && (
                     <div className="flex items-center gap-3 text-xs">
                       <span
-                        className={`px-3 py-1 rounded-full font-bold uppercase tracking-widest ${(option as any).sourceAgent?.includes("Hybrid")
-                          ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                          : "bg-yellow-500/20 text-yellow-500 border border-yellow-500/30"
-                          }`}
+                        className={`px-3 py-1 rounded-full font-bold uppercase tracking-widest ${
+                          (option as any).sourceAgent?.includes("Hybrid")
+                            ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                            : "bg-yellow-500/20 text-yellow-500 border border-yellow-500/30"
+                        }`}
                       >
                         {(option as any).sourceAgent}
                       </span>
@@ -411,7 +519,11 @@ export function ResolutionPanel({
                   <Button
                     variant={isApproved ? "default" : "outline"}
                     className={`w-full gap-2 ${isApproved ? "bg-emerald-600 hover:bg-emerald-700" : ""}`}
-                    onClick={() => handleApprove((option as any).resolution_id || option.title)}
+                    onClick={() =>
+                      handleApprove(
+                        (option as any).resolution_id || option.title,
+                      )
+                    }
                   >
                     {isApproved ? (
                       <>
@@ -427,7 +539,7 @@ export function ResolutionPanel({
                   </Button>
                 </div>
               </div>
-            )
+            );
           })}
         </div>
       </div>
