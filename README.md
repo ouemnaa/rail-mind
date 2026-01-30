@@ -29,7 +29,7 @@ Live Demo: [https://rail-mind-production.up.railway.app/](https://rail-mind-prod
 
 ### Overall Architecture
 
-<img width="2611" height="1149" alt="image" src="https://github.com/user-attachments/assets/1b619f33-3292-438e-b794-f60570392a8a" />
+<img width="2607" height="1092" alt="image" src="https://github.com/user-attachments/assets/d7c7bee6-87ee-4e7b-9c6b-214cbfb78260" />
 
 
 ### Technical Architecture
@@ -77,7 +77,8 @@ rail-mind/
 
 ### 1. Detection Agent
 
-![Uploading image.png…]()
+<img width="2143" height="1256" alt="image" src="https://github.com/user-attachments/assets/f065bc08-dd50-4b52-b9c5-c416538949ff" />
+
 
 
 **Components:**
@@ -127,8 +128,32 @@ results = client.search(
     limit=5
 )
 ```
+### 2. Resolution Agent
+
+<img width="2235" height="1079" alt="image" src="https://github.com/user-attachments/assets/e4907690-8f07-47f4-9953-c484f70db700" />
+
+
+
+**2-Agent Hybrid Architecture:**
+
+**Agent 1: Mathematical Optimization** (50-500ms)
+- **Solvers**: Greedy (50ms) | LNS+QAOA (300ms) | SA (500ms) | NSGA-II (2s) | GA (5s)
+- **Selection**: Neural Net (128→64→64→4) picks best solver in Fast mode
+- **Embedding**: 10 simple features → padded to 128D (GNN implemented but unused)
+- **Fitness**: `0.4*delay + 0.3*safety + 0.2*passengers + 0.1*cost`
+- **Quantum**: Optional QAOA (Qiskit Aer, 2 reps, ≤20 vars) for LNS repair
+- **Modes**: Fast (NN picks 1) vs Benchmark (runs all 5)
+
+**Agent 2: LLM RAG Resolution** (2-5s)
+- **Model**: Llama-3.3-70B via Groq (temp=0.2-0.3)
+- **Search**: Qdrant `rail_incidents` (top 5, 384D cosine similarity)
+- **Reranker**: SentenceTransformer multilingual cross-encoder
+- **Output**: Top 3 contextual resolutions with reasoning
+
+**Final Output:** Math plan + LLM alternatives ranked by fitness
 
 ---
+
 
 ### 3. Simulator Agent
 
@@ -140,10 +165,12 @@ results = client.search(
 
 ---
 
-![Uploading image.png…]()
+
 
 
 ### Pipeline Stages
+<img width="2722" height="625" alt="image" src="https://github.com/user-attachments/assets/07660d41-294d-42cf-ab8d-389c777a05c0" />
+
 
 **1. Preprocessing** (`data-preprocessing-pipeline/`)
 
@@ -342,14 +369,6 @@ POST /api/qdrant/search     # Semantic search rail_incidents
 
 ---
 
-## 📚 Documentation
-
-- [README.md](README.md) - Main documentation
-- [TECHNICAL_ARCHITECTURE.md](TECHNICAL_ARCHITECTURE.md) - Full tech stack
-- [DEPLOYMENT.md](DEPLOYMENT.md) - Railway.com deployment
-- [backend/integration/CONFLICT_WORKFLOW.md](backend/integration/CONFLICT_WORKFLOW.md) - Conflict workflow
-
----
 
 <div align="center">
 
