@@ -266,25 +266,20 @@ jobs:
 
 ```mermaid
 flowchart LR
-    subgraph GitHub
-        BE[Backend Repo] --> CI[GitHub Actions]
-        FE[Frontend Repo]
-    end
-
+    BE[Backend Repo] --> CI[GitHub Actions]
     CI --> IMG[Docker Image]
     IMG --> REG[Railway Container Registry]
-    REG --> SVC[Railway Backend Service (port 8002)]
+    REG --> SVC[Railway Backend Service]
 
-    subgraph Railway
-        FE --> FE_SVC[Railway Frontend Service]
-    end
+    FE[Frontend Repo] --> FE_SVC[Railway Frontend Service]
 
-    SVC --> API[(Public API /ws /api)]
-    FE_SVC --> UI[React PWA]
+    SVC --> API[Public API & WebSocket]
+    FE_SVC --> UI[React Frontend]
     UI --> API
 
-    QDRANT[(Qdrant Cloud)]
+    QDRANT[Qdrant Cloud]
     SVC --> QDRANT
+
 ```
 
 ### Notes
