@@ -29,15 +29,18 @@ Live Demo: [https://rail-mind-production.up.railway.app/](https://rail-mind-prod
 
 ### Overall Architecture
 
-![Overall Architecture](image-4.png)
+<img width="2611" height="1149" alt="image" src="https://github.com/user-attachments/assets/1b619f33-3292-438e-b794-f60570392a8a" />
+
 
 ### Technical Architecture
 
-![Technical Architecture](image.png)
+<img width="2848" height="238" alt="image" src="https://github.com/user-attachments/assets/4e011991-afee-4a35-a58d-e16e4d92f73a" />
+
 
 ### High-Level Flow
 
-![Flow](image-5.png)
+<img width="4599" height="1365" alt="image" src="https://github.com/user-attachments/assets/e8ecfa58-d9bc-443c-9a27-0f528e3acbab" />
+
 
 ---
 
@@ -75,7 +78,8 @@ rail-mind/
 
 ### 1. Detection Agent
 
-![Detection Agent Architecture](image-1.png)
+![Uploading image.png…]()
+
 
 **Components:**
 
@@ -137,7 +141,8 @@ results = client.search(
 
 ---
 
-![Data Preprocessing Architecture](image-3.png)
+![Uploading image.png…]()
+
 
 ### Pipeline Stages
 
