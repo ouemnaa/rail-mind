@@ -34,13 +34,12 @@ Live Demo: [https://rail-mind-production.up.railway.app/](https://rail-mind-prod
 
 ### Technical Architecture
 
-<img width="2848" height="238" alt="image" src="https://github.com/user-attachments/assets/4e011991-afee-4a35-a58d-e16e4d92f73a" />
+<img width="4599" height="1365" alt="image" src="https://github.com/user-attachments/assets/e8ecfa58-d9bc-443c-9a27-0f528e3acbab" />
 
 
 ### High-Level Flow
 
-<img width="4599" height="1365" alt="image" src="https://github.com/user-attachments/assets/e8ecfa58-d9bc-443c-9a27-0f528e3acbab" />
-
+<img width="2848" height="238" alt="image" src="https://github.com/user-attachments/assets/4e011991-afee-4a35-a58d-e16e4d92f73a" />
 
 ---
 
