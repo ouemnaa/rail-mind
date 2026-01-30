@@ -1,0 +1,453 @@
+{
+  "status": "ok",
+  "conflict_id": "a284739b-a206-47da-b3b5-8fb5c8c150b5",
+  "started_at": "2026-01-29T22:52:30.101283+00:00",
+  "finished_at": "2026-01-29T22:53:20.703239+00:00",
+  "total_execution_ms": 50601,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 40924,
+      "raw_result": {
+        "conflict_id": "a284739b-a206-47da-b3b5-8fb5c8c150b5",
+        "conflict_summary": "",
+        "timestamp": "2026-01-29T23:53:11.003578",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [
+          {
+            "resolution_id": "algo_1",
+            "strategy_name": "Immediate stop & slot‑based release",
+            "action_steps": [
+              "Issue an automatic stop order to all trains (IC_1539, REG_2014, FR_9752, REG_10207) approaching the Pavia‑Milano Centrale segment.",
+              "Allow the trains already inside the segment to clear the block before any new entry.",
+              "Create time‑slots for each pending train based on service priority (high‑speed > intercity > regional).",
+              "Release the next train only when its allocated slot starts and the segment occupancy is below the capacity limit (e.g., 2 trains).",
+              "Adjust upstream departure times of the affected trains to keep the slot schedule feasible and prevent a repeat overflow."
+            ],
+            "expected_outcome": "The segment will never exceed its safe capacity, eliminating collision risk and smoothing the flow of traffic. Delays are limited to the minimum required holding time.",
+            "reasoning": "The conflict is an edge_capacity_overflow on a single track segment. Algorithm *edge_overflow_resolution_1* is explicitly designed for this situation: it stops further entry, lets existing trains clear, and then uses time‑slot allocation to keep occupancy within limits.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: edge_overflow_resolution_1"
+            ],
+            "confidence_score": 0.857,
+            "algorithm_name": "edge_overflow_resolution_1",
+            "algorithm_reasoning": "The conflict is an edge_capacity_overflow on a single track segment. Algorithm *edge_overflow_resolution_1* is explicitly designed for this situation: it stops further entry, lets existing trains clear, and then uses time‑slot allocation to keep occupancy within limits.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539",
+              "REG_2014",
+              "FR_9752",
+              "REG_10207"
+            ],
+            "estimated_delay_reduction_sec": 180,
+            "side_effects": [],
+            "feasibility_score": 0.92,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "algo_2",
+            "strategy_name": "Priority‑based staggered entry",
+            "action_steps": [
+              "Immediately halt entry of all four trains into the segment.",
+              "Grant priority access to the high‑speed train FR_9752 and allow it to enter the segment now.",
+              "Hold IC_1539 at the preceding signal for an additional 5 minutes.",
+              "Delay REG_2014 and REG_10207 by 10–15 minutes each, spacing their entry slots to respect the segment capacity of 2 trains.",
+              "Implement a slot‑based control rule for subsequent arrivals on the Milano‑Pavia corridor."
+            ],
+            "expected_outcome": "Critical high‑speed service proceeds with minimal impact while the remaining trains are spaced out, keeping the segment occupancy within its limit and preventing further overflow.",
+            "reasoning": "Algorithm *synthetic_edge_overflow_milano_pavia* provides a concrete priority rule and staggered delay values for a similar Milano‑Pavia edge overflow. Applying the same logic to the current four‑train set directly resolves the capacity breach.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: synthetic_edge_overflow_milano_pavia"
+            ],
+            "confidence_score": 0.833,
+            "algorithm_name": "synthetic_edge_overflow_milano_pavia",
+            "algorithm_reasoning": "Algorithm *synthetic_edge_overflow_milano_pavia* provides a concrete priority rule and staggered delay values for a similar Milano‑Pavia edge overflow. Applying the same logic to the current four‑train set directly resolves the capacity breach.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_9752",
+              "IC_1539",
+              "REG_2014",
+              "REG_10207"
+            ],
+            "estimated_delay_reduction_sec": 120,
+            "side_effects": [],
+            "feasibility_score": 0.88,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Dynamic Slot‑Flex with Temporary Parallel Use",
+            "action_steps": [
+              "1. Immediately issue a stop order to all four trains at the upstream signal of the Pavia‑Milano Centrale segment.",
+              "2. Activate the historic “temporary parallel use” procedure (used in the 2019 Milan‑Pavia overload) to open the adjacent freight line for bidirectional passenger traffic for the next 30 minutes.",
+              "3. Run the edge‑overflow slot algorithm to allocate time‑slots, but allow a maximum of 3 trains simultaneously by counting the newly opened parallel track as extra capacity.",
+              "4. Prioritise slots as follows: FR_9752 (high‑speed) → first slot, IC_1539 (intercity) → second slot, REG_2014 → third slot, REG_10207 → fourth slot (released after the first three have cleared).",
+              "5. Adjust upstream departure times so that the first three trains enter the segment within their allocated slots, while REG_10207 is held at the preceding signal for an additional 7 minutes.",
+              "6. After the 30‑minute window, close the temporary parallel use and revert to normal single‑track operation, updating the timetable accordingly."
+            ],
+            "expected_outcome": "The segment capacity is effectively increased to 3 trains for a short window, preventing a hard stop for all services and keeping overall occupancy within safe limits. All trains clear the bottleneck with only minimal additional delay.",
+            "reasoning": "This hybrid merges the algorithmic slot‑based release (ensuring disciplined entry) with a proven historical mitigation (temporary use of a nearby freight line) that has successfully resolved similar overloads. The combined approach avoids a full stop for every train while respecting safety constraints.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.786,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539",
+              "REG_2014",
+              "FR_9752",
+              "REG_10207"
+            ],
+            "estimated_delay_reduction_sec": 150,
+            "side_effects": [
+              "Requires coordination with freight operators and may delay freight services",
+              "Slightly higher energy consumption due to speed adjustments",
+              "Potential passenger confusion from temporary platform changes"
+            ],
+            "feasibility_score": 0.81,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        ],
+        "layer1_count": 3,
+        "layer2_refinements": {
+          "historical_cases_found": 10,
+          "algorithm_resolutions": 3,
+          "hybrid_resolutions_generated": 2,
+          "total_candidates_evaluated": 5,
+          "historical_success_rates": {
+            "total_cases": 10,
+            "average_similarity": 0.1470589084,
+            "outcome_distribution": {
+              "resolved": 9,
+              "unknown": 1
+            }
+          }
+        },
+        "generation_time_sec": 8.006231
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 3
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 2694,
+      "raw_result": {
+        "solver_used": "genetic_algorithm",
+        "overall_fitness": 0.638430605602511,
+        "total_delay_min": 13.250244523258898,
+        "passenger_impact": 7975.073356977669,
+        "propagation_depth": 2,
+        "recovery_smoothness": 0.6767626207956247,
+        "actions": [
+          {
+            "action_type": "reroute",
+            "target_train_id": "REG_10207",
+            "parameters": {
+              "alternate_route": 1
+            }
+          },
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "FR_9752",
+            "parameters": {
+              "speed_factor": 1.0919984294239935
+            }
+          },
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "REG_2014",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          },
+          {
+            "action_type": "reroute",
+            "target_train_id": "IC_1539",
+            "parameters": {
+              "alternate_route": 1
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: a284739b-a206-47da-b3b5-8fb5c8c150b5\nType: edge_capacity_overflow\nSeverity: 0.50\nAffected trains: IC_1539, REG_2014, FR_9752, REG_10207\nAffected stations: PAVIA--MILANO CENTRALE\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using genetic_algorithm):\n  1. REROUTE - Train REG_10207\n      alternate_route: 1\n  2. SPEED_ADJUST - Train FR_9752\n      speed_factor: 1.09\n  3. SPEED_ADJUST - Train REG_2014\n      speed_factor: 1.12\n  4. REROUTE - Train IC_1539\n      alternate_route: 1\n\nExpected Outcomes:\n  - Total delay: 13.3 minutes\n  - Passenger impact: 7975 passenger-minutes\n  - Propagation depth: 2 trains\n  - Recovery smoothness: 0.68\n  - Overall fitness: 0.638"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "ok",
+    "execution_ms": 9647,
+    "ranked_resolutions": [
+      {
+        "rank": 1,
+        "resolution_number": 1,
+        "resolution_id": "R1",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Issue an automatic stop order to all trains (IC_1539, REG_2014, FR_9752, REG_10207) approaching the Pavia‑Milano Centrale segment.",
+            "Allow the trains already inside the segment to clear the block before any new entry.",
+            "Create time‑slots for each pending train based on service priority (high‑speed > intercity > regional).",
+            "Release the next train only when its allocated slot starts and the segment occupancy is below the capacity limit (e.g., 2 trains).",
+            "Adjust upstream departure times of the affected trains to keep the slot schedule feasible and prevent a repeat overflow."
+          ]
+        },
+        "overall_score": 80,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 9.2,
+        "robustness_rating": 8.0,
+        "justification": "Provides a clear, low‑complexity stop‑and‑slot procedure that keeps safety high and can be implemented instantly with existing signalling, yielding the best weighted performance.",
+        "full_resolution": {
+          "resolution_id": "algo_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Immediate stop & slot‑based release",
+          "actions": [
+            "Issue an automatic stop order to all trains (IC_1539, REG_2014, FR_9752, REG_10207) approaching the Pavia‑Milano Centrale segment.",
+            "Allow the trains already inside the segment to clear the block before any new entry.",
+            "Create time‑slots for each pending train based on service priority (high‑speed > intercity > regional).",
+            "Release the next train only when its allocated slot starts and the segment occupancy is below the capacity limit (e.g., 2 trains).",
+            "Adjust upstream departure times of the affected trains to keep the slot schedule feasible and prevent a repeat overflow."
+          ],
+          "expected_outcome": "The segment will never exceed its safe capacity, eliminating collision risk and smoothing the flow of traffic. Delays are limited to the minimum required holding time.",
+          "reasoning": "The conflict is an edge_capacity_overflow on a single track segment. Algorithm *edge_overflow_resolution_1* is explicitly designed for this situation: it stops further entry, lets existing trains clear, and then uses time‑slot allocation to keep occupancy within limits.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.92,
+          "overall_fitness": 0.857,
+          "estimated_delay_min": 3.0,
+          "affected_trains": [
+            "IC_1539",
+            "REG_2014",
+            "FR_9752",
+            "REG_10207"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_1",
+            "strategy_name": "Immediate stop & slot‑based release",
+            "action_steps": [
+              "Issue an automatic stop order to all trains (IC_1539, REG_2014, FR_9752, REG_10207) approaching the Pavia‑Milano Centrale segment.",
+              "Allow the trains already inside the segment to clear the block before any new entry.",
+              "Create time‑slots for each pending train based on service priority (high‑speed > intercity > regional).",
+              "Release the next train only when its allocated slot starts and the segment occupancy is below the capacity limit (e.g., 2 trains).",
+              "Adjust upstream departure times of the affected trains to keep the slot schedule feasible and prevent a repeat overflow."
+            ],
+            "expected_outcome": "The segment will never exceed its safe capacity, eliminating collision risk and smoothing the flow of traffic. Delays are limited to the minimum required holding time.",
+            "reasoning": "The conflict is an edge_capacity_overflow on a single track segment. Algorithm *edge_overflow_resolution_1* is explicitly designed for this situation: it stops further entry, lets existing trains clear, and then uses time‑slot allocation to keep occupancy within limits.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: edge_overflow_resolution_1"
+            ],
+            "confidence_score": 0.857,
+            "algorithm_name": "edge_overflow_resolution_1",
+            "algorithm_reasoning": "The conflict is an edge_capacity_overflow on a single track segment. Algorithm *edge_overflow_resolution_1* is explicitly designed for this situation: it stops further entry, lets existing trains clear, and then uses time‑slot allocation to keep occupancy within limits.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539",
+              "REG_2014",
+              "FR_9752",
+              "REG_10207"
+            ],
+            "estimated_delay_reduction_sec": 180,
+            "side_effects": [],
+            "feasibility_score": 0.92,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      },
+      {
+        "rank": 2,
+        "resolution_number": 2,
+        "resolution_id": "R2",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Immediately halt entry of all four trains into the segment.",
+            "Grant priority access to the high‑speed train FR_9752 and allow it to enter the segment now.",
+            "Hold IC_1539 at the preceding signal for an additional 5 minutes.",
+            "Delay REG_2014 and REG_10207 by 10–15 minutes each, spacing their entry slots to respect the segment capacity of 2 trains.",
+            "Implement a slot‑based control rule for subsequent arrivals on the Milano‑Pavia corridor."
+          ]
+        },
+        "overall_score": 78,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 8.8,
+        "robustness_rating": 7.0,
+        "justification": "Prioritises the high‑speed service while still using a simple slot‑based hold, offering slightly lower feasibility than Resolution 1 but maintaining comparable safety and efficiency.",
+        "full_resolution": {
+          "resolution_id": "algo_2",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Priority‑based staggered entry",
+          "actions": [
+            "Immediately halt entry of all four trains into the segment.",
+            "Grant priority access to the high‑speed train FR_9752 and allow it to enter the segment now.",
+            "Hold IC_1539 at the preceding signal for an additional 5 minutes.",
+            "Delay REG_2014 and REG_10207 by 10–15 minutes each, spacing their entry slots to respect the segment capacity of 2 trains.",
+            "Implement a slot‑based control rule for subsequent arrivals on the Milano‑Pavia corridor."
+          ],
+          "expected_outcome": "Critical high‑speed service proceeds with minimal impact while the remaining trains are spaced out, keeping the segment occupancy within its limit and preventing further overflow.",
+          "reasoning": "Algorithm *synthetic_edge_overflow_milano_pavia* provides a concrete priority rule and staggered delay values for a similar Milano‑Pavia edge overflow. Applying the same logic to the current four‑train set directly resolves the capacity breach.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.88,
+          "overall_fitness": 0.833,
+          "estimated_delay_min": 2.0,
+          "affected_trains": [
+            "FR_9752",
+            "IC_1539",
+            "REG_2014",
+            "REG_10207"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_2",
+            "strategy_name": "Priority‑based staggered entry",
+            "action_steps": [
+              "Immediately halt entry of all four trains into the segment.",
+              "Grant priority access to the high‑speed train FR_9752 and allow it to enter the segment now.",
+              "Hold IC_1539 at the preceding signal for an additional 5 minutes.",
+              "Delay REG_2014 and REG_10207 by 10–15 minutes each, spacing their entry slots to respect the segment capacity of 2 trains.",
+              "Implement a slot‑based control rule for subsequent arrivals on the Milano‑Pavia corridor."
+            ],
+            "expected_outcome": "Critical high‑speed service proceeds with minimal impact while the remaining trains are spaced out, keeping the segment occupancy within its limit and preventing further overflow.",
+            "reasoning": "Algorithm *synthetic_edge_overflow_milano_pavia* provides a concrete priority rule and staggered delay values for a similar Milano‑Pavia edge overflow. Applying the same logic to the current four‑train set directly resolves the capacity breach.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: synthetic_edge_overflow_milano_pavia"
+            ],
+            "confidence_score": 0.833,
+            "algorithm_name": "synthetic_edge_overflow_milano_pavia",
+            "algorithm_reasoning": "Algorithm *synthetic_edge_overflow_milano_pavia* provides a concrete priority rule and staggered delay values for a similar Milano‑Pavia edge overflow. Applying the same logic to the current four‑train set directly resolves the capacity breach.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_9752",
+              "IC_1539",
+              "REG_2014",
+              "REG_10207"
+            ],
+            "estimated_delay_reduction_sec": 120,
+            "side_effects": [],
+            "feasibility_score": 0.88,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      },
+      {
+        "rank": 3,
+        "resolution_number": 3,
+        "resolution_id": "R3",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Immediately issue a stop order to all four trains at the upstream signal of the Pavia‑Milano Centrale segment.",
+            "Activate the historic “temporary parallel use” procedure (used in the 2019 Milan‑Pavia overload) to open the adjacent freight line for bidirectional passenger traffic for the next 30 minutes.",
+            "Run the edge‑overflow slot algorithm to allocate time‑slots, but allow a maximum of 3 trains simultaneously by counting the newly opened parallel track as extra capacity.",
+            "Prioritise slots as follows: FR_9752 (high‑speed) → first slot, IC_1539 (intercity) → second slot, REG_2014 → third slot, REG_10207 → fourth slot (released after the first three have cleared).",
+            "Adjust upstream departure times so that the first three trains enter the segment within their allocated slots, while REG_10207 is held at the preceding signal for an additional 7 minutes.",
+            "After the 30‑minute window, close the temporary parallel use and revert to normal single‑track operation, updating the timetable accordingly."
+          ]
+        },
+        "overall_score": 74,
+        "safety_rating": 7.5,
+        "efficiency_rating": 7.5,
+        "feasibility_rating": 8.1,
+        "robustness_rating": 6.0,
+        "justification": "Increases capacity temporarily, reducing delays for most services, but adds coordination complexity and freight impact, lowering robustness relative to the pure slot‑based approaches.",
+        "full_resolution": {
+          "resolution_id": "hybrid_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Dynamic Slot‑Flex with Temporary Parallel Use",
+          "actions": [
+            "1. Immediately issue a stop order to all four trains at the upstream signal of the Pavia‑Milano Centrale segment.",
+            "2. Activate the historic “temporary parallel use” procedure (used in the 2019 Milan‑Pavia overload) to open the adjacent freight line for bidirectional passenger traffic for the next 30 minutes.",
+            "3. Run the edge‑overflow slot algorithm to allocate time‑slots, but allow a maximum of 3 trains simultaneously by counting the newly opened parallel track as extra capacity.",
+            "4. Prioritise slots as follows: FR_9752 (high‑speed) → first slot, IC_1539 (intercity) → second slot, REG_2014 → third slot, REG_10207 → fourth slot (released after the first three have cleared).",
+            "5. Adjust upstream departure times so that the first three trains enter the segment within their allocated slots, while REG_10207 is held at the preceding signal for an additional 7 minutes.",
+            "6. After the 30‑minute window, close the temporary parallel use and revert to normal single‑track operation, updating the timetable accordingly."
+          ],
+          "expected_outcome": "The segment capacity is effectively increased to 3 trains for a short window, preventing a hard stop for all services and keeping overall occupancy within safe limits. All trains clear the bottleneck with only minimal additional delay.",
+          "reasoning": "This hybrid merges the algorithmic slot‑based release (ensuring disciplined entry) with a proven historical mitigation (temporary use of a nearby freight line) that has successfully resolved similar overloads. The combined approach avoids a full stop for every train while respecting safety constraints.",
+          "safety_score": 0.75,
+          "efficiency_score": 0.75,
+          "feasibility_score": 0.81,
+          "overall_fitness": 0.786,
+          "estimated_delay_min": 2.5,
+          "affected_trains": [
+            "IC_1539",
+            "REG_2014",
+            "FR_9752",
+            "REG_10207"
+          ],
+          "side_effects": [
+            "Requires coordination with freight operators and may delay freight services",
+            "Slightly higher energy consumption due to speed adjustments",
+            "Potential passenger confusion from temporary platform changes"
+          ],
+          "algorithm_type": "hybrid",
+          "raw_data": {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Dynamic Slot‑Flex with Temporary Parallel Use",
+            "action_steps": [
+              "1. Immediately issue a stop order to all four trains at the upstream signal of the Pavia‑Milano Centrale segment.",
+              "2. Activate the historic “temporary parallel use” procedure (used in the 2019 Milan‑Pavia overload) to open the adjacent freight line for bidirectional passenger traffic for the next 30 minutes.",
+              "3. Run the edge‑overflow slot algorithm to allocate time‑slots, but allow a maximum of 3 trains simultaneously by counting the newly opened parallel track as extra capacity.",
+              "4. Prioritise slots as follows: FR_9752 (high‑speed) → first slot, IC_1539 (intercity) → second slot, REG_2014 → third slot, REG_10207 → fourth slot (released after the first three have cleared).",
+              "5. Adjust upstream departure times so that the first three trains enter the segment within their allocated slots, while REG_10207 is held at the preceding signal for an additional 7 minutes.",
+              "6. After the 30‑minute window, close the temporary parallel use and revert to normal single‑track operation, updating the timetable accordingly."
+            ],
+            "expected_outcome": "The segment capacity is effectively increased to 3 trains for a short window, preventing a hard stop for all services and keeping overall occupancy within safe limits. All trains clear the bottleneck with only minimal additional delay.",
+            "reasoning": "This hybrid merges the algorithmic slot‑based release (ensuring disciplined entry) with a proven historical mitigation (temporary use of a nearby freight line) that has successfully resolved similar overloads. The combined approach avoids a full stop for every train while respecting safety constraints.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.786,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539",
+              "REG_2014",
+              "FR_9752",
+              "REG_10207"
+            ],
+            "estimated_delay_reduction_sec": 150,
+            "side_effects": [
+              "Requires coordination with freight operators and may delay freight services",
+              "Slightly higher energy consumption due to speed adjustments",
+              "Potential passenger confusion from temporary platform changes"
+            ],
+            "feasibility_score": 0.81,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        }
+      }
+    ],
+    "raw_llm_response": "{\n  \"ranked_resolutions\": [\n    {\n      \"rank\": 1,\n      \"resolution_number\": 1,\n      \"resolution_id\": \"R1\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Issue an automatic stop order to all trains (IC_1539, REG_2014, FR_9752, REG_10207) approaching the Pavia‑Milano Centrale segment.\",\n          \"Allow the trains already inside the segment to clear the block before any new entry.\",\n          \"Create time‑slots for each pending train based on service priority (high‑speed > intercity > regional).\",\n          \"Release the next train only when its allocated slot starts and the segment occupancy is below the capacity limit (e.g., 2 trains).\",\n          \"Adjust upstream departure times of the affected trains to keep the slot schedule feasible and prevent a repeat overflow.\"\n        ]\n      },\n      \"overall_score\": 80,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 9.2,\n      \"robustness_rating\": 8.0,\n      \"justification\": \"Provides a clear, low‑complexity stop‑and‑slot procedure that keeps safety high and can be implemented instantly with existing signalling, yielding the best weighted performance.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"R1\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"edge_overflow_resolution_1\",\n        \"actions\": [\n          \"Issue an automatic stop order to all trains (IC_1539, REG_2014, FR_9752, REG_10207) approaching the Pavia‑Milano Centrale segment.\",\n          \"Allow the trains already inside the segment to clear the block before any new entry.\",\n          \"Create time‑slots for each pending train based on service priority (high‑speed > intercity > regional).\",\n          \"Release the next train only when its allocated slot starts and the segment occupancy is below the capacity limit (e.g., 2 trains).\",\n          \"Adjust upstream departure times of the affected trains to keep the slot schedule feasible and prevent a repeat overflow.\"\n        ],\n        \"expected_outcome\": \"The segment will never exceed its safe capacity, eliminating collision risk and smoothing the flow of traffic. Delays are limited to the minimum required holding time.\",\n        \"reasoning\": \"The conflict is an edge_capacity_overflow on a single track segment. Algorithm edge_overflow_resolution_1 is explicitly designed for this situation: it stops further entry, lets existing trains clear, and then uses time‑slot allocation to keep occupancy within limits.\",\n        \"safety_score\": 0.800,\n        \"efficiency_score\": 0.700,\n        \"feasibility_score\": 0.920,\n        \"overall_fitness\": 0.857,\n        \"estimated_delay_min\": 3.0,\n        \"affected_trains\": [\"IC_1539\", \"REG_2014\", \"FR_9752\", \"REG_10207\"],\n        \"side_effects\": [],\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 2,\n      \"resolution_number\": 2,\n      \"resolution_id\": \"R2\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Immediately halt entry of all four trains into the segment.\",\n          \"Grant priority access to the high‑speed train FR_9752 and allow it to enter the segment now.\",\n          \"Hold IC_1539 at the preceding signal for an additional 5 minutes.\",\n          \"Delay REG_2014 and REG_10207 by 10–15 minutes each, spacing their entry slots to respect the segment capacity of 2 trains.\",\n          \"Implement a slot‑based control rule for subsequent arrivals on the Milano‑Pavia corridor.\"\n        ]\n      },\n      \"overall_score\": 78,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 8.8,\n      \"robustness_rating\": 7.0,\n      \"justification\": \"Prioritises the high‑speed service while still using a simple slot‑based hold, offering slightly lower feasibility than Resolution 1 but maintaining comparable safety and efficiency.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"R2\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"synthetic_edge_overflow_milano_pavia\",\n        \"actions\": [\n          \"Immediately halt entry of all four trains into the segment.\",\n          \"Grant priority access to the high‑speed train FR_9752 and allow it to enter the segment now.\",\n          \"Hold IC_1539 at the preceding signal for an additional 5 minutes.\",\n          \"Delay REG_2014 and REG_10207 by 10–15 minutes each, spacing their entry slots to respect the segment capacity of 2 trains.\",\n          \"Implement a slot‑based control rule for subsequent arrivals on the Milano‑Pavia corridor.\"\n        ],\n        \"expected_outcome\": \"Critical high‑speed service proceeds with minimal impact while the remaining trains are spaced out, keeping the segment occupancy within its limit and preventing further overflow.\",\n        \"reasoning\": \"Algorithm synthetic_edge_overflow_milano_pavia provides a concrete priority rule and staggered delay values for a similar Milano‑Pavia edge overflow. Applying the same logic to the current four‑train set directly resolves the capacity breach.\",\n        \"safety_score\": 0.800,\n        \"efficiency_score\": 0.700,\n        \"feasibility_score\": 0.880,\n        \"overall_fitness\": 0.833,\n        \"estimated_delay_min\": 2.0,\n        \"affected_trains\": [\"IC_1539\", \"REG_2014\", \"FR_9752\", \"REG_10207\"],\n        \"side_effects\": [],\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 3,\n      \"resolution_number\": 3,\n      \"resolution_id\": \"R3\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Immediately issue a stop order to all four trains at the upstream signal of the Pavia‑Milano Centrale segment.\",\n          \"Activate the historic “temporary parallel use” procedure (used in the 2019 Milan‑Pavia overload) to open the adjacent freight line for bidirectional passenger traffic for the next 30 minutes.\",\n          \"Run the edge‑overflow slot algorithm to allocate time‑slots, but allow a maximum of 3 trains simultaneously by counting the newly opened parallel track as extra capacity.\",\n          \"Prioritise slots as follows: FR_9752 (high‑speed) → first slot, IC_1539 (intercity) → second slot, REG_2014 → third slot, REG_10207 → fourth slot (released after the first three have cleared).\",\n          \"Adjust upstream departure times so that the first three trains enter the segment within their allocated slots, while REG_10207 is held at the preceding signal for an additional 7 minutes.\",\n          \"After the 30‑minute window, close the temporary parallel use and revert to normal single‑track operation, updating the timetable accordingly.\"\n        ]\n      },\n      \"overall_score\": 74,\n      \"safety_rating\": 7.5,\n      \"efficiency_rating\": 7.5,\n      \"feasibility_rating\": 8.1,\n      \"robustness_rating\": 6.0,\n      \"justification\": \"Increases capacity temporarily, reducing delays for most services, but adds coordination complexity and freight impact, lowering robustness relative to the pure slot‑based approaches.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"R3\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"dynamic_slot_flex_parallel\",\n        \"actions\": [\n          \"Immediately issue a stop order to all four trains at the upstream signal of the Pavia‑Milano Centrale segment.\",\n          \"Activate the historic “temporary parallel use” procedure (used in the 2019 Milan‑Pavia overload) to open the adjacent freight line for bidirectional passenger traffic for the next 30 minutes.\",\n          \"Run the edge‑overflow slot algorithm to allocate time‑slots, but allow a maximum of 3 trains simultaneously by counting the newly opened parallel track as extra capacity.\",\n          \"Prioritise slots as follows: FR_9752 (high‑speed) → first slot, IC_1539 (intercity) → second slot, REG_2014 → third slot, REG_10207 → fourth slot (released after the first three have cleared).\",\n          \"Adjust upstream departure times so that the first three trains enter the segment within their allocated slots, while REG_10207 is held at the preceding signal for an additional 7 minutes.\",\n          \"After the 30‑minute window, close the temporary parallel use and revert to normal single‑track operation, updating the timetable accordingly.\"\n        ],\n        \"expected_outcome\": \"The segment capacity is effectively increased to 3 trains for a short window, preventing a hard stop for all services and keeping overall occupancy within safe limits. All trains clear the bottleneck with only minimal additional delay.\",\n        \"reasoning\": \"This hybrid merges the algorithmic slot‑based release (ensuring disciplined entry) with a proven historical mitigation (temporary use of a nearby freight line) that has successfully resolved similar overloads. The combined approach avoids a full stop for every train while respecting safety constraints.\",\n        \"safety_score\": 0.750,\n        \"efficiency_score\": 0.750,\n        \"feasibility_score\": 0.810,\n        \"overall_fitness\": 0.786,\n        \"estimated_delay_min\": 2.5,\n        \"affected_trains\": [\"IC_1539\", \"REG_2014\", \"FR_9752\", \"REG_10207\"],\n        \"side_effects\": [\n          \"Requires coordination with freight operators and may delay freight services\",\n          \"Slightly higher energy consumption due to speed adjustments\",\n          \"Potential passenger confusion from temporary platform changes\"\n        ],\n        \"algorithm_type\": \"hybrid\",\n        \"raw_data\": null\n      }\n    }\n  ]\n}",
+    "error": null
+  }
+}

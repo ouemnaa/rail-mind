@@ -14,11 +14,13 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { ResolutionCard } from "./ResolutionCard";
+import { FeedbackForm } from "./FeedbackForm";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { toast } from "sonner";
 
 // API base URL - adjust based on environment
-const API_BASE_URL = import.meta.env.VITE_API_URL;
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8002';
 
 interface OrchestratorOutput {
   status: string;
@@ -106,8 +108,20 @@ export function ResolutionPanel({
 
   const handleApprove = (resolutionId: string) => {
     setApprovedResolutionId(resolutionId);
-    // Here you would typically also make an API call to save the approval
     console.log(`Resolution ${resolutionId} approved`);
+
+    // Show feedback notification
+    toast.custom((t) => (
+      <FeedbackForm
+        resolutionId={resolutionId}
+        conflictId={selectedConflict?.conflict_id}
+        onSuccess={() => toast.dismiss(t)}
+        onCancel={() => toast.dismiss(t)}
+      />
+    ), {
+      duration: Infinity,
+      position: "bottom-right",
+    });
   };
 
   // Auto-run resolution if we have a conflict but no results yet
@@ -175,7 +189,6 @@ export function ResolutionPanel({
         },
         body: JSON.stringify({
           conflict: selectedConflict,
-          timeout: 90,
         }),
       });
 

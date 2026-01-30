@@ -1,0 +1,461 @@
+{
+  "status": "ok",
+  "conflict_id": "647b405a-fb61-4531-a0eb-f7ae88488feb",
+  "started_at": "2026-01-29T20:40:52.043418+00:00",
+  "finished_at": "2026-01-29T20:41:23.341737+00:00",
+  "total_execution_ms": 31298,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 20626,
+      "raw_result": {
+        "conflict_id": "647b405a-fb61-4531-a0eb-f7ae88488feb",
+        "conflict_summary": "",
+        "timestamp": "2026-01-29T21:41:12.656869",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [
+          {
+            "resolution_id": "algo_1",
+            "strategy_name": "Immediate stop & slot‑based release",
+            "action_steps": [
+              "Issue an automatic stop command for all inbound trains to the segment MILANO CENTRALE‑RHO FIERA MILANO.",
+              "Allow the trains already inside the segment to clear it before any new entry.",
+              "Create time‑slots for each of the four trains (e.g., 2‑minute windows) based on current delay and service priority.",
+              "Adjust upstream departure times so that each train departs exactly at its allocated slot.",
+              "Continuously monitor segment occupancy and release the next train only when the previous one has fully exited."
+            ],
+            "expected_outcome": "The segment never exceeds its safe capacity, preventing a collision risk and quickly restoring normal flow; cumulative delay of the involved trains is reduced.",
+            "reasoning": "The generic Edge‑Overflow resolution (algorithm edge_overflow_resolution_1) prescribes stopping entry, clearing the segment, and using time‑based slot allocation. This directly matches the soft‑blocking edge‑capacity overflow observed on the Milano‑Rho Fiera link.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: edge_overflow_resolution_1"
+            ],
+            "confidence_score": 0.857,
+            "algorithm_name": "edge_overflow_resolution_1",
+            "algorithm_reasoning": "The generic Edge‑Overflow resolution (algorithm edge_overflow_resolution_1) prescribes stopping entry, clearing the segment, and using time‑based slot allocation. This directly matches the soft‑blocking edge‑capacity overflow observed on the Milano‑Rho Fiera link.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_2014",
+              "FR_9700",
+              "REG_2553",
+              "REG_33137"
+            ],
+            "estimated_delay_reduction_sec": 8,
+            "side_effects": [],
+            "feasibility_score": 0.92,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "algo_2",
+            "strategy_name": "Priority‑based staggered entry (Milano‑Pavia pattern)",
+            "action_steps": [
+              "Identify the highest‑priority service (FR_9700 – fast passenger) and grant it immediate access to the segment.",
+              "Hold the three lower‑priority trains (REG_2014, REG_2553, REG_33137) at Milano Centrale.",
+              "Apply a staggered delay of roughly 10‑12 minutes to the held trains, spacing their entry so that at most two trains occupy the segment simultaneously.",
+              "Implement a slot‑based schedule reflecting the new release times.",
+              "Notify downstream stations of the revised ETAs and update the traffic management system."
+            ],
+            "expected_outcome": "Critical passenger service proceeds with no extra delay while the segment capacity violation is eliminated; overall network delay is minimized because the remaining trains are spaced out.",
+            "reasoning": "The synthetic_edge_overflow_milano_pavia algorithm deals with the same corridor and uses a priority‑first approach combined with staggered delays, which is directly applicable to the current four‑train overload.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: synthetic_edge_overflow_milano_pavia"
+            ],
+            "confidence_score": 0.821,
+            "algorithm_name": "synthetic_edge_overflow_milano_pavia",
+            "algorithm_reasoning": "The synthetic_edge_overflow_milano_pavia algorithm deals with the same corridor and uses a priority‑first approach combined with staggered delays, which is directly applicable to the current four‑train overload.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_9700",
+              "REG_2014",
+              "REG_2553",
+              "REG_33137"
+            ],
+            "estimated_delay_reduction_sec": 12,
+            "side_effects": [],
+            "feasibility_score": 0.86,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Dynamic Slot Allocation with Real‑Time Capacity Buffer (Milano‑Rho Adaptive Buffer)",
+            "action_steps": [
+              "1. Issue an automatic stop for all four inbound trains at Milano Centrale as soon as the overflow is detected.",
+              "2. Pull the last 10 minutes of real‑time occupancy data for the MILANO CENTRALE‑RHO FIERA MILANO segment (historical cases showed a 7‑minute buffer is enough to absorb a 4‑train overload).",
+              "3. Compute a dynamic capacity buffer (Δt) = max(0, (current occupancy + 4 trains) – nominal capacity) × 30 seconds, yielding a 2‑minute buffer for this situation.",
+              "4. Allocate time‑slots to each train using a weighted‑priority formula:  slot = now + Δt + (π × delay), where π = 1 for FR_9700 (fast passenger) and π = 1.2 for the regional services.",
+              "5. Adjust upstream departure times so that each train departs Milano Centrale exactly at its allocated slot, using automatic speed‑up or brief dwell‑time reduction where crew permits (historical crew‑swap manoeuvre reduced dwell by 30 seconds).",
+              "6. Continuously monitor segment occupancy; release the next train only after the previous one has cleared the segment and the buffer has been replenished.",
+              "7. Broadcast the revised ETAs to downstream stations and update the traffic‑management system (TMS) with the new slot table.",
+              "8. After the overflow clears, revert to normal headway control."
+            ],
+            "expected_outcome": "The segment returns to its nominal capacity within ~8 minutes, preventing a cascade of delays. Average delay for the four trains is reduced by roughly 70 seconds, and the high‑priority FR_9700 regains its schedule advantage.",
+            "reasoning": "This hybrid merges the algorithmic slot‑based release (ensuring deterministic clearance) with the historical practice of using a short, data‑driven capacity buffer and crew‑swap dwell reductions. The buffer absorbs the transient overload without a full stop of the entire corridor, while weighted slots respect service priority.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.768,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_2014",
+              "FR_9700",
+              "REG_2553",
+              "REG_33137"
+            ],
+            "estimated_delay_reduction_sec": 70,
+            "side_effects": [
+              "Minor downstream headway adjustments for trains already in the segment",
+              "Potential crew overtime if dwell‑time reductions require extra work",
+              "Slight increase in energy consumption for speed‑up maneuvers"
+            ],
+            "feasibility_score": 0.78,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        ],
+        "layer1_count": 3,
+        "layer2_refinements": {
+          "historical_cases_found": 10,
+          "algorithm_resolutions": 3,
+          "hybrid_resolutions_generated": 2,
+          "total_candidates_evaluated": 5,
+          "historical_success_rates": {
+            "total_cases": 10,
+            "average_similarity": 0.1470589084,
+            "outcome_distribution": {
+              "resolved": 9,
+              "unknown": 1
+            }
+          }
+        },
+        "generation_time_sec": 8.618047
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 3
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 2656,
+      "raw_result": {
+        "solver_used": "genetic_algorithm",
+        "overall_fitness": 0.6531382607607971,
+        "total_delay_min": 9.070939729559838,
+        "passenger_impact": 6721.281918867951,
+        "propagation_depth": 0,
+        "recovery_smoothness": 0.7893061098991971,
+        "actions": [
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "REG_2014",
+            "parameters": {
+              "speed_factor": 1.1179109188591485
+            }
+          },
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "REG_2553",
+            "parameters": {
+              "speed_factor": 1.0916037644073198
+            }
+          },
+          {
+            "action_type": "reroute",
+            "target_train_id": "FR_9700",
+            "parameters": {
+              "alternate_route": 1
+            }
+          },
+          {
+            "action_type": "reroute",
+            "target_train_id": "REG_33137",
+            "parameters": {
+              "alternate_route": 1
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: 647b405a-fb61-4531-a0eb-f7ae88488feb\nType: edge_capacity_overflow\nSeverity: 0.50\nAffected trains: REG_2014, FR_9700, REG_2553, REG_33137\nAffected stations: MILANO CENTRALE--RHO FIERA MILANO\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using genetic_algorithm):\n  1. SPEED_ADJUST - Train REG_2014\n      speed_factor: 1.12\n  2. SPEED_ADJUST - Train REG_2553\n      speed_factor: 1.09\n  3. REROUTE - Train FR_9700\n      alternate_route: 1\n  4. REROUTE - Train REG_33137\n      alternate_route: 1\n\nExpected Outcomes:\n  - Total delay: 9.1 minutes\n  - Passenger impact: 6721 passenger-minutes\n  - Propagation depth: 0 trains\n  - Recovery smoothness: 0.79\n  - Overall fitness: 0.653"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "ok",
+    "execution_ms": 10658,
+    "ranked_resolutions": [
+      {
+        "rank": 1,
+        "resolution_number": 1,
+        "resolution_id": "resolution_1",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Issue automatic stop for all inbound trains to the segment.",
+            "Allow trains already inside to clear before new entry.",
+            "Create 2‑minute time‑slots for each train based on delay and priority.",
+            "Adjust upstream departures to match allocated slots.",
+            "Continuously monitor occupancy and release next train after previous exits."
+          ]
+        },
+        "overall_score": 81,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 9.2,
+        "robustness_rating": 8.5,
+        "justification": "The solution guarantees safety by preventing any capacity breach and quickly restores normal flow with minimal delay, while using only existing signalling and scheduling tools.",
+        "full_resolution": {
+          "resolution_id": "algo_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Immediate stop & slot‑based release",
+          "actions": [
+            "Issue an automatic stop command for all inbound trains to the segment MILANO CENTRALE‑RHO FIERA MILANO.",
+            "Allow the trains already inside the segment to clear it before any new entry.",
+            "Create time‑slots for each of the four trains (e.g., 2‑minute windows) based on current delay and service priority.",
+            "Adjust upstream departure times so that each train departs exactly at its allocated slot.",
+            "Continuously monitor segment occupancy and release the next train only when the previous one has fully exited."
+          ],
+          "expected_outcome": "The segment never exceeds its safe capacity, preventing a collision risk and quickly restoring normal flow; cumulative delay of the involved trains is reduced.",
+          "reasoning": "The generic Edge‑Overflow resolution (algorithm edge_overflow_resolution_1) prescribes stopping entry, clearing the segment, and using time‑based slot allocation. This directly matches the soft‑blocking edge‑capacity overflow observed on the Milano‑Rho Fiera link.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.92,
+          "overall_fitness": 0.857,
+          "estimated_delay_min": 0.13333333333333333,
+          "affected_trains": [
+            "REG_2014",
+            "FR_9700",
+            "REG_2553",
+            "REG_33137"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_1",
+            "strategy_name": "Immediate stop & slot‑based release",
+            "action_steps": [
+              "Issue an automatic stop command for all inbound trains to the segment MILANO CENTRALE‑RHO FIERA MILANO.",
+              "Allow the trains already inside the segment to clear it before any new entry.",
+              "Create time‑slots for each of the four trains (e.g., 2‑minute windows) based on current delay and service priority.",
+              "Adjust upstream departure times so that each train departs exactly at its allocated slot.",
+              "Continuously monitor segment occupancy and release the next train only when the previous one has fully exited."
+            ],
+            "expected_outcome": "The segment never exceeds its safe capacity, preventing a collision risk and quickly restoring normal flow; cumulative delay of the involved trains is reduced.",
+            "reasoning": "The generic Edge‑Overflow resolution (algorithm edge_overflow_resolution_1) prescribes stopping entry, clearing the segment, and using time‑based slot allocation. This directly matches the soft‑blocking edge‑capacity overflow observed on the Milano‑Rho Fiera link.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: edge_overflow_resolution_1"
+            ],
+            "confidence_score": 0.857,
+            "algorithm_name": "edge_overflow_resolution_1",
+            "algorithm_reasoning": "The generic Edge‑Overflow resolution (algorithm edge_overflow_resolution_1) prescribes stopping entry, clearing the segment, and using time‑based slot allocation. This directly matches the soft‑blocking edge‑capacity overflow observed on the Milano‑Rho Fiera link.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_2014",
+              "FR_9700",
+              "REG_2553",
+              "REG_33137"
+            ],
+            "estimated_delay_reduction_sec": 8,
+            "side_effects": [],
+            "feasibility_score": 0.92,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      },
+      {
+        "rank": 2,
+        "resolution_number": 2,
+        "resolution_id": "resolution_2",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Identify FR_9700 as highest‑priority and grant immediate access.",
+            "Hold REG_2014, REG_2553, REG_33137 at Milano Centrale.",
+            "Apply staggered 10‑12 minute delays to held trains to keep at most two trains in the segment.",
+            "Implement slot‑based schedule reflecting new release times.",
+            "Notify downstream stations and update the traffic management system."
+          ]
+        },
+        "overall_score": 78.5,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 8.6,
+        "robustness_rating": 8.0,
+        "justification": "Prioritising the fast passenger service eliminates the overflow while keeping other trains delayed only modestly, and it relies on standard scheduling adjustments.",
+        "full_resolution": {
+          "resolution_id": "algo_2",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Priority‑based staggered entry (Milano‑Pavia pattern)",
+          "actions": [
+            "Identify the highest‑priority service (FR_9700 – fast passenger) and grant it immediate access to the segment.",
+            "Hold the three lower‑priority trains (REG_2014, REG_2553, REG_33137) at Milano Centrale.",
+            "Apply a staggered delay of roughly 10‑12 minutes to the held trains, spacing their entry so that at most two trains occupy the segment simultaneously.",
+            "Implement a slot‑based schedule reflecting the new release times.",
+            "Notify downstream stations of the revised ETAs and update the traffic management system."
+          ],
+          "expected_outcome": "Critical passenger service proceeds with no extra delay while the segment capacity violation is eliminated; overall network delay is minimized because the remaining trains are spaced out.",
+          "reasoning": "The synthetic_edge_overflow_milano_pavia algorithm deals with the same corridor and uses a priority‑first approach combined with staggered delays, which is directly applicable to the current four‑train overload.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.86,
+          "overall_fitness": 0.821,
+          "estimated_delay_min": 0.2,
+          "affected_trains": [
+            "FR_9700",
+            "REG_2014",
+            "REG_2553",
+            "REG_33137"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_2",
+            "strategy_name": "Priority‑based staggered entry (Milano‑Pavia pattern)",
+            "action_steps": [
+              "Identify the highest‑priority service (FR_9700 – fast passenger) and grant it immediate access to the segment.",
+              "Hold the three lower‑priority trains (REG_2014, REG_2553, REG_33137) at Milano Centrale.",
+              "Apply a staggered delay of roughly 10‑12 minutes to the held trains, spacing their entry so that at most two trains occupy the segment simultaneously.",
+              "Implement a slot‑based schedule reflecting the new release times.",
+              "Notify downstream stations of the revised ETAs and update the traffic management system."
+            ],
+            "expected_outcome": "Critical passenger service proceeds with no extra delay while the segment capacity violation is eliminated; overall network delay is minimized because the remaining trains are spaced out.",
+            "reasoning": "The synthetic_edge_overflow_milano_pavia algorithm deals with the same corridor and uses a priority‑first approach combined with staggered delays, which is directly applicable to the current four‑train overload.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: synthetic_edge_overflow_milano_pavia"
+            ],
+            "confidence_score": 0.821,
+            "algorithm_name": "synthetic_edge_overflow_milano_pavia",
+            "algorithm_reasoning": "The synthetic_edge_overflow_milano_pavia algorithm deals with the same corridor and uses a priority‑first approach combined with staggered delays, which is directly applicable to the current four‑train overload.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_9700",
+              "REG_2014",
+              "REG_2553",
+              "REG_33137"
+            ],
+            "estimated_delay_reduction_sec": 12,
+            "side_effects": [],
+            "feasibility_score": 0.86,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      },
+      {
+        "rank": 3,
+        "resolution_number": 3,
+        "resolution_id": "resolution_3",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Issue automatic stop for all four inbound trains at Milano Centrale.",
+            "Pull last 10 minutes of real‑time occupancy data for the segment.",
+            "Compute dynamic capacity buffer Δt (2 minutes) based on overload.",
+            "Allocate time‑slots using weighted‑priority formula.",
+            "Adjust upstream departures with speed‑up or dwell‑time reduction.",
+            "Continuously monitor occupancy and release next train after clearance and buffer replenishment.",
+            "Broadcast revised ETAs downstream and update TMS.",
+            "Revert to normal headway control after overflow clears."
+          ]
+        },
+        "overall_score": 75,
+        "safety_rating": 7.5,
+        "efficiency_rating": 7.5,
+        "feasibility_rating": 7.8,
+        "robustness_rating": 7.0,
+        "justification": "The adaptive buffer adds flexibility and respects service priority, but the extra complexity and minor side‑effects lower its robustness compared with the simpler slot‑based plans.",
+        "full_resolution": {
+          "resolution_id": "hybrid_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Dynamic Slot Allocation with Real‑Time Capacity Buffer (Milano‑Rho Adaptive Buffer)",
+          "actions": [
+            "1. Issue an automatic stop for all four inbound trains at Milano Centrale as soon as the overflow is detected.",
+            "2. Pull the last 10 minutes of real‑time occupancy data for the MILANO CENTRALE‑RHO FIERA MILANO segment (historical cases showed a 7‑minute buffer is enough to absorb a 4‑train overload).",
+            "3. Compute a dynamic capacity buffer (Δt) = max(0, (current occupancy + 4 trains) – nominal capacity) × 30 seconds, yielding a 2‑minute buffer for this situation.",
+            "4. Allocate time‑slots to each train using a weighted‑priority formula:  slot = now + Δt + (π × delay), where π = 1 for FR_9700 (fast passenger) and π = 1.2 for the regional services.",
+            "5. Adjust upstream departure times so that each train departs Milano Centrale exactly at its allocated slot, using automatic speed‑up or brief dwell‑time reduction where crew permits (historical crew‑swap manoeuvre reduced dwell by 30 seconds).",
+            "6. Continuously monitor segment occupancy; release the next train only after the previous one has cleared the segment and the buffer has been replenished.",
+            "7. Broadcast the revised ETAs to downstream stations and update the traffic‑management system (TMS) with the new slot table.",
+            "8. After the overflow clears, revert to normal headway control."
+          ],
+          "expected_outcome": "The segment returns to its nominal capacity within ~8 minutes, preventing a cascade of delays. Average delay for the four trains is reduced by roughly 70 seconds, and the high‑priority FR_9700 regains its schedule advantage.",
+          "reasoning": "This hybrid merges the algorithmic slot‑based release (ensuring deterministic clearance) with the historical practice of using a short, data‑driven capacity buffer and crew‑swap dwell reductions. The buffer absorbs the transient overload without a full stop of the entire corridor, while weighted slots respect service priority.",
+          "safety_score": 0.75,
+          "efficiency_score": 0.75,
+          "feasibility_score": 0.78,
+          "overall_fitness": 0.768,
+          "estimated_delay_min": 1.1666666666666667,
+          "affected_trains": [
+            "REG_2014",
+            "FR_9700",
+            "REG_2553",
+            "REG_33137"
+          ],
+          "side_effects": [
+            "Minor downstream headway adjustments for trains already in the segment",
+            "Potential crew overtime if dwell‑time reductions require extra work",
+            "Slight increase in energy consumption for speed‑up maneuvers"
+          ],
+          "algorithm_type": "hybrid",
+          "raw_data": {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Dynamic Slot Allocation with Real‑Time Capacity Buffer (Milano‑Rho Adaptive Buffer)",
+            "action_steps": [
+              "1. Issue an automatic stop for all four inbound trains at Milano Centrale as soon as the overflow is detected.",
+              "2. Pull the last 10 minutes of real‑time occupancy data for the MILANO CENTRALE‑RHO FIERA MILANO segment (historical cases showed a 7‑minute buffer is enough to absorb a 4‑train overload).",
+              "3. Compute a dynamic capacity buffer (Δt) = max(0, (current occupancy + 4 trains) – nominal capacity) × 30 seconds, yielding a 2‑minute buffer for this situation.",
+              "4. Allocate time‑slots to each train using a weighted‑priority formula:  slot = now + Δt + (π × delay), where π = 1 for FR_9700 (fast passenger) and π = 1.2 for the regional services.",
+              "5. Adjust upstream departure times so that each train departs Milano Centrale exactly at its allocated slot, using automatic speed‑up or brief dwell‑time reduction where crew permits (historical crew‑swap manoeuvre reduced dwell by 30 seconds).",
+              "6. Continuously monitor segment occupancy; release the next train only after the previous one has cleared the segment and the buffer has been replenished.",
+              "7. Broadcast the revised ETAs to downstream stations and update the traffic‑management system (TMS) with the new slot table.",
+              "8. After the overflow clears, revert to normal headway control."
+            ],
+            "expected_outcome": "The segment returns to its nominal capacity within ~8 minutes, preventing a cascade of delays. Average delay for the four trains is reduced by roughly 70 seconds, and the high‑priority FR_9700 regains its schedule advantage.",
+            "reasoning": "This hybrid merges the algorithmic slot‑based release (ensuring deterministic clearance) with the historical practice of using a short, data‑driven capacity buffer and crew‑swap dwell reductions. The buffer absorbs the transient overload without a full stop of the entire corridor, while weighted slots respect service priority.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.768,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_2014",
+              "FR_9700",
+              "REG_2553",
+              "REG_33137"
+            ],
+            "estimated_delay_reduction_sec": 70,
+            "side_effects": [
+              "Minor downstream headway adjustments for trains already in the segment",
+              "Potential crew overtime if dwell‑time reductions require extra work",
+              "Slight increase in energy consumption for speed‑up maneuvers"
+            ],
+            "feasibility_score": 0.78,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        }
+      }
+    ],
+    "raw_llm_response": "{\n  \"ranked_resolutions\": [\n    {\n      \"rank\": 1,\n      \"resolution_number\": 1,\n      \"resolution_id\": \"resolution_1\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Issue automatic stop for all inbound trains to the segment.\",\n          \"Allow trains already inside to clear before new entry.\",\n          \"Create 2‑minute time‑slots for each train based on delay and priority.\",\n          \"Adjust upstream departures to match allocated slots.\",\n          \"Continuously monitor occupancy and release next train after previous exits.\"\n        ]\n      },\n      \"overall_score\": 81,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 9.2,\n      \"robustness_rating\": 8.5,\n      \"justification\": \"The solution guarantees safety by preventing any capacity breach and quickly restores normal flow with minimal delay, while using only existing signalling and scheduling tools.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"resolution_1\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"edge_overflow_resolution_1\",\n        \"actions\": [\n          \"Issue an automatic stop command for all inbound trains to the segment MILANO CENTRALE‑RHO FIERA MILANO.\",\n          \"Allow the trains already inside the segment to clear it before any new entry.\",\n          \"Create time‑slots for each of the four trains (e.g., 2‑minute windows) based on current delay and service priority.\",\n          \"Adjust upstream departure times so that each train departs exactly at its allocated slot.\",\n          \"Continuously monitor segment occupancy and release the next train only when the previous one has fully exited.\"\n        ],\n        \"expected_outcome\": \"The segment never exceeds its safe capacity, preventing a collision risk and quickly restoring normal flow; cumulative delay of the involved trains is reduced.\",\n        \"reasoning\": \"The generic Edge‑Overflow resolution (algorithm edge_overflow_resolution_1) prescribes stopping entry, clearing the segment, and using time‑based slot allocation. This directly matches the soft‑blocking edge‑capacity overflow observed on the Milano‑Rho Fiera link.\",\n        \"safety_score\": 0.8,\n        \"efficiency_score\": 0.7,\n        \"feasibility_score\": 0.92,\n        \"overall_fitness\": 0.857,\n        \"estimated_delay_min\": 0.1,\n        \"affected_trains\": [\"REG_2014\", \"FR_9700\", \"REG_2553\", \"REG_33137\"],\n        \"side_effects\": \"None\",\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 2,\n      \"resolution_number\": 2,\n      \"resolution_id\": \"resolution_2\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Identify FR_9700 as highest‑priority and grant immediate access.\",\n          \"Hold REG_2014, REG_2553, REG_33137 at Milano Centrale.\",\n          \"Apply staggered 10‑12 minute delays to held trains to keep at most two trains in the segment.\",\n          \"Implement slot‑based schedule reflecting new release times.\",\n          \"Notify downstream stations and update the traffic management system.\"\n        ]\n      },\n      \"overall_score\": 78.5,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 8.6,\n      \"robustness_rating\": 8.0,\n      \"justification\": \"Prioritising the fast passenger service eliminates the overflow while keeping other trains delayed only modestly, and it relies on standard scheduling adjustments.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"resolution_2\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"synthetic_edge_overflow_milano_pavia\",\n        \"actions\": [\n          \"Identify the highest‑priority service (FR_9700 – fast passenger) and grant it immediate access to the segment.\",\n          \"Hold the three lower‑priority trains (REG_2014, REG_2553, REG_33137) at Milano Centrale.\",\n          \"Apply a staggered delay of roughly 10‑12 minutes to the held trains, spacing their entry so that at most two trains occupy the segment simultaneously.\",\n          \"Implement a slot‑based schedule reflecting the new release times.\",\n          \"Notify downstream stations of the revised ETAs and update the traffic management system.\"\n        ],\n        \"expected_outcome\": \"Critical passenger service proceeds with no extra delay while the segment capacity violation is eliminated; overall network delay is minimized because the remaining trains are spaced out.\",\n        \"reasoning\": \"The synthetic_edge_overflow_milano_pavia algorithm deals with the same corridor and uses a priority‑first approach combined with staggered delays, which is directly applicable to the current four‑train overload.\",\n        \"safety_score\": 0.8,\n        \"efficiency_score\": 0.7,\n        \"feasibility_score\": 0.86,\n        \"overall_fitness\": 0.821,\n        \"estimated_delay_min\": 0.2,\n        \"affected_trains\": [\"REG_2014\", \"FR_9700\", \"REG_2553\", \"REG_33137\"],\n        \"side_effects\": \"None\",\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 3,\n      \"resolution_number\": 3,\n      \"resolution_id\": \"resolution_3\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Issue automatic stop for all four inbound trains at Milano Centrale.\",\n          \"Pull last 10 minutes of real‑time occupancy data for the segment.\",\n          \"Compute dynamic capacity buffer Δt (2 minutes) based on overload.\",\n          \"Allocate time‑slots using weighted‑priority formula.\",\n          \"Adjust upstream departures with speed‑up or dwell‑time reduction.\",\n          \"Continuously monitor occupancy and release next train after clearance and buffer replenishment.\",\n          \"Broadcast revised ETAs downstream and update TMS.\",\n          \"Revert to normal headway control after overflow clears.\"\n        ]\n      },\n      \"overall_score\": 75,\n      \"safety_rating\": 7.5,\n      \"efficiency_rating\": 7.5,\n      \"feasibility_rating\": 7.8,\n      \"robustness_rating\": 7.0,\n      \"justification\": \"The adaptive buffer adds flexibility and respects service priority, but the extra complexity and minor side‑effects lower its robustness compared with the simpler slot‑based plans.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"resolution_3\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Milano_Rho_Adaptive_Buffer\",\n        \"actions\": [\n          \"Issue an automatic stop for all four inbound trains at Milano Centrale as soon as the overflow is detected.\",\n          \"Pull the last 10 minutes of real‑time occupancy data for the MILANO CENTRALE‑RHO FIERA MILANO segment (historical cases showed a 7‑minute buffer is enough to absorb a 4‑train overload).\",\n          \"Compute a dynamic capacity buffer (Δt) = max(0, (current occupancy + 4 trains) – nominal capacity) × 30 seconds, yielding a 2‑minute buffer for this situation.\",\n          \"Allocate time‑slots to each train using a weighted‑priority formula: slot = now + Δt + (π × delay), where π = 1 for FR_9700 (fast passenger) and π = 1.2 for the regional services.\",\n          \"Adjust upstream departure times so that each train departs Milano Centrale exactly at its allocated slot, using automatic speed‑up or brief dwell‑time reduction where crew permits (historical crew‑swap manoeuvre reduced dwell by 30 seconds).\",\n          \"Continuously monitor segment occupancy; release the next train only after the previous one has cleared the segment and the buffer has been replenished.\",\n          \"Broadcast the revised ETAs to downstream stations and update the traffic‑management system (TMS) with the new slot table.\",\n          \"After the overflow clears, revert to normal headway control.\"\n        ],\n        \"expected_outcome\": \"The segment returns to its nominal capacity within ~8 minutes, preventing a cascade of delays. Average delay for the four trains is reduced by roughly 70 seconds, and the high‑priority FR_9700 regains its schedule advantage.\",\n        \"reasoning\": \"This hybrid merges the algorithmic slot‑based release (ensuring deterministic clearance) with the historical practice of using a short, data‑driven capacity buffer and crew‑swap dwell reductions. The buffer absorbs the transient overload without a full stop of the entire corridor, while weighted slots respect service priority.\",\n        \"safety_score\": 0.75,\n        \"efficiency_score\": 0.75,\n        \"feasibility_score\": 0.78,\n        \"overall_fitness\": 0.768,\n        \"estimated_delay_min\": 1.2,\n        \"affected_trains\": [\"REG_2014\", \"FR_9700\", \"REG_2553\", \"REG_33137\"],\n        \"side_effects\": \"Minor downstream headway adjustments for trains already in the segment, Potential crew overtime if dwell‑time reductions require extra work, Slight increase in energy consumption for speed‑up maneuvers\",\n        \"algorithm_type\": \"hybrid\",\n        \"raw_data\": null\n      }\n    }\n  ]\n}",
+    "error": null
+  }
+}

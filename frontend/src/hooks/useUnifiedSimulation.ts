@@ -150,7 +150,7 @@ interface UseUnifiedSimulationReturn {
 // Hook Implementation
 // =============================================================================
 
-const DEFAULT_API_URL = import.meta.env.VITE_API_URL
+const DEFAULT_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8002'
 
 export function useUnifiedSimulation(
   options: UseUnifiedSimulationOptions = {}

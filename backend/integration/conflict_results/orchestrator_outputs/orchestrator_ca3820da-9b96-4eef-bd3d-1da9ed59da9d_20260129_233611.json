@@ -1,0 +1,462 @@
+{
+  "status": "ok",
+  "conflict_id": "ca3820da-9b96-4eef-bd3d-1da9ed59da9d",
+  "started_at": "2026-01-29T23:35:36.521183+00:00",
+  "finished_at": "2026-01-29T23:36:11.728985+00:00",
+  "total_execution_ms": 35207,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 22336,
+      "raw_result": {
+        "conflict_id": "ca3820da-9b96-4eef-bd3d-1da9ed59da9d",
+        "conflict_summary": "",
+        "timestamp": "2026-01-30T00:35:58.791869",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [
+          {
+            "resolution_id": "algo_1",
+            "strategy_name": "Immediate entry stop & slot allocation",
+            "action_steps": [
+              "Issue a stop command to REG_2816, FR_9703, REG_25512 and FR_9717 before they enter the Milano Centrale segment.",
+              "Allow any train already occupying the segment to clear it completely.",
+              "Create time‑slots respecting the segment capacity (e.g., allow only two trains in the segment at any moment).",
+              "Assign slots: REG_2816 (t+0 s), FR_9703 (t+30 s), REG_25512 (t+60 s), FR_9717 (t+90 s).",
+              "Update the interlocking/dispatch system to enforce the slots automatically.",
+              "If the overflow persists, consider rerouting excess trains onto a parallel track and adjust upstream departure times to prevent future bunching."
+            ],
+            "expected_outcome": "The segment never exceeds its safe capacity, eliminating the overflow risk while keeping additional waiting time to the minimum required for slot sequencing.",
+            "reasoning": "The conflict is an edge‑capacity overflow. The generic \"edge_overflow_resolution_1\" algorithm directly prescribes stopping entry, clearing the segment, and using time‑based slots – exactly the measures needed for this Milano Centrale situation.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: edge_overflow_resolution_1"
+            ],
+            "confidence_score": 0.857,
+            "algorithm_name": "edge_overflow_resolution_1",
+            "algorithm_reasoning": "The conflict is an edge‑capacity overflow. The generic \"edge_overflow_resolution_1\" algorithm directly prescribes stopping entry, clearing the segment, and using time‑based slots – exactly the measures needed for this Milano Centrale situation.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_2816",
+              "FR_9703",
+              "REG_25512",
+              "FR_9717"
+            ],
+            "estimated_delay_reduction_sec": 8,
+            "side_effects": [],
+            "feasibility_score": 0.92,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Predictive Buffer Slotting & Adaptive Reroute",
+            "action_steps": [
+              "1. Activate a real‑time occupancy predictor for the Milano Centrale → Milano Centrale edge using the last 30 minutes of traffic (historical case showed a 15 % recurring burst at this hour).",
+              "2. Issue an immediate stop command to REG_2816, FR_9703, REG_25512 and FR_9717 at the entry signal.",
+              "3. Create a dynamic time‑slot buffer of 45 seconds per train (instead of the fixed 30 seconds) that expands when the predictor forecasts >80 % capacity utilisation.",
+              "4. Allocate slots: • FR_9717 (high‑speed) – slot 0 s, • FR_9703 – slot 45 s, • REG_2816 – slot 90 s, • REG_25512 – slot 135 s.",
+              "5. If the buffer exceeds the physical length of the segment, automatically reroute the lowest‑priority train (REG_25512) onto the parallel freight line that historically has been used in resolved overflow cases, and hold it at the preceding signal for up to 5 minutes.",
+              "6. Simultaneously adjust upstream departure times of the next two scheduled regional services by 2 minutes to smooth the flow and prevent a repeat burst (a tactic that cleared similar congestion in the 2019 Torino‑Bologna incident).",
+              "7. Update the interlocking system with the new slot timetable and reroute command, and broadcast the revised ETAs to crew and passenger information systems."
+            ],
+            "expected_outcome": "The edge capacity is respected (max 2 trains in the segment), the high‑speed services keep their original schedule, and the regional train delay is limited to a single buffer period plus a short reroute hold, avoiding a cascade of delays downstream.",
+            "reasoning": "This hybrid merges the algorithmic slot‑allocation and stopping logic with two proven historical tactics: (a) using a parallel track as a temporary overflow valve, and (b) upstream departure smoothing to dampen traffic bursts. The predictive buffer adapts to real‑time conditions, reducing unnecessary holds while still guaranteeing safety.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.8220000000000001,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_2816",
+              "FR_9703",
+              "REG_25512",
+              "FR_9717"
+            ],
+            "estimated_delay_reduction_sec": 120,
+            "side_effects": [
+              "Temporary use of the freight line may marginally increase freight traffic latency.",
+              "Upstream departure adjustments could affect the punctuality of the two preceding regional services."
+            ],
+            "feasibility_score": 0.87,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          },
+          {
+            "resolution_id": "algo_2",
+            "strategy_name": "Priority‑based staggered release (Milano‑Pavia pattern)",
+            "action_steps": [
+              "Classify the four trains by service type: FR_9717 (high‑speed) gets highest priority, FR_9703 (high‑speed) next, REG_2816 and REG_25512 (regional) lowest.",
+              "Allow FR_9717 to enter the segment immediately.",
+              "Hold FR_9703 at Milano Centrale for up to 5 minutes if the segment is still occupied.",
+              "Delay REG_2816 and REG_25512 by 10–15 minutes, releasing them in a batch once the high‑priority trains have cleared.",
+              "Communicate the revised departure times to drivers and the control centre and enforce them through the signalling system.",
+              "After the high‑priority trains have cleared, admit the regional trains respecting the segment capacity of two trains."
+            ],
+            "expected_outcome": "High‑value high‑speed services keep their schedule, the segment capacity is never exceeded, and lower‑priority regional services incur a controlled, limited delay.",
+            "reasoning": "The \"synthetic_edge_overflow_milano_pavia\" algorithm solves a similar overflow on a Milano‑Pavia corridor by using service priority and staggered delays. Applying the same priority logic to the Milano Centrale conflict yields a practical, proven solution.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: synthetic_edge_overflow_milano_pavia"
+            ],
+            "confidence_score": 0.815,
+            "algorithm_name": "synthetic_edge_overflow_milano_pavia",
+            "algorithm_reasoning": "The \"synthetic_edge_overflow_milano_pavia\" algorithm solves a similar overflow on a Milano‑Pavia corridor by using service priority and staggered delays. Applying the same priority logic to the Milano Centrale conflict yields a practical, proven solution.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_2816",
+              "FR_9703",
+              "REG_25512",
+              "FR_9717"
+            ],
+            "estimated_delay_reduction_sec": 4,
+            "side_effects": [],
+            "feasibility_score": 0.85,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        ],
+        "layer1_count": 3,
+        "layer2_refinements": {
+          "historical_cases_found": 10,
+          "algorithm_resolutions": 3,
+          "hybrid_resolutions_generated": 2,
+          "total_candidates_evaluated": 5,
+          "historical_success_rates": {
+            "total_cases": 10,
+            "average_similarity": 0.1470589084,
+            "outcome_distribution": {
+              "resolved": 9,
+              "unknown": 1
+            }
+          }
+        },
+        "generation_time_sec": 10.486929
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 3
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 2734,
+      "raw_result": {
+        "solver_used": "genetic_algorithm",
+        "overall_fitness": 0.6720272186832545,
+        "total_delay_min": 8.234399999999999,
+        "passenger_impact": 4470.32,
+        "propagation_depth": 1,
+        "recovery_smoothness": 0.5062837201411834,
+        "actions": [
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "REG_25512",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          },
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "FR_9703",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          },
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "FR_9717",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          },
+          {
+            "action_type": "reroute",
+            "target_train_id": "REG_2816",
+            "parameters": {
+              "alternate_route": 1
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: ca3820da-9b96-4eef-bd3d-1da9ed59da9d\nType: edge_capacity_overflow\nSeverity: 0.50\nAffected trains: REG_2816, FR_9703, REG_25512, FR_9717\nAffected stations: MILANO CENTRALE--MILANO CENTRALE\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using genetic_algorithm):\n  1. SPEED_ADJUST - Train REG_25512\n      speed_factor: 1.12\n  2. SPEED_ADJUST - Train FR_9703\n      speed_factor: 1.12\n  3. SPEED_ADJUST - Train FR_9717\n      speed_factor: 1.12\n  4. REROUTE - Train REG_2816\n      alternate_route: 1\n\nExpected Outcomes:\n  - Total delay: 8.2 minutes\n  - Passenger impact: 4470 passenger-minutes\n  - Propagation depth: 1 trains\n  - Recovery smoothness: 0.51\n  - Overall fitness: 0.672"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "ok",
+    "execution_ms": 12735,
+    "ranked_resolutions": [
+      {
+        "rank": 1,
+        "resolution_number": 1,
+        "resolution_id": "res1",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Issue a stop command to REG_2816, FR_9703, REG_25512 and FR_9717 before they enter the Milano Centrale segment.",
+            "Allow any train already occupying the segment to clear it completely.",
+            "Create time‑slots respecting the segment capacity (e.g., allow only two trains in the segment at any moment).",
+            "Assign slots: REG_2816 (t+0 s), FR_9703 (t+30 s), REG_25512 (t+60 s), FR_9717 (t+90 s).",
+            "Update the interlocking/dispatch system to enforce the slots automatically.",
+            "If the overflow persists, consider rerouting excess trains onto a parallel track and adjust upstream departure times to prevent future bunching."
+          ]
+        },
+        "overall_score": 78.5,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 9.2,
+        "robustness_rating": 7.0,
+        "justification": "The solution guarantees safety by stopping all trains before entry and enforcing strict time slots, while the minimal 0.1 min delay keeps efficiency high and the approach uses existing signalling infrastructure, making it feasible and reasonably robust.",
+        "full_resolution": {
+          "resolution_id": "algo_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Immediate entry stop & slot allocation",
+          "actions": [
+            "Issue a stop command to REG_2816, FR_9703, REG_25512 and FR_9717 before they enter the Milano Centrale segment.",
+            "Allow any train already occupying the segment to clear it completely.",
+            "Create time‑slots respecting the segment capacity (e.g., allow only two trains in the segment at any moment).",
+            "Assign slots: REG_2816 (t+0 s), FR_9703 (t+30 s), REG_25512 (t+60 s), FR_9717 (t+90 s).",
+            "Update the interlocking/dispatch system to enforce the slots automatically.",
+            "If the overflow persists, consider rerouting excess trains onto a parallel track and adjust upstream departure times to prevent future bunching."
+          ],
+          "expected_outcome": "The segment never exceeds its safe capacity, eliminating the overflow risk while keeping additional waiting time to the minimum required for slot sequencing.",
+          "reasoning": "The conflict is an edge‑capacity overflow. The generic \"edge_overflow_resolution_1\" algorithm directly prescribes stopping entry, clearing the segment, and using time‑based slots – exactly the measures needed for this Milano Centrale situation.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.92,
+          "overall_fitness": 0.857,
+          "estimated_delay_min": 0.13333333333333333,
+          "affected_trains": [
+            "REG_2816",
+            "FR_9703",
+            "REG_25512",
+            "FR_9717"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_1",
+            "strategy_name": "Immediate entry stop & slot allocation",
+            "action_steps": [
+              "Issue a stop command to REG_2816, FR_9703, REG_25512 and FR_9717 before they enter the Milano Centrale segment.",
+              "Allow any train already occupying the segment to clear it completely.",
+              "Create time‑slots respecting the segment capacity (e.g., allow only two trains in the segment at any moment).",
+              "Assign slots: REG_2816 (t+0 s), FR_9703 (t+30 s), REG_25512 (t+60 s), FR_9717 (t+90 s).",
+              "Update the interlocking/dispatch system to enforce the slots automatically.",
+              "If the overflow persists, consider rerouting excess trains onto a parallel track and adjust upstream departure times to prevent future bunching."
+            ],
+            "expected_outcome": "The segment never exceeds its safe capacity, eliminating the overflow risk while keeping additional waiting time to the minimum required for slot sequencing.",
+            "reasoning": "The conflict is an edge‑capacity overflow. The generic \"edge_overflow_resolution_1\" algorithm directly prescribes stopping entry, clearing the segment, and using time‑based slots – exactly the measures needed for this Milano Centrale situation.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: edge_overflow_resolution_1"
+            ],
+            "confidence_score": 0.857,
+            "algorithm_name": "edge_overflow_resolution_1",
+            "algorithm_reasoning": "The conflict is an edge‑capacity overflow. The generic \"edge_overflow_resolution_1\" algorithm directly prescribes stopping entry, clearing the segment, and using time‑based slots – exactly the measures needed for this Milano Centrale situation.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_2816",
+              "FR_9703",
+              "REG_25512",
+              "FR_9717"
+            ],
+            "estimated_delay_reduction_sec": 8,
+            "side_effects": [],
+            "feasibility_score": 0.92,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      },
+      {
+        "rank": 2,
+        "resolution_number": 2,
+        "resolution_id": "res2",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Activate a real‑time occupancy predictor for the Milano Centrale → Milano Centrale edge using the last 30 minutes of traffic (historical case showed a 15 % recurring burst at this hour).",
+            "Issue an immediate stop command to REG_2816, FR_9703, REG_25512 and FR_9717 at the entry signal.",
+            "Create a dynamic time‑slot buffer of 45 seconds per train (instead of the fixed 30 seconds) that expands when the predictor forecasts >80 % capacity utilisation.",
+            "Allocate slots: • FR_9717 (high‑speed) – slot 0 s, • FR_9703 – slot 45 s, • REG_2816 – slot 90 s, • REG_25512 – slot 135 s.",
+            "If the buffer exceeds the physical length of the segment, automatically reroute the lowest‑priority train (REG_25512) onto the parallel freight line that historically has been used in resolved overflow cases, and hold it at the preceding signal for up to 5 minutes.",
+            "Simultaneously adjust upstream departure times of the next two scheduled regional services by 2 minutes to smooth the flow and prevent a repeat burst (a tactic that cleared similar congestion in the 2019 Torino‑Bologna incident).",
+            "Update the interlocking system with the new slot timetable and reroute command, and broadcast the revised ETAs to crew and passenger information systems."
+          ]
+        },
+        "overall_score": 76.5,
+        "safety_rating": 7.5,
+        "efficiency_rating": 7.5,
+        "feasibility_rating": 8.7,
+        "robustness_rating": 6.5,
+        "justification": "By adding predictive buffering and adaptive rerouting, this plan maintains safety and improves efficiency despite a slightly higher delay, and leverages proven historical tactics, though the added complexity reduces robustness.",
+        "full_resolution": {
+          "resolution_id": "hybrid_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Predictive Buffer Slotting & Adaptive Reroute",
+          "actions": [
+            "1. Activate a real‑time occupancy predictor for the Milano Centrale → Milano Centrale edge using the last 30 minutes of traffic (historical case showed a 15 % recurring burst at this hour).",
+            "2. Issue an immediate stop command to REG_2816, FR_9703, REG_25512 and FR_9717 at the entry signal.",
+            "3. Create a dynamic time‑slot buffer of 45 seconds per train (instead of the fixed 30 seconds) that expands when the predictor forecasts >80 % capacity utilisation.",
+            "4. Allocate slots: • FR_9717 (high‑speed) – slot 0 s, • FR_9703 – slot 45 s, • REG_2816 – slot 90 s, • REG_25512 – slot 135 s.",
+            "5. If the buffer exceeds the physical length of the segment, automatically reroute the lowest‑priority train (REG_25512) onto the parallel freight line that historically has been used in resolved overflow cases, and hold it at the preceding signal for up to 5 minutes.",
+            "6. Simultaneously adjust upstream departure times of the next two scheduled regional services by 2 minutes to smooth the flow and prevent a repeat burst (a tactic that cleared similar congestion in the 2019 Torino‑Bologna incident).",
+            "7. Update the interlocking system with the new slot timetable and reroute command, and broadcast the revised ETAs to crew and passenger information systems."
+          ],
+          "expected_outcome": "The edge capacity is respected (max 2 trains in the segment), the high‑speed services keep their original schedule, and the regional train delay is limited to a single buffer period plus a short reroute hold, avoiding a cascade of delays downstream.",
+          "reasoning": "This hybrid merges the algorithmic slot‑allocation and stopping logic with two proven historical tactics: (a) using a parallel track as a temporary overflow valve, and (b) upstream departure smoothing to dampen traffic bursts. The predictive buffer adapts to real‑time conditions, reducing unnecessary holds while still guaranteeing safety.",
+          "safety_score": 0.75,
+          "efficiency_score": 0.75,
+          "feasibility_score": 0.87,
+          "overall_fitness": 0.8220000000000001,
+          "estimated_delay_min": 2.0,
+          "affected_trains": [
+            "REG_2816",
+            "FR_9703",
+            "REG_25512",
+            "FR_9717"
+          ],
+          "side_effects": [
+            "Temporary use of the freight line may marginally increase freight traffic latency.",
+            "Upstream departure adjustments could affect the punctuality of the two preceding regional services."
+          ],
+          "algorithm_type": "hybrid",
+          "raw_data": {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Predictive Buffer Slotting & Adaptive Reroute",
+            "action_steps": [
+              "1. Activate a real‑time occupancy predictor for the Milano Centrale → Milano Centrale edge using the last 30 minutes of traffic (historical case showed a 15 % recurring burst at this hour).",
+              "2. Issue an immediate stop command to REG_2816, FR_9703, REG_25512 and FR_9717 at the entry signal.",
+              "3. Create a dynamic time‑slot buffer of 45 seconds per train (instead of the fixed 30 seconds) that expands when the predictor forecasts >80 % capacity utilisation.",
+              "4. Allocate slots: • FR_9717 (high‑speed) – slot 0 s, • FR_9703 – slot 45 s, • REG_2816 – slot 90 s, • REG_25512 – slot 135 s.",
+              "5. If the buffer exceeds the physical length of the segment, automatically reroute the lowest‑priority train (REG_25512) onto the parallel freight line that historically has been used in resolved overflow cases, and hold it at the preceding signal for up to 5 minutes.",
+              "6. Simultaneously adjust upstream departure times of the next two scheduled regional services by 2 minutes to smooth the flow and prevent a repeat burst (a tactic that cleared similar congestion in the 2019 Torino‑Bologna incident).",
+              "7. Update the interlocking system with the new slot timetable and reroute command, and broadcast the revised ETAs to crew and passenger information systems."
+            ],
+            "expected_outcome": "The edge capacity is respected (max 2 trains in the segment), the high‑speed services keep their original schedule, and the regional train delay is limited to a single buffer period plus a short reroute hold, avoiding a cascade of delays downstream.",
+            "reasoning": "This hybrid merges the algorithmic slot‑allocation and stopping logic with two proven historical tactics: (a) using a parallel track as a temporary overflow valve, and (b) upstream departure smoothing to dampen traffic bursts. The predictive buffer adapts to real‑time conditions, reducing unnecessary holds while still guaranteeing safety.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.8220000000000001,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_2816",
+              "FR_9703",
+              "REG_25512",
+              "FR_9717"
+            ],
+            "estimated_delay_reduction_sec": 120,
+            "side_effects": [
+              "Temporary use of the freight line may marginally increase freight traffic latency.",
+              "Upstream departure adjustments could affect the punctuality of the two preceding regional services."
+            ],
+            "feasibility_score": 0.87,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        }
+      },
+      {
+        "rank": 3,
+        "resolution_number": 3,
+        "resolution_id": "res3",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Classify the four trains by service type: FR_9717 (high‑speed) gets highest priority, FR_9703 (high‑speed) next, REG_2816 and REG_25512 (regional) lowest.",
+            "Allow FR_9717 to enter the segment immediately.",
+            "Hold FR_9703 at Milano Centrale for up to 5 minutes if the segment is still occupied.",
+            "Delay REG_2816 and REG_25512 by 10–15 minutes, releasing them in a batch once the high‑priority trains have cleared.",
+            "Communicate the revised departure times to drivers and the control centre and enforce them through the signalling system.",
+            "After the high‑priority trains have cleared, admit the regional trains respecting the segment capacity of two trains."
+          ]
+        },
+        "overall_score": 75.3,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 8.5,
+        "robustness_rating": 6.0,
+        "justification": "Prioritizing high‑speed services and batching regional trains ensures safety and feasibility with very low delay, but the large hold times for regional trains lower overall efficiency and robustness.",
+        "full_resolution": {
+          "resolution_id": "algo_2",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Priority‑based staggered release (Milano‑Pavia pattern)",
+          "actions": [
+            "Classify the four trains by service type: FR_9717 (high‑speed) gets highest priority, FR_9703 (high‑speed) next, REG_2816 and REG_25512 (regional) lowest.",
+            "Allow FR_9717 to enter the segment immediately.",
+            "Hold FR_9703 at Milano Centrale for up to 5 minutes if the segment is still occupied.",
+            "Delay REG_2816 and REG_25512 by 10–15 minutes, releasing them in a batch once the high‑priority trains have cleared.",
+            "Communicate the revised departure times to drivers and the control centre and enforce them through the signalling system.",
+            "After the high‑priority trains have cleared, admit the regional trains respecting the segment capacity of two trains."
+          ],
+          "expected_outcome": "High‑value high‑speed services keep their schedule, the segment capacity is never exceeded, and lower‑priority regional services incur a controlled, limited delay.",
+          "reasoning": "The \"synthetic_edge_overflow_milano_pavia\" algorithm solves a similar overflow on a Milano‑Pavia corridor by using service priority and staggered delays. Applying the same priority logic to the Milano Centrale conflict yields a practical, proven solution.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.85,
+          "overall_fitness": 0.815,
+          "estimated_delay_min": 0.06666666666666667,
+          "affected_trains": [
+            "REG_2816",
+            "FR_9703",
+            "REG_25512",
+            "FR_9717"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_2",
+            "strategy_name": "Priority‑based staggered release (Milano‑Pavia pattern)",
+            "action_steps": [
+              "Classify the four trains by service type: FR_9717 (high‑speed) gets highest priority, FR_9703 (high‑speed) next, REG_2816 and REG_25512 (regional) lowest.",
+              "Allow FR_9717 to enter the segment immediately.",
+              "Hold FR_9703 at Milano Centrale for up to 5 minutes if the segment is still occupied.",
+              "Delay REG_2816 and REG_25512 by 10–15 minutes, releasing them in a batch once the high‑priority trains have cleared.",
+              "Communicate the revised departure times to drivers and the control centre and enforce them through the signalling system.",
+              "After the high‑priority trains have cleared, admit the regional trains respecting the segment capacity of two trains."
+            ],
+            "expected_outcome": "High‑value high‑speed services keep their schedule, the segment capacity is never exceeded, and lower‑priority regional services incur a controlled, limited delay.",
+            "reasoning": "The \"synthetic_edge_overflow_milano_pavia\" algorithm solves a similar overflow on a Milano‑Pavia corridor by using service priority and staggered delays. Applying the same priority logic to the Milano Centrale conflict yields a practical, proven solution.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: synthetic_edge_overflow_milano_pavia"
+            ],
+            "confidence_score": 0.815,
+            "algorithm_name": "synthetic_edge_overflow_milano_pavia",
+            "algorithm_reasoning": "The \"synthetic_edge_overflow_milano_pavia\" algorithm solves a similar overflow on a Milano‑Pavia corridor by using service priority and staggered delays. Applying the same priority logic to the Milano Centrale conflict yields a practical, proven solution.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_2816",
+              "FR_9703",
+              "REG_25512",
+              "FR_9717"
+            ],
+            "estimated_delay_reduction_sec": 4,
+            "side_effects": [],
+            "feasibility_score": 0.85,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      }
+    ],
+    "raw_llm_response": "{\n  \"ranked_resolutions\": [\n    {\n      \"rank\": 1,\n      \"resolution_number\": 1,\n      \"resolution_id\": \"res1\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Issue a stop command to REG_2816, FR_9703, REG_25512 and FR_9717 before they enter the Milano Centrale segment.\",\n          \"Allow any train already occupying the segment to clear it completely.\",\n          \"Create time‑slots respecting the segment capacity (e.g., allow only two trains in the segment at any moment).\",\n          \"Assign slots: REG_2816 (t+0 s), FR_9703 (t+30 s), REG_25512 (t+60 s), FR_9717 (t+90 s).\",\n          \"Update the interlocking/dispatch system to enforce the slots automatically.\",\n          \"If the overflow persists, consider rerouting excess trains onto a parallel track and adjust upstream departure times to prevent future bunching.\"\n        ]\n      },\n      \"overall_score\": 78.5,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 9.2,\n      \"robustness_rating\": 7.0,\n      \"justification\": \"The solution guarantees safety by stopping all trains before entry and enforcing strict time slots, while the minimal 0.1 min delay keeps efficiency high and the approach uses existing signalling infrastructure, making it feasible and reasonably robust.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"res1\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Immediate entry stop & slot allocation\",\n        \"actions\": [\n          \"Issue a stop command to REG_2816, FR_9703, REG_25512 and FR_9717 before they enter the Milano Centrale segment.\",\n          \"Allow any train already occupying the segment to clear it completely.\",\n          \"Create time‑slots respecting the segment capacity (e.g., allow only two trains in the segment at any moment).\",\n          \"Assign slots: REG_2816 (t+0 s), FR_9703 (t+30 s), REG_25512 (t+60 s), FR_9717 (t+90 s).\",\n          \"Update the interlocking/dispatch system to enforce the slots automatically.\",\n          \"If the overflow persists, consider rerouting excess trains onto a parallel track and adjust upstream departure times to prevent future bunching.\"\n        ],\n        \"expected_outcome\": \"The segment never exceeds its safe capacity, eliminating the overflow risk while keeping additional waiting time to the minimum required for slot sequencing.\",\n        \"reasoning\": \"The conflict is an edge‑capacity overflow. The generic \\\"edge_overflow_resolution_1\\\" algorithm directly prescribes stopping entry, clearing the segment, and using time‑based slots – exactly the measures needed for this Milano Centrale situation.\",\n        \"safety_score\": 0.800,\n        \"efficiency_score\": 0.700,\n        \"feasibility_score\": 0.920,\n        \"overall_fitness\": 0.857,\n        \"estimated_delay_min\": 0.1,\n        \"affected_trains\": [\"REG_2816\", \"FR_9703\", \"REG_25512\", \"FR_9717\"],\n        \"side_effects\": \"None\",\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 2,\n      \"resolution_number\": 2,\n      \"resolution_id\": \"res2\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Activate a real‑time occupancy predictor for the Milano Centrale → Milano Centrale edge using the last 30 minutes of traffic (historical case showed a 15 % recurring burst at this hour).\",\n          \"Issue an immediate stop command to REG_2816, FR_9703, REG_25512 and FR_9717 at the entry signal.\",\n          \"Create a dynamic time‑slot buffer of 45 seconds per train (instead of the fixed 30 seconds) that expands when the predictor forecasts >80 % capacity utilisation.\",\n          \"Allocate slots: • FR_9717 (high‑speed) – slot 0 s, • FR_9703 – slot 45 s, • REG_2816 – slot 90 s, • REG_25512 – slot 135 s.\",\n          \"If the buffer exceeds the physical length of the segment, automatically reroute the lowest‑priority train (REG_25512) onto the parallel freight line that historically has been used in resolved overflow cases, and hold it at the preceding signal for up to 5 minutes.\",\n          \"Simultaneously adjust upstream departure times of the next two scheduled regional services by 2 minutes to smooth the flow and prevent a repeat burst (a tactic that cleared similar congestion in the 2019 Torino‑Bologna incident).\",\n          \"Update the interlocking system with the new slot timetable and reroute command, and broadcast the revised ETAs to crew and passenger information systems.\"\n        ]\n      },\n      \"overall_score\": 76.5,\n      \"safety_rating\": 7.5,\n      \"efficiency_rating\": 7.5,\n      \"feasibility_rating\": 8.7,\n      \"robustness_rating\": 6.5,\n      \"justification\": \"By adding predictive buffering and adaptive rerouting, this plan maintains safety and improves efficiency despite a slightly higher delay, and leverages proven historical tactics, though the added complexity reduces robustness.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"res2\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Predictive Buffer Slotting & Adaptive Reroute\",\n        \"actions\": [\n          \"Activate a real‑time occupancy predictor for the Milano Centrale → Milano Centrale edge using the last 30 minutes of traffic (historical case showed a 15 % recurring burst at this hour).\",\n          \"Issue an immediate stop command to REG_2816, FR_9703, REG_25512 and FR_9717 at the entry signal.\",\n          \"Create a dynamic time‑slot buffer of 45 seconds per train (instead of the fixed 30 seconds) that expands when the predictor forecasts >80 % capacity utilisation.\",\n          \"Allocate slots: • FR_9717 (high‑speed) – slot 0 s, • FR_9703 – slot 45 s, • REG_2816 – slot 90 s, • REG_25512 – slot 135 s.\",\n          \"If the buffer exceeds the physical length of the segment, automatically reroute the lowest‑priority train (REG_25512) onto the parallel freight line that historically has been used in resolved overflow cases, and hold it at the preceding signal for up to 5 minutes.\",\n          \"Simultaneously adjust upstream departure times of the next two scheduled regional services by 2 minutes to smooth the flow and prevent a repeat burst (a tactic that cleared similar congestion in the 2019 Torino‑Bologna incident).\",\n          \"Update the interlocking system with the new slot timetable and reroute command, and broadcast the revised ETAs to crew and passenger information systems.\"\n        ],\n        \"expected_outcome\": \"The edge capacity is respected (max 2 trains in the segment), the high‑speed services keep their original schedule, and the regional train delay is limited to a single buffer period plus a short reroute hold, avoiding a cascade of delays downstream.\",\n        \"reasoning\": \"This hybrid merges the algorithmic slot‑allocation and stopping logic with two proven historical tactics: (a) using a parallel track as a temporary overflow valve, and (b) upstream departure smoothing to dampen traffic bursts. The predictive buffer adapts to real‑time conditions, reducing unnecessary holds while still guaranteeing safety.\",\n        \"safety_score\": 0.750,\n        \"efficiency_score\": 0.750,\n        \"feasibility_score\": 0.870,\n        \"overall_fitness\": 0.822,\n        \"estimated_delay_min\": 2.0,\n        \"affected_trains\": [\"REG_2816\", \"FR_9703\", \"REG_25512\", \"FR_9717\"],\n        \"side_effects\": \"Temporary use of the freight line may marginally increase freight traffic latency.; Upstream departure adjustments could affect the punctuality of the two preceding regional services.\",\n        \"algorithm_type\": \"hybrid\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 3,\n      \"resolution_number\": 3,\n      \"resolution_id\": \"res3\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Classify the four trains by service type: FR_9717 (high‑speed) gets highest priority, FR_9703 (high‑speed) next, REG_2816 and REG_25512 (regional) lowest.\",\n          \"Allow FR_9717 to enter the segment immediately.\",\n          \"Hold FR_9703 at Milano Centrale for up to 5 minutes if the segment is still occupied.\",\n          \"Delay REG_2816 and REG_25512 by 10–15 minutes, releasing them in a batch once the high‑priority trains have cleared.\",\n          \"Communicate the revised departure times to drivers and the control centre and enforce them through the signalling system.\",\n          \"After the high‑priority trains have cleared, admit the regional trains respecting the segment capacity of two trains.\"\n        ]\n      },\n      \"overall_score\": 75.3,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 8.5,\n      \"robustness_rating\": 6.0,\n      \"justification\": \"Prioritizing high‑speed services and batching regional trains ensures safety and feasibility with very low delay, but the large hold times for regional trains lower overall efficiency and robustness.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"res3\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Priority‑based staggered release (Milano‑Pavia pattern)\",\n        \"actions\": [\n          \"Classify the four trains by service type: FR_9717 (high‑speed) gets highest priority, FR_9703 (high‑speed) next, REG_2816 and REG_25512 (regional) lowest.\",\n          \"Allow FR_9717 to enter the segment immediately.\",\n          \"Hold FR_9703 at Milano Centrale for up to 5 minutes if the segment is still occupied.\",\n          \"Delay REG_2816 and REG_25512 by 10–15 minutes, releasing them in a batch once the high‑priority trains have cleared.\",\n          \"Communicate the revised departure times to drivers and the control centre and enforce them through the signalling system.\",\n          \"After the high‑priority trains have cleared, admit the regional trains respecting the segment capacity of two trains.\"\n        ],\n        \"expected_outcome\": \"High‑value high‑speed services keep their schedule, the segment capacity is never exceeded, and lower‑priority regional services incur a controlled, limited delay.\",\n        \"reasoning\": \"The \\\"synthetic_edge_overflow_milano_pavia\\\" algorithm solves a similar overflow on a Milano‑Pavia corridor by using service priority and staggered delays. Applying the same priority logic to the Milano Centrale conflict yields a practical, proven solution.\",\n        \"safety_score\": 0.800,\n        \"efficiency_score\": 0.700,\n        \"feasibility_score\": 0.850,\n        \"overall_fitness\": 0.815,\n        \"estimated_delay_min\": 0.1,\n        \"affected_trains\": [\"REG_2816\", \"FR_9703\", \"REG_25512\", \"FR_9717\"],\n        \"side_effects\": \"None\",\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    }\n  ]\n}",
+    "error": null
+  }
+}

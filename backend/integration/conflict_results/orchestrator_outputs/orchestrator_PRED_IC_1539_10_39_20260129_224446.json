@@ -1,0 +1,408 @@
+{
+  "status": "ok",
+  "conflict_id": "PRED_IC_1539_10_39",
+  "started_at": "2026-01-29T22:44:17.714248+00:00",
+  "finished_at": "2026-01-29T22:44:46.968786+00:00",
+  "total_execution_ms": 29254,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 19171,
+      "raw_result": {
+        "conflict_id": "PRED_IC_1539_10_39",
+        "conflict_summary": "",
+        "timestamp": "2026-01-29T23:44:36.861818",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [
+          {
+            "resolution_id": "algo_1",
+            "strategy_name": "MILP safety‑headway rescheduling",
+            "action_steps": [
+              "Formulate a small‑scale MILP model containing the arrival and departure events of IC 1539 at Milano Centrale and the next downstream station.",
+              "Add linear constraints for the minimum safety interval (headway) required between IC 1539 and any following train (if any) and for minimum dwell‑time at the platform.",
+              "Set the objective to minimise the deviation of IC 1539’s departure time from the original schedule while respecting the headway constraints.",
+              "Solve the MILP in real‑time and, if a feasible earlier departure is found, issue a revised departure order to the train crew and update the traffic‑control system.",
+              "If the solution still leaves a residual delay, communicate the updated expected arrival time to downstream stations."
+            ],
+            "expected_outcome": "IC 1539 departs Milano Centrale as early as safety constraints allow, reducing the 5.1 min delay and preserving safe separation from any following services.",
+            "reasoning": "The conflict is a schedule deviation at a single station. The safety‑interval algorithm explicitly models minimum headways as linear constraints and optimises departure times, making it directly applicable to recover lost time while guaranteeing safety.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: Safety interval conflict – MILP rescheduling (ID 348a21e1‑a1bc‑57fa‑b21f‑34547280b9b9)"
+            ],
+            "confidence_score": 0.863,
+            "algorithm_name": "Safety interval conflict – MILP rescheduling (ID 348a21e1‑a1bc‑57fa‑b21f‑34547280b9b9)",
+            "algorithm_reasoning": "The conflict is a schedule deviation at a single station. The safety‑interval algorithm explicitly models minimum headways as linear constraints and optimises departure times, making it directly applicable to recover lost time while guaranteeing safety.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539"
+            ],
+            "estimated_delay_reduction_sec": 180,
+            "side_effects": [],
+            "feasibility_score": 0.93,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "algo_2",
+            "strategy_name": "Rolling‑horizon delay‑propagation minimisation",
+            "action_steps": [
+              "Create a rolling‑horizon MILP that includes IC 1539’s current arrival time, its planned downstream events, and any already‑scheduled trains that could be impacted.",
+              "Define the objective as the weighted sum of all arrival/departure deviations, giving a high weight to IC 1539 because of its high severity (0.95).",
+              "Allow adjustments of dwell times, optional speed‑up (within line‑speed limits), and minor re‑ordering of later trains if they exist.",
+              "Run the optimisation for the next 30‑minute horizon, implement the first‑step decisions (e.g., reduced dwell, earlier departure), and repeat the process as new data arrive.",
+              "Update passenger information systems with the revised ETA."
+            ],
+            "expected_outcome": "Overall timetable deviation is reduced; IC 1539 recovers most of its delay while preventing any cascade to later services.",
+            "reasoning": "The delay‑propagation algorithm is designed to minimise total timetable deviation after a disruption. Even though only one train is currently affected, the method ensures that any future ripple effects are limited, aligning with the conflict’s ‘schedule_deviation’ type.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: Delay propagation – MILP minimising total deviation (ID 6e9bd5a8‑91ff‑5527‑bbed‑04bd63ac42ec)"
+            ],
+            "confidence_score": 0.833,
+            "algorithm_name": "Delay propagation – MILP minimising total deviation (ID 6e9bd5a8‑91ff‑5527‑bbed‑04bd63ac42ec)",
+            "algorithm_reasoning": "The delay‑propagation algorithm is designed to minimise total timetable deviation after a disruption. Even though only one train is currently affected, the method ensures that any future ripple effects are limited, aligning with the conflict’s ‘schedule_deviation’ type.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539"
+            ],
+            "estimated_delay_reduction_sec": 240,
+            "side_effects": [],
+            "feasibility_score": 0.88,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Hybrid MILP‑Driven Platform Switchover & Dwell Optimisation",
+            "action_steps": [
+              "1. Run the MILP safety‑headway model for IC 1539 at Milano Centrale using the current 5.1 min arrival delay.",
+              "2. If the MILP solution yields a departure that still leaves >2 min of delay, query the real‑time platform‑availability matrix for an alternative platform that is free for the next 10 minutes (historical case: 2012 SNCF Paris‑Lyon used a similar platform‑swap to gain 2‑3 min).",
+              "3. Re‑assign IC 1539 to the alternative platform and recompute the MILP with the new platform‑specific dwell‑time limits (shorter dwell is allowed on the less‑congested platform).",
+              "4. Trim the dwell time on the chosen platform to the minimum safe value (e.g., from 2 min to 1 min 30 s) after confirming that no other train is scheduled to occupy the same track.",
+              "5. Issue the revised departure order to the train crew and automatically update the signalling system to respect the new headway.",
+              "6. Broadcast the revised ETA to downstream stations and passenger information systems (apps, displays, announcements).",
+              "7. Log the platform change and dwell‑time adjustment for post‑event analysis."
+            ],
+            "expected_outcome": "Recover approximately 4 minutes of the 5.1‑minute delay, keep headways safe, and prevent any downstream ripple effects while using only existing infrastructure.",
+            "reasoning": "The MILP provides a mathematically optimal departure time under safety constraints, while the historical platform‑swap technique demonstrates that a short‑term platform change can create additional slack without extra track work. Combining both yields a practical, low‑complexity fix that respects safety and leverages proven operational practice.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.8280000000000001,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539"
+            ],
+            "estimated_delay_reduction_sec": 240,
+            "side_effects": [
+              "Potential passenger confusion due to platform change; requires clear announcements.",
+              "Minor disturbance to the schedule of any train originally planned for the alternative platform.",
+              "Additional coordination effort for crew and dispatch."
+            ],
+            "feasibility_score": 0.88,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        ],
+        "layer1_count": 3,
+        "layer2_refinements": {
+          "historical_cases_found": 10,
+          "algorithm_resolutions": 3,
+          "hybrid_resolutions_generated": 2,
+          "total_candidates_evaluated": 5,
+          "historical_success_rates": {
+            "total_cases": 10,
+            "average_similarity": 0.22203051899999998,
+            "outcome_distribution": {
+              "unknown": 10
+            }
+          }
+        },
+        "generation_time_sec": 7.406345
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 3
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 1293,
+      "raw_result": {
+        "solver_used": "nsga2",
+        "overall_fitness": 0.7247128194027649,
+        "total_delay_min": 4.610399999999999,
+        "passenger_impact": 1383.12,
+        "propagation_depth": 1,
+        "recovery_smoothness": 1.0,
+        "actions": [
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "IC_1539",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: PRED_IC_1539_10_39\nType: schedule_deviation\nSeverity: 0.95\nAffected trains: IC_1539\nAffected stations: MILANO CENTRALE\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using nsga2):\n  1. SPEED_ADJUST - Train IC_1539\n      speed_factor: 1.12\n\nExpected Outcomes:\n  - Total delay: 4.6 minutes\n  - Passenger impact: 1383 passenger-minutes\n  - Propagation depth: 1 trains\n  - Recovery smoothness: 1.00\n  - Overall fitness: 0.725"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "ok",
+    "execution_ms": 10059,
+    "ranked_resolutions": [
+      {
+        "rank": 1,
+        "resolution_number": 1,
+        "resolution_id": "MILP_safety_headway_rescheduling",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Formulate a small‑scale MILP model containing the arrival and departure events of IC 1539 at Milano Centrale and the next downstream station.",
+            "Add linear constraints for the minimum safety interval (headway) required between IC 1539 and any following train (if any) and for minimum dwell‑time at the platform.",
+            "Set the objective to minimise the deviation of IC 1539’s departure time from the original schedule while respecting the headway constraints.",
+            "Solve the MILP in real‑time and, if a feasible earlier departure is found, issue a revised departure order to the train crew and update the traffic‑control system.",
+            "If the solution still leaves a residual delay, communicate the updated expected arrival time to downstream stations."
+          ]
+        },
+        "overall_score": 80,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 9.3,
+        "robustness_rating": 7.5,
+        "justification": "Provides the highest weighted score by balancing strong safety and feasibility while delivering the greatest delay reduction with minimal side effects.",
+        "full_resolution": {
+          "resolution_id": "algo_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "MILP safety‑headway rescheduling",
+          "actions": [
+            "Formulate a small‑scale MILP model containing the arrival and departure events of IC 1539 at Milano Centrale and the next downstream station.",
+            "Add linear constraints for the minimum safety interval (headway) required between IC 1539 and any following train (if any) and for minimum dwell‑time at the platform.",
+            "Set the objective to minimise the deviation of IC 1539’s departure time from the original schedule while respecting the headway constraints.",
+            "Solve the MILP in real‑time and, if a feasible earlier departure is found, issue a revised departure order to the train crew and update the traffic‑control system.",
+            "If the solution still leaves a residual delay, communicate the updated expected arrival time to downstream stations."
+          ],
+          "expected_outcome": "IC 1539 departs Milano Centrale as early as safety constraints allow, reducing the 5.1 min delay and preserving safe separation from any following services.",
+          "reasoning": "The conflict is a schedule deviation at a single station. The safety‑interval algorithm explicitly models minimum headways as linear constraints and optimises departure times, making it directly applicable to recover lost time while guaranteeing safety.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.93,
+          "overall_fitness": 0.863,
+          "estimated_delay_min": 3.0,
+          "affected_trains": [
+            "IC_1539"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_1",
+            "strategy_name": "MILP safety‑headway rescheduling",
+            "action_steps": [
+              "Formulate a small‑scale MILP model containing the arrival and departure events of IC 1539 at Milano Centrale and the next downstream station.",
+              "Add linear constraints for the minimum safety interval (headway) required between IC 1539 and any following train (if any) and for minimum dwell‑time at the platform.",
+              "Set the objective to minimise the deviation of IC 1539’s departure time from the original schedule while respecting the headway constraints.",
+              "Solve the MILP in real‑time and, if a feasible earlier departure is found, issue a revised departure order to the train crew and update the traffic‑control system.",
+              "If the solution still leaves a residual delay, communicate the updated expected arrival time to downstream stations."
+            ],
+            "expected_outcome": "IC 1539 departs Milano Centrale as early as safety constraints allow, reducing the 5.1 min delay and preserving safe separation from any following services.",
+            "reasoning": "The conflict is a schedule deviation at a single station. The safety‑interval algorithm explicitly models minimum headways as linear constraints and optimises departure times, making it directly applicable to recover lost time while guaranteeing safety.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: Safety interval conflict – MILP rescheduling (ID 348a21e1‑a1bc‑57fa‑b21f‑34547280b9b9)"
+            ],
+            "confidence_score": 0.863,
+            "algorithm_name": "Safety interval conflict – MILP rescheduling (ID 348a21e1‑a1bc‑57fa‑b21f‑34547280b9b9)",
+            "algorithm_reasoning": "The conflict is a schedule deviation at a single station. The safety‑interval algorithm explicitly models minimum headways as linear constraints and optimises departure times, making it directly applicable to recover lost time while guaranteeing safety.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539"
+            ],
+            "estimated_delay_reduction_sec": 180,
+            "side_effects": [],
+            "feasibility_score": 0.93,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      },
+      {
+        "rank": 2,
+        "resolution_number": 2,
+        "resolution_id": "Rolling_horizon_delay_propagation",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Create a rolling‑horizon MILP that includes IC 1539’s current arrival time, its planned downstream events, and any already‑scheduled trains that could be impacted.",
+            "Define the objective as the weighted sum of all arrival/departure deviations, giving a high weight to IC 1539 because of its high severity (0.95).",
+            "Allow adjustments of dwell times, optional speed‑up (within line‑speed limits), and minor re‑ordering of later trains if they exist.",
+            "Run the optimisation for the next 30‑minute horizon, implement the first‑step decisions (e.g., reduced dwell, earlier departure), and repeat the process as new data arrive.",
+            "Update passenger information systems with the revised ETA."
+          ]
+        },
+        "overall_score": 79,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 8.8,
+        "robustness_rating": 8.0,
+        "justification": "Slightly lower overall score than the first option but offers strong robustness through a rolling‑horizon approach that adapts to evolving conditions.",
+        "full_resolution": {
+          "resolution_id": "algo_2",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Rolling‑horizon delay‑propagation minimisation",
+          "actions": [
+            "Create a rolling‑horizon MILP that includes IC 1539’s current arrival time, its planned downstream events, and any already‑scheduled trains that could be impacted.",
+            "Define the objective as the weighted sum of all arrival/departure deviations, giving a high weight to IC 1539 because of its high severity (0.95).",
+            "Allow adjustments of dwell times, optional speed‑up (within line‑speed limits), and minor re‑ordering of later trains if they exist.",
+            "Run the optimisation for the next 30‑minute horizon, implement the first‑step decisions (e.g., reduced dwell, earlier departure), and repeat the process as new data arrive.",
+            "Update passenger information systems with the revised ETA."
+          ],
+          "expected_outcome": "Overall timetable deviation is reduced; IC 1539 recovers most of its delay while preventing any cascade to later services.",
+          "reasoning": "The delay‑propagation algorithm is designed to minimise total timetable deviation after a disruption. Even though only one train is currently affected, the method ensures that any future ripple effects are limited, aligning with the conflict’s ‘schedule_deviation’ type.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.88,
+          "overall_fitness": 0.833,
+          "estimated_delay_min": 4.0,
+          "affected_trains": [
+            "IC_1539"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_2",
+            "strategy_name": "Rolling‑horizon delay‑propagation minimisation",
+            "action_steps": [
+              "Create a rolling‑horizon MILP that includes IC 1539’s current arrival time, its planned downstream events, and any already‑scheduled trains that could be impacted.",
+              "Define the objective as the weighted sum of all arrival/departure deviations, giving a high weight to IC 1539 because of its high severity (0.95).",
+              "Allow adjustments of dwell times, optional speed‑up (within line‑speed limits), and minor re‑ordering of later trains if they exist.",
+              "Run the optimisation for the next 30‑minute horizon, implement the first‑step decisions (e.g., reduced dwell, earlier departure), and repeat the process as new data arrive.",
+              "Update passenger information systems with the revised ETA."
+            ],
+            "expected_outcome": "Overall timetable deviation is reduced; IC 1539 recovers most of its delay while preventing any cascade to later services.",
+            "reasoning": "The delay‑propagation algorithm is designed to minimise total timetable deviation after a disruption. Even though only one train is currently affected, the method ensures that any future ripple effects are limited, aligning with the conflict’s ‘schedule_deviation’ type.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: Delay propagation – MILP minimising total deviation (ID 6e9bd5a8‑91ff‑5527‑bbed‑04bd63ac42ec)"
+            ],
+            "confidence_score": 0.833,
+            "algorithm_name": "Delay propagation – MILP minimising total deviation (ID 6e9bd5a8‑91ff‑5527‑bbed‑04bd63ac42ec)",
+            "algorithm_reasoning": "The delay‑propagation algorithm is designed to minimise total timetable deviation after a disruption. Even though only one train is currently affected, the method ensures that any future ripple effects are limited, aligning with the conflict’s ‘schedule_deviation’ type.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539"
+            ],
+            "estimated_delay_reduction_sec": 240,
+            "side_effects": [],
+            "feasibility_score": 0.88,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      },
+      {
+        "rank": 3,
+        "resolution_number": 3,
+        "resolution_id": "Hybrid_MILP_platform_switchover",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Run the MILP safety‑headway model for IC 1539 at Milano Centrale using the current 5.1 min arrival delay.",
+            "If the MILP solution yields a departure that still leaves >2 min of delay, query the real‑time platform‑availability matrix for an alternative platform that is free for the next 10 minutes (historical case: 2012 SNCF Paris‑Lyon used a similar platform‑swap to gain 2‑3 min).",
+            "Re‑assign IC 1539 to the alternative platform and recompute the MILP with the new platform‑specific dwell‑time limits (shorter dwell is allowed on the less‑congested platform).",
+            "Trim the dwell time on the chosen platform to the minimum safe value (e.g., from 2 min to 1 min 30 s) after confirming that no other train is scheduled to occupy the same track.",
+            "Issue the revised departure order to the train crew and automatically update the signalling system to respect the new headway.",
+            "Broadcast the revised ETA to downstream stations and passenger information systems (apps, displays, announcements).",
+            "Log the platform change and dwell‑time adjustment for post‑event analysis."
+          ]
+        },
+        "overall_score": 77,
+        "safety_rating": 7.5,
+        "efficiency_rating": 7.5,
+        "feasibility_rating": 8.8,
+        "robustness_rating": 6.5,
+        "justification": "Combines MILP optimisation with a proven platform‑swap tactic, achieving good delay recovery while remaining feasible, though passenger‑impact risks lower robustness.",
+        "full_resolution": {
+          "resolution_id": "hybrid_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Hybrid MILP‑Driven Platform Switchover & Dwell Optimisation",
+          "actions": [
+            "1. Run the MILP safety‑headway model for IC 1539 at Milano Centrale using the current 5.1 min arrival delay.",
+            "2. If the MILP solution yields a departure that still leaves >2 min of delay, query the real‑time platform‑availability matrix for an alternative platform that is free for the next 10 minutes (historical case: 2012 SNCF Paris‑Lyon used a similar platform‑swap to gain 2‑3 min).",
+            "3. Re‑assign IC 1539 to the alternative platform and recompute the MILP with the new platform‑specific dwell‑time limits (shorter dwell is allowed on the less‑congested platform).",
+            "4. Trim the dwell time on the chosen platform to the minimum safe value (e.g., from 2 min to 1 min 30 s) after confirming that no other train is scheduled to occupy the same track.",
+            "5. Issue the revised departure order to the train crew and automatically update the signalling system to respect the new headway.",
+            "6. Broadcast the revised ETA to downstream stations and passenger information systems (apps, displays, announcements).",
+            "7. Log the platform change and dwell‑time adjustment for post‑event analysis."
+          ],
+          "expected_outcome": "Recover approximately 4 minutes of the 5.1‑minute delay, keep headways safe, and prevent any downstream ripple effects while using only existing infrastructure.",
+          "reasoning": "The MILP provides a mathematically optimal departure time under safety constraints, while the historical platform‑swap technique demonstrates that a short‑term platform change can create additional slack without extra track work. Combining both yields a practical, low‑complexity fix that respects safety and leverages proven operational practice.",
+          "safety_score": 0.75,
+          "efficiency_score": 0.75,
+          "feasibility_score": 0.88,
+          "overall_fitness": 0.8280000000000001,
+          "estimated_delay_min": 4.0,
+          "affected_trains": [
+            "IC_1539"
+          ],
+          "side_effects": [
+            "Potential passenger confusion due to platform change; requires clear announcements.",
+            "Minor disturbance to the schedule of any train originally planned for the alternative platform.",
+            "Additional coordination effort for crew and dispatch."
+          ],
+          "algorithm_type": "hybrid",
+          "raw_data": {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Hybrid MILP‑Driven Platform Switchover & Dwell Optimisation",
+            "action_steps": [
+              "1. Run the MILP safety‑headway model for IC 1539 at Milano Centrale using the current 5.1 min arrival delay.",
+              "2. If the MILP solution yields a departure that still leaves >2 min of delay, query the real‑time platform‑availability matrix for an alternative platform that is free for the next 10 minutes (historical case: 2012 SNCF Paris‑Lyon used a similar platform‑swap to gain 2‑3 min).",
+              "3. Re‑assign IC 1539 to the alternative platform and recompute the MILP with the new platform‑specific dwell‑time limits (shorter dwell is allowed on the less‑congested platform).",
+              "4. Trim the dwell time on the chosen platform to the minimum safe value (e.g., from 2 min to 1 min 30 s) after confirming that no other train is scheduled to occupy the same track.",
+              "5. Issue the revised departure order to the train crew and automatically update the signalling system to respect the new headway.",
+              "6. Broadcast the revised ETA to downstream stations and passenger information systems (apps, displays, announcements).",
+              "7. Log the platform change and dwell‑time adjustment for post‑event analysis."
+            ],
+            "expected_outcome": "Recover approximately 4 minutes of the 5.1‑minute delay, keep headways safe, and prevent any downstream ripple effects while using only existing infrastructure.",
+            "reasoning": "The MILP provides a mathematically optimal departure time under safety constraints, while the historical platform‑swap technique demonstrates that a short‑term platform change can create additional slack without extra track work. Combining both yields a practical, low‑complexity fix that respects safety and leverages proven operational practice.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.8280000000000001,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539"
+            ],
+            "estimated_delay_reduction_sec": 240,
+            "side_effects": [
+              "Potential passenger confusion due to platform change; requires clear announcements.",
+              "Minor disturbance to the schedule of any train originally planned for the alternative platform.",
+              "Additional coordination effort for crew and dispatch."
+            ],
+            "feasibility_score": 0.88,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        }
+      }
+    ],
+    "raw_llm_response": "{\n  \"ranked_resolutions\": [\n    {\n      \"rank\": 1,\n      \"resolution_number\": 1,\n      \"resolution_id\": \"MILP_safety_headway_rescheduling\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Formulate a small‑scale MILP model containing the arrival and departure events of IC 1539 at Milano Centrale and the next downstream station.\",\n          \"Add linear constraints for the minimum safety interval (headway) required between IC 1539 and any following train (if any) and for minimum dwell‑time at the platform.\",\n          \"Set the objective to minimise the deviation of IC 1539’s departure time from the original schedule while respecting the headway constraints.\",\n          \"Solve the MILP in real‑time and, if a feasible earlier departure is found, issue a revised departure order to the train crew and update the traffic‑control system.\",\n          \"If the solution still leaves a residual delay, communicate the updated expected arrival time to downstream stations.\"\n        ]\n      },\n      \"overall_score\": 80,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 9.3,\n      \"robustness_rating\": 7.5,\n      \"justification\": \"Provides the highest weighted score by balancing strong safety and feasibility while delivering the greatest delay reduction with minimal side effects.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"MILP_safety_headway_rescheduling\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"MILP safety‑headway rescheduling\",\n        \"actions\": [\n          \"Formulate a small‑scale MILP model containing the arrival and departure events of IC 1539 at Milano Centrale and the next downstream station.\",\n          \"Add linear constraints for the minimum safety interval (headway) required between IC 1539 and any following train (if any) and for minimum dwell‑time at the platform.\",\n          \"Set the objective to minimise the deviation of IC 1539’s departure time from the original schedule while respecting the headway constraints.\",\n          \"Solve the MILP in real‑time and, if a feasible earlier departure is found, issue a revised departure order to the train crew and update the traffic‑control system.\",\n          \"If the solution still leaves a residual delay, communicate the updated expected arrival time to downstream stations.\"\n        ],\n        \"expected_outcome\": \"IC 1539 departs Milano Centrale as early as safety constraints allow, reducing the 5.1 min delay and preserving safe separation from any following services.\",\n        \"reasoning\": \"The conflict is a schedule deviation at a single station. The safety‑interval algorithm explicitly models minimum headways as linear constraints and optimises departure times, making it directly applicable to recover lost time while guaranteeing safety.\",\n        \"safety_score\": 0.800,\n        \"efficiency_score\": 0.700,\n        \"feasibility_score\": 0.930,\n        \"overall_fitness\": 0.863,\n        \"estimated_delay_min\": 3.0,\n        \"affected_trains\": [\"IC_1539\"],\n        \"side_effects\": \"None\",\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 2,\n      \"resolution_number\": 2,\n      \"resolution_id\": \"Rolling_horizon_delay_propagation\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Create a rolling‑horizon MILP that includes IC 1539’s current arrival time, its planned downstream events, and any already‑scheduled trains that could be impacted.\",\n          \"Define the objective as the weighted sum of all arrival/departure deviations, giving a high weight to IC 1539 because of its high severity (0.95).\",\n          \"Allow adjustments of dwell times, optional speed‑up (within line‑speed limits), and minor re‑ordering of later trains if they exist.\",\n          \"Run the optimisation for the next 30‑minute horizon, implement the first‑step decisions (e.g., reduced dwell, earlier departure), and repeat the process as new data arrive.\",\n          \"Update passenger information systems with the revised ETA.\"\n        ]\n      },\n      \"overall_score\": 79,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 8.8,\n      \"robustness_rating\": 8.0,\n      \"justification\": \"Slightly lower overall score than the first option but offers strong robustness through a rolling‑horizon approach that adapts to evolving conditions.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"Rolling_horizon_delay_propagation\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Rolling‑horizon delay‑propagation minimisation\",\n        \"actions\": [\n          \"Create a rolling‑horizon MILP that includes IC 1539’s current arrival time, its planned downstream events, and any already‑scheduled trains that could be impacted.\",\n          \"Define the objective as the weighted sum of all arrival/departure deviations, giving a high weight to IC 1539 because of its high severity (0.95).\",\n          \"Allow adjustments of dwell times, optional speed‑up (within line‑speed limits), and minor re‑ordering of later trains if they exist.\",\n          \"Run the optimisation for the next 30‑minute horizon, implement the first‑step decisions (e.g., reduced dwell, earlier departure), and repeat the process as new data arrive.\",\n          \"Update passenger information systems with the revised ETA.\"\n        ],\n        \"expected_outcome\": \"Overall timetable deviation is reduced; IC 1539 recovers most of its delay while preventing any cascade to later services.\",\n        \"reasoning\": \"The delay‑propagation algorithm is designed to minimise total timetable deviation after a disruption. Even though only one train is currently affected, the method ensures that any future ripple effects are limited, aligning with the conflict’s ‘schedule_deviation’ type.\",\n        \"safety_score\": 0.800,\n        \"efficiency_score\": 0.700,\n        \"feasibility_score\": 0.880,\n        \"overall_fitness\": 0.833,\n        \"estimated_delay_min\": 4.0,\n        \"affected_trains\": [\"IC_1539\"],\n        \"side_effects\": \"None\",\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 3,\n      \"resolution_number\": 3,\n      \"resolution_id\": \"Hybrid_MILP_platform_switchover\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Run the MILP safety‑headway model for IC 1539 at Milano Centrale using the current 5.1 min arrival delay.\",\n          \"If the MILP solution yields a departure that still leaves >2 min of delay, query the real‑time platform‑availability matrix for an alternative platform that is free for the next 10 minutes (historical case: 2012 SNCF Paris‑Lyon used a similar platform‑swap to gain 2‑3 min).\",\n          \"Re‑assign IC 1539 to the alternative platform and recompute the MILP with the new platform‑specific dwell‑time limits (shorter dwell is allowed on the less‑congested platform).\",\n          \"Trim the dwell time on the chosen platform to the minimum safe value (e.g., from 2 min to 1 min 30 s) after confirming that no other train is scheduled to occupy the same track.\",\n          \"Issue the revised departure order to the train crew and automatically update the signalling system to respect the new headway.\",\n          \"Broadcast the revised ETA to downstream stations and passenger information systems (apps, displays, announcements).\",\n          \"Log the platform change and dwell‑time adjustment for post‑event analysis.\"\n        ]\n      },\n      \"overall_score\": 77,\n      \"safety_rating\": 7.5,\n      \"efficiency_rating\": 7.5,\n      \"feasibility_rating\": 8.8,\n      \"robustness_rating\": 6.5,\n      \"justification\": \"Combines MILP optimisation with a proven platform‑swap tactic, achieving good delay recovery while remaining feasible, though passenger‑impact risks lower robustness.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"Hybrid_MILP_platform_switchover\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Hybrid MILP‑Driven Platform Switchover & Dwell Optimisation\",\n        \"actions\": [\n          \"Run the MILP safety‑headway model for IC 1539 at Milano Centrale using the current 5.1 min arrival delay.\",\n          \"If the MILP solution yields a departure that still leaves >2 min of delay, query the real‑time platform‑availability matrix for an alternative platform that is free for the next 10 minutes (historical case: 2012 SNCF Paris‑Lyon used a similar platform‑swap to gain 2‑3 min).\",\n          \"Re‑assign IC 1539 to the alternative platform and recompute the MILP with the new platform‑specific dwell‑time limits (shorter dwell is allowed on the less‑congested platform).\",\n          \"Trim the dwell time on the chosen platform to the minimum safe value (e.g., from 2 min to 1 min 30 s) after confirming that no other train is scheduled to occupy the same track.\",\n          \"Issue the revised departure order to the train crew and automatically update the signalling system to respect the new headway.\",\n          \"Broadcast the revised ETA to downstream stations and passenger information systems (apps, displays, announcements).\",\n          \"Log the platform change and dwell‑time adjustment for post‑event analysis.\"\n        ],\n        \"expected_outcome\": \"Recover approximately 4 minutes of the 5.1‑minute delay, keep headways safe, and prevent any downstream ripple effects while using only existing infrastructure.\",\n        \"reasoning\": \"The MILP provides a mathematically optimal departure time under safety constraints, while the historical platform‑swap technique demonstrates that a short‑term platform change can create additional slack without extra track work. Combining both yields a practical, low‑complexity fix that respects safety and leverages proven operational practice.\",\n        \"safety_score\": 0.750,\n        \"efficiency_score\": 0.750,\n        \"feasibility_score\": 0.880,\n        \"overall_fitness\": 0.828,\n        \"estimated_delay_min\": 4.0,\n        \"affected_trains\": [\"IC_1539\"],\n        \"side_effects\": \"Potential passenger confusion due to platform change; requires clear announcements., Minor disturbance to the schedule of any train originally planned for the alternative platform., Additional coordination effort for crew and dispatch.\",\n        \"algorithm_type\": \"hybrid\",\n        \"raw_data\": null\n      }\n    }\n  ]\n}",
+    "error": null
+  }
+}

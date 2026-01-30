@@ -1,3 +1,142 @@
+
+
+# =============================================================================
+# Imports (ensure FastAPI, CORSMiddleware, typing, etc. are available before use)
+# =============================================================================
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from typing import Optional, List, Dict, Any
+import sys
+import os
+import asyncio
+import time
+import traceback
+from pathlib import Path
+from datetime import datetime
+import json
+from concurrent.futures import ThreadPoolExecutor
+
+# Add paths
+BASE_DIR = Path(__file__).resolve().parent.parent  # backend folder
+PROJECT_ROOT = BASE_DIR.parent  # rail-mind folder
+RESOLUTION_AGENT_DIR = PROJECT_ROOT / "agents" / "resolution-agent"
+sys.path.insert(0, str(RESOLUTION_AGENT_DIR))
+DETECTION_AGENT_DIR = PROJECT_ROOT / "agents" / "detection-agent"
+sys.path.insert(0, str(DETECTION_AGENT_DIR / "prediction_confilt"))
+sys.path.insert(0, str(DETECTION_AGENT_DIR / "deterministic-detection"))
+sys.path.insert(0, str(BASE_DIR / "integration"))
+
+# =============================================================================
+# App Setup
+# =============================================================================
+app = FastAPI(
+    title="Rail-Mind Unified API",
+    description="Combines ML prediction with deterministic detection for railway conflict management",
+    version="2.0.0"
+)
+
+# CORS for frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Global engine instance
+engine: Optional["IntegrationEngine"] = None
+
+# =============================================================================
+# Feedback Endpoint: Store feedback and chosen resolution in Qdrant
+# =============================================================================
+
+@app.post("/api/feedback")
+async def submit_feedback(request: Request) -> dict:
+    """
+    Store user feedback and chosen resolution in Qdrant collection 'rail_incidents'.
+    Request body should include:
+    {
+        "conflict_id": str,
+        "resolution_id": str,
+        "feedback": str,
+        "user_id": str (optional),
+        ... (any other fields)
+    }
+    """
+    try:
+        data = await request.json()
+        conflict_id = data.get("conflict_id")
+        resolution_id = data.get("resolution_id")
+        feedback = data.get("feedback", "")
+        user_id = data.get("user_id", "anonymous")
+        timestamp = datetime.now().isoformat()
+
+        # Prepare Qdrant payload
+        payload = {
+            "conflict_id": conflict_id,
+            "resolution_id": resolution_id,
+            "feedback": feedback,
+            "user_id": user_id,
+            "timestamp": timestamp,
+        }
+
+        # Optionally add all other fields
+        for k, v in data.items():
+            if k not in payload:
+                payload[k] = v
+
+        # Store in Qdrant
+        try:
+            from qdrant_client import QdrantClient
+            import uuid
+            # Use a simple text embedding for feedback+resolution
+            from sentence_transformers import SentenceTransformer
+            model = SentenceTransformer("all-MiniLM-L6-v2")
+            text_to_embed = f"{conflict_id} {resolution_id} {feedback}"
+            embedding = model.encode(text_to_embed).tolist()
+
+            qdrant_url = "https://cf323744-546a-492d-b614-8542cb3ce423.us-east-1-1.aws.cloud.qdrant.io"
+            qdrant_api_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.fI89vclTejMkRnUs-MbAmV-O4PwoQcYE1DO_fN6l7LM"
+            client = QdrantClient(url=qdrant_url, api_key=qdrant_api_key)
+
+            collection_name = "rail_incidents"
+            # Ensure collection exists
+            try:
+                client.get_collection(collection_name)
+            except:
+                client.create_collection(
+                    collection_name=collection_name,
+                    vectors_config={"size": len(embedding), "distance": "Cosine"},
+                )
+
+            client.upsert(
+                collection_name=collection_name,
+                points=[
+                    {
+                        "id": int(uuid.uuid4().int % (2**32)),
+                        "vector": embedding,
+                        "payload": payload,
+                    }
+                ]
+            )
+            print(f"[API] ✅ Feedback stored in Qdrant: {collection_name}")
+        except Exception as e:
+            print(f"[API] ⚠️ Qdrant feedback storage failed: {e}")
+
+        # Optionally, also store to local file for audit
+        feedback_dir = OUTCOMES_DIR / "feedback"
+        feedback_dir.mkdir(exist_ok=True)
+        feedback_file = feedback_dir / f"feedback_{conflict_id}_{timestamp.replace(':', '-')}.json"
+        with open(feedback_file, "w", encoding="utf-8") as f:
+            json.dump(payload, f, indent=2)
+
+        return {"success": True, "message": "Feedback stored successfully"}
+    except Exception as e:
+        print(f"[API] ❌ Failed to store feedback: {e}")
+        return {"success": False, "message": f"Failed to store feedback: {e}"}
 """
 Unified FastAPI Server
 ======================
@@ -862,94 +1001,6 @@ class OutcomeRequest(BaseModel):
     comparison_results: dict
     final_kpis: dict
     timestamp: str
-
-
-
-@app.post("/api/feedback")
-async def submit_feedback(request: Request) -> dict:
-    """
-    Store user feedback and chosen resolution in Qdrant collection 'rail_incidents'.
-    Request body should include:
-    {
-        "conflict_id": str,
-        "resolution_id": str,
-        "feedback": str,
-        "user_id": str (optional),
-        ... (any other fields)
-    }
-    """
-    try:
-        data = await request.json()
-        conflict_id = data.get("conflict_id")
-        resolution_id = data.get("resolution_id")
-        feedback = data.get("feedback", "")
-        user_id = data.get("user_id", "anonymous")
-        timestamp = datetime.now().isoformat()
-
-        # Prepare Qdrant payload
-        payload = {
-            "conflict_id": conflict_id,
-            "resolution_id": resolution_id,
-            "feedback": feedback,
-            "user_id": user_id,
-            "timestamp": timestamp,
-        }
-
-        # Optionally add all other fields
-        for k, v in data.items():
-            if k not in payload:
-                payload[k] = v
-
-        # Store in Qdrant
-        try:
-            from qdrant_client import QdrantClient
-            import uuid
-            # Use a simple text embedding for feedback+resolution
-            from sentence_transformers import SentenceTransformer
-            model = SentenceTransformer("all-MiniLM-L6-v2")
-            text_to_embed = f"{conflict_id} {resolution_id} {feedback}"
-            embedding = model.encode(text_to_embed).tolist()
-
-            qdrant_url = "https://cf323744-546a-492d-b614-8542cb3ce423.us-east-1-1.aws.cloud.qdrant.io"
-            qdrant_api_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.fI89vclTejMkRnUs-MbAmV-O4PwoQcYE1DO_fN6l7LM"
-            client = QdrantClient(url=qdrant_url, api_key=qdrant_api_key)
-
-            collection_name = "rail_incidents"
-            # Ensure collection exists
-            try:
-                client.get_collection(collection_name)
-            except:
-                client.create_collection(
-                    collection_name=collection_name,
-                    vectors_config={"size": len(embedding), "distance": "Cosine"},
-                )
-
-            client.upsert(
-                collection_name=collection_name,
-                points=[
-                    {
-                        "id": int(uuid.uuid4().int % (2**32)),
-                        "vector": embedding,
-                        "payload": payload,
-                    }
-                ]
-            )
-            print(f"[API] ✅ Feedback stored in Qdrant: {collection_name}")
-        except Exception as e:
-            print(f"[API] ⚠️ Qdrant feedback storage failed: {e}")
-
-        # Optionally, also store to local file for audit
-        feedback_dir = OUTCOMES_DIR / "feedback"
-        feedback_dir.mkdir(exist_ok=True)
-        feedback_file = feedback_dir / f"feedback_{conflict_id}_{timestamp.replace(':', '-')}.json"
-        with open(feedback_file, "w", encoding="utf-8") as f:
-            json.dump(payload, f, indent=2)
-
-        return {"success": True, "message": "Feedback stored successfully"}
-    except Exception as e:
-        print(f"[API] ❌ Failed to store feedback: {e}")
-        return {"success": False, "message": f"Failed to store feedback: {e}"}
-
 
 
 @app.post("/api/outcomes/store")

@@ -1,0 +1,405 @@
+{
+  "status": "ok",
+  "conflict_id": "PRED_FR_9752_10_5",
+  "started_at": "2026-01-29T20:36:59.659056+00:00",
+  "finished_at": "2026-01-29T20:38:32.041916+00:00",
+  "total_execution_ms": 92382,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 81299,
+      "raw_result": {
+        "conflict_id": "PRED_FR_9752_10_5",
+        "conflict_summary": "",
+        "timestamp": "2026-01-29T21:38:20.944492",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [
+          {
+            "resolution_id": "algo_1",
+            "strategy_name": "Priority‑based platform allocation (FCFS with express override)",
+            "action_steps": [
+              "1. Check the arrival order of FR_9752 at Brescia and any other pending arrivals (if any).",
+              "2. Apply First‑Come‑First‑Served ordering, but give a priority boost to FR_9752 if it is classified as an express/fast‑regional service.",
+              "3. If the platform is currently occupied, hold FR_9752 at the preceding signal until the platform becomes free.",
+              "4. Once the platform is released, assign FR_9752 the platform immediately and enforce a reduced dwell time (e.g., 2 min instead of the standard 4 min) to free the resource quickly.",
+              "5. Monitor the platform occupancy; if the conflict persists beyond 5 minutes, trigger the platform‑rotation schedule (swap platform usage with a nearby platform if infrastructure permits)."
+            ],
+            "expected_outcome": "FR_9752 regains access to a platform with minimal additional waiting, preventing the soft block from propagating and keeping downstream schedules intact.",
+            "reasoning": "The conflict is a classic platform‑congestion case. Algorithm *platform_congestion_resolution_1* directly addresses such situations with FCFS ordering, priority overrides for important services, upstream holding, and dwell‑time reduction – all suited to a single‑train soft‑block scenario.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: platform_congestion_resolution_1"
+            ],
+            "confidence_score": 0.857,
+            "algorithm_name": "platform_congestion_resolution_1",
+            "algorithm_reasoning": "The conflict is a classic platform‑congestion case. Algorithm *platform_congestion_resolution_1* directly addresses such situations with FCFS ordering, priority overrides for important services, upstream holding, and dwell‑time reduction – all suited to a single‑train soft‑block scenario.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_9752"
+            ],
+            "estimated_delay_reduction_sec": 180,
+            "side_effects": [],
+            "feasibility_score": 0.92,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "algo_2",
+            "strategy_name": "Redirect to alternative platform & upstream hold",
+            "action_steps": [
+              "1. Query Brescia station layout for any free auxiliary platforms (e.g., platforms 2 or 4).",
+              "2. If an alternative platform is available, issue a routing order for FR_9752 to use that platform instead of the congested primary platform.",
+              "3. If no alternative platform is free, command the signal before Brescia to hold FR_9752 for a calculated holding time (≈ 5 min) to allow the occupied platform to clear.",
+              "4. Simultaneously, instruct the train currently occupying the primary platform to reduce its dwell time by 30‑40 % (subject to safety limits).",
+              "5. Update the dispatch system with the new platform assignment and revised departure time."
+            ],
+            "expected_outcome": "By moving FR_9752 to a free platform or holding it upstream, the platform conflict is eliminated, and the train can continue with only a short, controlled delay.",
+            "reasoning": "The synthetic Milano‑Centrale example demonstrates the same pattern: give priority to the high‑speed train, redirect others, and hold the remainder. The same logic applies at Brescia, even though the station is smaller; the steps are directly transferable.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: synthetic_platform_milano_centrale"
+            ],
+            "confidence_score": 0.833,
+            "algorithm_name": "synthetic_platform_milano_centrale",
+            "algorithm_reasoning": "The synthetic Milano‑Centrale example demonstrates the same pattern: give priority to the high‑speed train, redirect others, and hold the remainder. The same logic applies at Brescia, even though the station is smaller; the steps are directly transferable.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_9752"
+            ],
+            "estimated_delay_reduction_sec": 200,
+            "side_effects": [],
+            "feasibility_score": 0.88,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Dynamic Platform Switchover with Predictive Holding & Dwell Compression",
+            "action_steps": [
+              "1. Query the real‑time layout of Brescia station for any free auxiliary platform (e.g., platform 2) and the current occupancy timeline of the primary platform.",
+              "2. Using the historical success of rapid crew‑to‑crew hand‑over (as seen in the 2018 Milan‑Brescia peak‑hour case), dispatch a pre‑positioned crew to the auxiliary platform to prepare for an immediate arrival of FR‑9752.",
+              "3. If an auxiliary platform is free, issue a temporary routing order that redirects FR‑9752 to that platform, overriding the default FCFS rule but preserving the express‑override priority from the algorithmic strategy.",
+              "4. Simultaneously, run a short‑term predictive holding calculation (5‑minute horizon) for the train currently occupying the primary platform, instructing it to reduce its dwell time by 30 % within safety limits and to prepare for an early departure.",
+              "5. If no auxiliary platform is free, apply the algorithmic upstream hold: hold FR‑9752 at the signal before Brescia for the exact time needed for the primary platform to clear (estimated 4 minutes), then release it with a reduced dwell time of 2 minutes.",
+              "6. Update the dispatch system and passenger information displays with the new platform assignment and revised departure time, and log the deviation for post‑event analysis."
+            ],
+            "expected_outcome": "FR‑9752 regains its schedule with minimal additional delay, while the platform bottleneck is cleared through a combination of platform switchover and dwell‑time compression, mirroring the rapid‑crew coordination that resolved similar past conflicts.",
+            "reasoning": "The hybrid merges the algorithmic priority‑based allocation and dwell‑time reduction with the historical crew‑coordination tactic that proved effective in past Italian regional conflicts. By adding a predictive hold based on real‑time platform occupancy, the solution anticipates the exact release window, avoiding unnecessary waiting and preserving service reliability.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.8220000000000001,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_9752"
+            ],
+            "estimated_delay_reduction_sec": 210,
+            "side_effects": [
+              "Possible slight increase in dwell time for the train currently on the primary platform",
+              "Passenger inconvenience due to platform change announcement",
+              "Requires availability of an auxiliary platform and crew on standby"
+            ],
+            "feasibility_score": 0.87,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        ],
+        "layer1_count": 3,
+        "layer2_refinements": {
+          "historical_cases_found": 10,
+          "algorithm_resolutions": 3,
+          "hybrid_resolutions_generated": 2,
+          "total_candidates_evaluated": 5,
+          "historical_success_rates": {
+            "total_cases": 10,
+            "average_similarity": 0.19456458299999999,
+            "outcome_distribution": {
+              "resolved": 3,
+              "unknown": 7
+            }
+          }
+        },
+        "generation_time_sec": 9.152346
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 3
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 1399,
+      "raw_result": {
+        "solver_used": "nsga2",
+        "overall_fitness": 0.7299276125675406,
+        "total_delay_min": 3.9776,
+        "passenger_impact": 1193.28,
+        "propagation_depth": 1,
+        "recovery_smoothness": 1.0,
+        "actions": [
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "FR_9752",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: PRED_FR_9752_10_5\nType: platform_conflict\nSeverity: 0.75\nAffected trains: FR_9752\nAffected stations: BRESCIA\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using nsga2):\n  1. SPEED_ADJUST - Train FR_9752\n      speed_factor: 1.12\n\nExpected Outcomes:\n  - Total delay: 4.0 minutes\n  - Passenger impact: 1193 passenger-minutes\n  - Propagation depth: 1 trains\n  - Recovery smoothness: 1.00\n  - Overall fitness: 0.730"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "ok",
+    "execution_ms": 11058,
+    "ranked_resolutions": [
+      {
+        "rank": 1,
+        "resolution_number": 1,
+        "resolution_id": "priority_based_platform_allocation",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Check the arrival order of FR_9752 at Brescia and any other pending arrivals (if any).",
+            "Apply First‑Come‑First‑Served ordering, but give a priority boost to FR_9752 if it is classified as an express/fast‑regional service.",
+            "If the platform is currently occupied, hold FR_9752 at the preceding signal until the platform becomes free.",
+            "Once the platform is released, assign FR_9752 the platform immediately and enforce a reduced dwell time (e.g., 2 min instead of the standard 4 min) to free the resource quickly.",
+            "Monitor the platform occupancy; if the conflict persists beyond 5 minutes, trigger the platform‑rotation schedule (swap platform usage with a nearby platform if infrastructure permits)."
+          ]
+        },
+        "overall_score": 80,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 9.2,
+        "robustness_rating": 8.0,
+        "justification": "The solution prioritizes FR_9752 while keeping platform usage simple and safe, and the reduced dwell time quickly frees the resource. Its high feasibility and robustness yield the best overall score.",
+        "full_resolution": {
+          "resolution_id": "algo_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Priority‑based platform allocation (FCFS with express override)",
+          "actions": [
+            "1. Check the arrival order of FR_9752 at Brescia and any other pending arrivals (if any).",
+            "2. Apply First‑Come‑First‑Served ordering, but give a priority boost to FR_9752 if it is classified as an express/fast‑regional service.",
+            "3. If the platform is currently occupied, hold FR_9752 at the preceding signal until the platform becomes free.",
+            "4. Once the platform is released, assign FR_9752 the platform immediately and enforce a reduced dwell time (e.g., 2 min instead of the standard 4 min) to free the resource quickly.",
+            "5. Monitor the platform occupancy; if the conflict persists beyond 5 minutes, trigger the platform‑rotation schedule (swap platform usage with a nearby platform if infrastructure permits)."
+          ],
+          "expected_outcome": "FR_9752 regains access to a platform with minimal additional waiting, preventing the soft block from propagating and keeping downstream schedules intact.",
+          "reasoning": "The conflict is a classic platform‑congestion case. Algorithm *platform_congestion_resolution_1* directly addresses such situations with FCFS ordering, priority overrides for important services, upstream holding, and dwell‑time reduction – all suited to a single‑train soft‑block scenario.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.92,
+          "overall_fitness": 0.857,
+          "estimated_delay_min": 3.0,
+          "affected_trains": [
+            "FR_9752"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_1",
+            "strategy_name": "Priority‑based platform allocation (FCFS with express override)",
+            "action_steps": [
+              "1. Check the arrival order of FR_9752 at Brescia and any other pending arrivals (if any).",
+              "2. Apply First‑Come‑First‑Served ordering, but give a priority boost to FR_9752 if it is classified as an express/fast‑regional service.",
+              "3. If the platform is currently occupied, hold FR_9752 at the preceding signal until the platform becomes free.",
+              "4. Once the platform is released, assign FR_9752 the platform immediately and enforce a reduced dwell time (e.g., 2 min instead of the standard 4 min) to free the resource quickly.",
+              "5. Monitor the platform occupancy; if the conflict persists beyond 5 minutes, trigger the platform‑rotation schedule (swap platform usage with a nearby platform if infrastructure permits)."
+            ],
+            "expected_outcome": "FR_9752 regains access to a platform with minimal additional waiting, preventing the soft block from propagating and keeping downstream schedules intact.",
+            "reasoning": "The conflict is a classic platform‑congestion case. Algorithm *platform_congestion_resolution_1* directly addresses such situations with FCFS ordering, priority overrides for important services, upstream holding, and dwell‑time reduction – all suited to a single‑train soft‑block scenario.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: platform_congestion_resolution_1"
+            ],
+            "confidence_score": 0.857,
+            "algorithm_name": "platform_congestion_resolution_1",
+            "algorithm_reasoning": "The conflict is a classic platform‑congestion case. Algorithm *platform_congestion_resolution_1* directly addresses such situations with FCFS ordering, priority overrides for important services, upstream holding, and dwell‑time reduction – all suited to a single‑train soft‑block scenario.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_9752"
+            ],
+            "estimated_delay_reduction_sec": 180,
+            "side_effects": [],
+            "feasibility_score": 0.92,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      },
+      {
+        "rank": 2,
+        "resolution_number": 2,
+        "resolution_id": "redirect_alternative_platform_upstream_hold",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Query Brescia station layout for any free auxiliary platforms (e.g., platforms 2 or 4).",
+            "If an alternative platform is available, issue a routing order for FR_9752 to use that platform instead of the congested primary platform.",
+            "If no alternative platform is free, command the signal before Brescia to hold FR_9752 for a calculated holding time (≈ 5 min) to allow the occupied platform to clear.",
+            "Simultaneously, instruct the train currently occupying the primary platform to reduce its dwell time by 30‑40 % (subject to safety limits).",
+            "Update the dispatch system with the new platform assignment and revised departure time."
+          ]
+        },
+        "overall_score": 78,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 8.8,
+        "robustness_rating": 7.0,
+        "justification": "Redirecting to an auxiliary platform or holding upstream gives FR_9752 priority with minimal complexity, though it depends on platform availability. Safety and feasibility remain strong, placing it second.",
+        "full_resolution": {
+          "resolution_id": "algo_2",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Redirect to alternative platform & upstream hold",
+          "actions": [
+            "1. Query Brescia station layout for any free auxiliary platforms (e.g., platforms 2 or 4).",
+            "2. If an alternative platform is available, issue a routing order for FR_9752 to use that platform instead of the congested primary platform.",
+            "3. If no alternative platform is free, command the signal before Brescia to hold FR_9752 for a calculated holding time (≈ 5 min) to allow the occupied platform to clear.",
+            "4. Simultaneously, instruct the train currently occupying the primary platform to reduce its dwell time by 30‑40 % (subject to safety limits).",
+            "5. Update the dispatch system with the new platform assignment and revised departure time."
+          ],
+          "expected_outcome": "By moving FR_9752 to a free platform or holding it upstream, the platform conflict is eliminated, and the train can continue with only a short, controlled delay.",
+          "reasoning": "The synthetic Milano‑Centrale example demonstrates the same pattern: give priority to the high‑speed train, redirect others, and hold the remainder. The same logic applies at Brescia, even though the station is smaller; the steps are directly transferable.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.88,
+          "overall_fitness": 0.833,
+          "estimated_delay_min": 3.3333333333333335,
+          "affected_trains": [
+            "FR_9752"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_2",
+            "strategy_name": "Redirect to alternative platform & upstream hold",
+            "action_steps": [
+              "1. Query Brescia station layout for any free auxiliary platforms (e.g., platforms 2 or 4).",
+              "2. If an alternative platform is available, issue a routing order for FR_9752 to use that platform instead of the congested primary platform.",
+              "3. If no alternative platform is free, command the signal before Brescia to hold FR_9752 for a calculated holding time (≈ 5 min) to allow the occupied platform to clear.",
+              "4. Simultaneously, instruct the train currently occupying the primary platform to reduce its dwell time by 30‑40 % (subject to safety limits).",
+              "5. Update the dispatch system with the new platform assignment and revised departure time."
+            ],
+            "expected_outcome": "By moving FR_9752 to a free platform or holding it upstream, the platform conflict is eliminated, and the train can continue with only a short, controlled delay.",
+            "reasoning": "The synthetic Milano‑Centrale example demonstrates the same pattern: give priority to the high‑speed train, redirect others, and hold the remainder. The same logic applies at Brescia, even though the station is smaller; the steps are directly transferable.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: synthetic_platform_milano_centrale"
+            ],
+            "confidence_score": 0.833,
+            "algorithm_name": "synthetic_platform_milano_centrale",
+            "algorithm_reasoning": "The synthetic Milano‑Centrale example demonstrates the same pattern: give priority to the high‑speed train, redirect others, and hold the remainder. The same logic applies at Brescia, even though the station is smaller; the steps are directly transferable.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_9752"
+            ],
+            "estimated_delay_reduction_sec": 200,
+            "side_effects": [],
+            "feasibility_score": 0.88,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      },
+      {
+        "rank": 3,
+        "resolution_number": 3,
+        "resolution_id": "dynamic_platform_switchover_predictive_holding",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Query the real‑time layout of Brescia station for any free auxiliary platform (e.g., platform 2) and the current occupancy timeline of the primary platform.",
+            "Using the historical success of rapid crew‑to‑crew hand‑over (as seen in the 2018 Milan‑Brescia peak‑hour case), dispatch a pre‑positioned crew to the auxiliary platform to prepare for an immediate arrival of FR‑9752.",
+            "If an auxiliary platform is free, issue a temporary routing order that redirects FR‑9752 to that platform, overriding the default FCFS rule but preserving the express‑override priority from the algorithmic strategy.",
+            "Simultaneously, run a short‑term predictive holding calculation (5‑minute horizon) for the train currently occupying the primary platform, instructing it to reduce its dwell time by 30 % within safety limits and to prepare for an early departure.",
+            "If no auxiliary platform is free, apply the algorithmic upstream hold: hold FR‑9752 at the signal before Brescia for the exact time needed for the primary platform to clear (estimated 4 minutes), then release it with a reduced dwell time of 2 minutes.",
+            "Update the dispatch system and passenger information displays with the new platform assignment and revised departure time, and log the deviation for post‑event analysis."
+          ]
+        },
+        "overall_score": 77,
+        "safety_rating": 7.5,
+        "efficiency_rating": 7.5,
+        "feasibility_rating": 8.7,
+        "robustness_rating": 6.5,
+        "justification": "Combining predictive holding with crew‑prepositioned switchover offers flexibility but adds operational complexity and passenger inconvenience. It still scores well on safety and efficiency, ranking third.",
+        "full_resolution": {
+          "resolution_id": "hybrid_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Dynamic Platform Switchover with Predictive Holding & Dwell Compression",
+          "actions": [
+            "1. Query the real‑time layout of Brescia station for any free auxiliary platform (e.g., platform 2) and the current occupancy timeline of the primary platform.",
+            "2. Using the historical success of rapid crew‑to‑crew hand‑over (as seen in the 2018 Milan‑Brescia peak‑hour case), dispatch a pre‑positioned crew to the auxiliary platform to prepare for an immediate arrival of FR‑9752.",
+            "3. If an auxiliary platform is free, issue a temporary routing order that redirects FR‑9752 to that platform, overriding the default FCFS rule but preserving the express‑override priority from the algorithmic strategy.",
+            "4. Simultaneously, run a short‑term predictive holding calculation (5‑minute horizon) for the train currently occupying the primary platform, instructing it to reduce its dwell time by 30 % within safety limits and to prepare for an early departure.",
+            "5. If no auxiliary platform is free, apply the algorithmic upstream hold: hold FR‑9752 at the signal before Brescia for the exact time needed for the primary platform to clear (estimated 4 minutes), then release it with a reduced dwell time of 2 minutes.",
+            "6. Update the dispatch system and passenger information displays with the new platform assignment and revised departure time, and log the deviation for post‑event analysis."
+          ],
+          "expected_outcome": "FR‑9752 regains its schedule with minimal additional delay, while the platform bottleneck is cleared through a combination of platform switchover and dwell‑time compression, mirroring the rapid‑crew coordination that resolved similar past conflicts.",
+          "reasoning": "The hybrid merges the algorithmic priority‑based allocation and dwell‑time reduction with the historical crew‑coordination tactic that proved effective in past Italian regional conflicts. By adding a predictive hold based on real‑time platform occupancy, the solution anticipates the exact release window, avoiding unnecessary waiting and preserving service reliability.",
+          "safety_score": 0.75,
+          "efficiency_score": 0.75,
+          "feasibility_score": 0.87,
+          "overall_fitness": 0.8220000000000001,
+          "estimated_delay_min": 3.5,
+          "affected_trains": [
+            "FR_9752"
+          ],
+          "side_effects": [
+            "Possible slight increase in dwell time for the train currently on the primary platform",
+            "Passenger inconvenience due to platform change announcement",
+            "Requires availability of an auxiliary platform and crew on standby"
+          ],
+          "algorithm_type": "hybrid",
+          "raw_data": {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Dynamic Platform Switchover with Predictive Holding & Dwell Compression",
+            "action_steps": [
+              "1. Query the real‑time layout of Brescia station for any free auxiliary platform (e.g., platform 2) and the current occupancy timeline of the primary platform.",
+              "2. Using the historical success of rapid crew‑to‑crew hand‑over (as seen in the 2018 Milan‑Brescia peak‑hour case), dispatch a pre‑positioned crew to the auxiliary platform to prepare for an immediate arrival of FR‑9752.",
+              "3. If an auxiliary platform is free, issue a temporary routing order that redirects FR‑9752 to that platform, overriding the default FCFS rule but preserving the express‑override priority from the algorithmic strategy.",
+              "4. Simultaneously, run a short‑term predictive holding calculation (5‑minute horizon) for the train currently occupying the primary platform, instructing it to reduce its dwell time by 30 % within safety limits and to prepare for an early departure.",
+              "5. If no auxiliary platform is free, apply the algorithmic upstream hold: hold FR‑9752 at the signal before Brescia for the exact time needed for the primary platform to clear (estimated 4 minutes), then release it with a reduced dwell time of 2 minutes.",
+              "6. Update the dispatch system and passenger information displays with the new platform assignment and revised departure time, and log the deviation for post‑event analysis."
+            ],
+            "expected_outcome": "FR‑9752 regains its schedule with minimal additional delay, while the platform bottleneck is cleared through a combination of platform switchover and dwell‑time compression, mirroring the rapid‑crew coordination that resolved similar past conflicts.",
+            "reasoning": "The hybrid merges the algorithmic priority‑based allocation and dwell‑time reduction with the historical crew‑coordination tactic that proved effective in past Italian regional conflicts. By adding a predictive hold based on real‑time platform occupancy, the solution anticipates the exact release window, avoiding unnecessary waiting and preserving service reliability.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.8220000000000001,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_9752"
+            ],
+            "estimated_delay_reduction_sec": 210,
+            "side_effects": [
+              "Possible slight increase in dwell time for the train currently on the primary platform",
+              "Passenger inconvenience due to platform change announcement",
+              "Requires availability of an auxiliary platform and crew on standby"
+            ],
+            "feasibility_score": 0.87,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        }
+      }
+    ],
+    "raw_llm_response": "{\n  \"ranked_resolutions\": [\n    {\n      \"rank\": 1,\n      \"resolution_number\": 1,\n      \"resolution_id\": \"priority_based_platform_allocation\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Check the arrival order of FR_9752 at Brescia and any other pending arrivals (if any).\",\n          \"Apply First‑Come‑First‑Served ordering, but give a priority boost to FR_9752 if it is classified as an express/fast‑regional service.\",\n          \"If the platform is currently occupied, hold FR_9752 at the preceding signal until the platform becomes free.\",\n          \"Once the platform is released, assign FR_9752 the platform immediately and enforce a reduced dwell time (e.g., 2 min instead of the standard 4 min) to free the resource quickly.\",\n          \"Monitor the platform occupancy; if the conflict persists beyond 5 minutes, trigger the platform‑rotation schedule (swap platform usage with a nearby platform if infrastructure permits).\"\n        ]\n      },\n      \"overall_score\": 80,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 9.2,\n      \"robustness_rating\": 8.0,\n      \"justification\": \"The solution prioritizes FR_9752 while keeping platform usage simple and safe, and the reduced dwell time quickly frees the resource. Its high feasibility and robustness yield the best overall score.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"priority_based_platform_allocation\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"FCFS with express override\",\n        \"actions\": [\n          \"Check the arrival order of FR_9752 at Brescia and any other pending arrivals (if any).\",\n          \"Apply First‑Come‑First‑Served ordering, but give a priority boost to FR_9752 if it is classified as an express/fast‑regional service.\",\n          \"If the platform is currently occupied, hold FR_9752 at the preceding signal until the platform becomes free.\",\n          \"Once the platform is released, assign FR_9752 the platform immediately and enforce a reduced dwell time (e.g., 2 min instead of the standard 4 min) to free the resource quickly.\",\n          \"Monitor the platform occupancy; if the conflict persists beyond 5 minutes, trigger the platform‑rotation schedule (swap platform usage with a nearby platform if infrastructure permits).\"\n        ],\n        \"expected_outcome\": \"FR_9752 regains access to a platform with minimal additional waiting, preventing the soft block from propagating and keeping downstream schedules intact.\",\n        \"reasoning\": \"The conflict is a classic platform‑congestion case. Algorithm platform_congestion_resolution_1 directly addresses such situations with FCFS ordering, priority overrides for important services, upstream holding, and dwell‑time reduction – all suited to a single‑train soft‑block scenario.\",\n        \"safety_score\": 0.800,\n        \"efficiency_score\": 0.700,\n        \"feasibility_score\": 0.920,\n        \"overall_fitness\": 0.857,\n        \"estimated_delay_min\": 3.0,\n        \"affected_trains\": [\"FR_9752\"],\n        \"side_effects\": \"None\",\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 2,\n      \"resolution_number\": 2,\n      \"resolution_id\": \"redirect_alternative_platform_upstream_hold\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Query Brescia station layout for any free auxiliary platforms (e.g., platforms 2 or 4).\",\n          \"If an alternative platform is available, issue a routing order for FR_9752 to use that platform instead of the congested primary platform.\",\n          \"If no alternative platform is free, command the signal before Brescia to hold FR_9752 for a calculated holding time (≈ 5 min) to allow the occupied platform to clear.\",\n          \"Simultaneously, instruct the train currently occupying the primary platform to reduce its dwell time by 30‑40 % (subject to safety limits).\",\n          \"Update the dispatch system with the new platform assignment and revised departure time.\"\n        ]\n      },\n      \"overall_score\": 78,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 8.8,\n      \"robustness_rating\": 7.0,\n      \"justification\": \"Redirecting to an auxiliary platform or holding upstream gives FR_9752 priority with minimal complexity, though it depends on platform availability. Safety and feasibility remain strong, placing it second.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"redirect_alternative_platform_upstream_hold\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Redirect to alternative platform & upstream hold\",\n        \"actions\": [\n          \"Query Brescia station layout for any free auxiliary platforms (e.g., platforms 2 or 4).\",\n          \"If an alternative platform is available, issue a routing order for FR_9752 to use that platform instead of the congested primary platform.\",\n          \"If no alternative platform is free, command the signal before Brescia to hold FR_9752 for a calculated holding time (≈ 5 min) to allow the occupied platform to clear.\",\n          \"Simultaneously, instruct the train currently occupying the primary platform to reduce its dwell time by 30‑40 % (subject to safety limits).\",\n          \"Update the dispatch system with the new platform assignment and revised departure time.\"\n        ],\n        \"expected_outcome\": \"By moving FR_9752 to a free platform or holding it upstream, the platform conflict is eliminated, and the train can continue with only a short, controlled delay.\",\n        \"reasoning\": \"The synthetic Milano‑Centrale example demonstrates the same pattern: give priority to the high‑speed train, redirect others, and hold the remainder. The same logic applies at Brescia, even though the station is smaller; the steps are directly transferable.\",\n        \"safety_score\": 0.800,\n        \"efficiency_score\": 0.700,\n        \"feasibility_score\": 0.880,\n        \"overall_fitness\": 0.833,\n        \"estimated_delay_min\": 3.3,\n        \"affected_trains\": [\"FR_9752\"],\n        \"side_effects\": \"None\",\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 3,\n      \"resolution_number\": 3,\n      \"resolution_id\": \"dynamic_platform_switchover_predictive_holding\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Query the real‑time layout of Brescia station for any free auxiliary platform (e.g., platform 2) and the current occupancy timeline of the primary platform.\",\n          \"Using the historical success of rapid crew‑to‑crew hand‑over (as seen in the 2018 Milan‑Brescia peak‑hour case), dispatch a pre‑positioned crew to the auxiliary platform to prepare for an immediate arrival of FR‑9752.\",\n          \"If an auxiliary platform is free, issue a temporary routing order that redirects FR‑9752 to that platform, overriding the default FCFS rule but preserving the express‑override priority from the algorithmic strategy.\",\n          \"Simultaneously, run a short‑term predictive holding calculation (5‑minute horizon) for the train currently occupying the primary platform, instructing it to reduce its dwell time by 30 % within safety limits and to prepare for an early departure.\",\n          \"If no auxiliary platform is free, apply the algorithmic upstream hold: hold FR‑9752 at the signal before Brescia for the exact time needed for the primary platform to clear (estimated 4 minutes), then release it with a reduced dwell time of 2 minutes.\",\n          \"Update the dispatch system and passenger information displays with the new platform assignment and revised departure time, and log the deviation for post‑event analysis.\"\n        ]\n      },\n      \"overall_score\": 77,\n      \"safety_rating\": 7.5,\n      \"efficiency_rating\": 7.5,\n      \"feasibility_rating\": 8.7,\n      \"robustness_rating\": 6.5,\n      \"justification\": \"Combining predictive holding with crew‑prepositioned switchover offers flexibility but adds operational complexity and passenger inconvenience. It still scores well on safety and efficiency, ranking third.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"dynamic_platform_switchover_predictive_holding\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Dynamic Platform Switchover with Predictive Holding & Dwell Compression\",\n        \"actions\": [\n          \"Query the real‑time layout of Brescia station for any free auxiliary platform (e.g., platform 2) and the current occupancy timeline of the primary platform.\",\n          \"Using the historical success of rapid crew‑to‑crew hand‑over (as seen in the 2018 Milan‑Brescia peak‑hour case), dispatch a pre‑positioned crew to the auxiliary platform to prepare for an immediate arrival of FR‑9752.\",\n          \"If an auxiliary platform is free, issue a temporary routing order that redirects FR‑9752 to that platform, overriding the default FCFS rule but preserving the express‑override priority from the algorithmic strategy.\",\n          \"Simultaneously, run a short‑term predictive holding calculation (5‑minute horizon) for the train currently occupying the primary platform, instructing it to reduce its dwell time by 30 % within safety limits and to prepare for an early departure.\",\n          \"If no auxiliary platform is free, apply the algorithmic upstream hold: hold FR‑9752 at the signal before Brescia for the exact time needed for the primary platform to clear (estimated 4 minutes), then release it with a reduced dwell time of 2 minutes.\",\n          \"Update the dispatch system and passenger information displays with the new platform assignment and revised departure time, and log the deviation for post‑event analysis.\"\n        ],\n        \"expected_outcome\": \"FR_9752 regains its schedule with minimal additional delay, while the platform bottleneck is cleared through a combination of platform switchover and dwell‑time compression, mirroring the rapid‑crew coordination that resolved similar past conflicts.\",\n        \"reasoning\": \"The hybrid merges the algorithmic priority‑based allocation and dwell‑time reduction with the historical crew‑coordination tactic that proved effective in past Italian regional conflicts. By adding a predictive hold based on real‑time platform occupancy, the solution anticipates the exact release window, avoiding unnecessary waiting and preserving service reliability.\",\n        \"safety_score\": 0.750,\n        \"efficiency_score\": 0.750,\n        \"feasibility_score\": 0.870,\n        \"overall_fitness\": 0.822,\n        \"estimated_delay_min\": 3.5,\n        \"affected_trains\": [\"FR_9752\"],\n        \"side_effects\": \"Possible slight increase in dwell time for the train currently on the primary platform, Passenger inconvenience due to platform change announcement, Requires availability of an auxiliary platform and crew on standby\",\n        \"algorithm_type\": \"hybrid\",\n        \"raw_data\": null\n      }\n    }\n  ]\n}",
+    "error": null
+  }
+}

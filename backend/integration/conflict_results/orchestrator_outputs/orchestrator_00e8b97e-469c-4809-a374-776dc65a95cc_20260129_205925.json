@@ -1,0 +1,448 @@
+{
+  "status": "ok",
+  "conflict_id": "00e8b97e-469c-4809-a374-776dc65a95cc",
+  "started_at": "2026-01-29T20:58:53.692287+00:00",
+  "finished_at": "2026-01-29T20:59:25.942907+00:00",
+  "total_execution_ms": 32250,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 21860,
+      "raw_result": {
+        "conflict_id": "00e8b97e-469c-4809-a374-776dc65a95cc",
+        "conflict_summary": "",
+        "timestamp": "2026-01-29T21:59:15.548057",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [
+          {
+            "resolution_id": "algo_1",
+            "strategy_name": "Immediate Gate Control & Slot Allocation",
+            "action_steps": [
+              "1. Issue an emergency stop command to all inbound movements toward the Milano Centrale platform segment for the four trains (REG_2816, FR_9703, REG_25512, FR_9717).",
+              "2. Allow any train already occupying the segment to complete its movement and clear the block.",
+              "3. Activate the entry gate (signal) for the segment in a closed state until the occupancy count falls below the capacity limit (2 trains).",
+              "4. Generate a time‑based slot schedule for the next accesses, spacing slots by at least the minimum headway required for safe occupancy (e.g., 8 min).",
+              "5. Communicate the new slots to the train drivers/ETCS and update the dispatch system.",
+              "6. Adjust upstream departure times of the affected services in the next planning horizon to avoid re‑creating the overflow."
+            ],
+            "expected_outcome": "The segment will never host more than its safe capacity, eliminating the collision risk and restoring normal flow after the current trains have cleared.",
+            "reasoning": "The conflict is an edge‑capacity overflow on the Milano Centrale platform track. Algorithm *edge_overflow_resolution_1* directly addresses this situation with gate control, clearing, and slot‑based access, which matches the required safety actions.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: edge_overflow_resolution_1"
+            ],
+            "confidence_score": 0.875,
+            "algorithm_name": "edge_overflow_resolution_1",
+            "algorithm_reasoning": "The conflict is an edge‑capacity overflow on the Milano Centrale platform track. Algorithm *edge_overflow_resolution_1* directly addresses this situation with gate control, clearing, and slot‑based access, which matches the required safety actions.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_2816",
+              "FR_9703",
+              "REG_25512",
+              "FR_9717"
+            ],
+            "estimated_delay_reduction_sec": 300,
+            "side_effects": [],
+            "feasibility_score": 0.95,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "algo_3",
+            "strategy_name": "Platform‑Track Optimization via MILP Coupling",
+            "action_steps": [
+              "1. Run a short‑term MILP model (rolling‑horizon) that includes the current occupancy of the Milano Centrale platform tracks and the four pending trains.",
+              "2. Allow compatible regional trains (e.g., REG_2816 and REG_25512) to be coupled on a single platform track, effectively doubling the usable capacity.",
+              "3. Assign FR_9703 and FR_9717 to separate high‑speed tracks that are already reserved for fast services.",
+              "4. Generate adjusted arrival/departure times that stagger the releases by the minimum safe headway, ensuring no more than two train units occupy the same track simultaneously.",
+              "5. Communicate the coupling plan and revised timings to train crews and update the dispatch system.",
+              "6. Monitor the platform occupancy; if the coupling is not feasible (e.g., due to equipment incompatibility), fall back to the slot‑allocation steps from resolution 1."
+            ],
+            "expected_outcome": "By coupling compatible regional services, the effective platform capacity is increased, allowing all four trains to be handled without additional delays beyond the minimal staggering required.",
+            "reasoning": "The conflict occurs on a station platform track, which is a classic resource‑capacity problem. Algorithm *24eeed11* provides a MILP‑based method to optimise platform assignments and use train coupling to raise capacity, directly applicable to Milano Centrale.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: 24eeed11"
+            ],
+            "confidence_score": 0.845,
+            "algorithm_name": "24eeed11",
+            "algorithm_reasoning": "The conflict occurs on a station platform track, which is a classic resource‑capacity problem. Algorithm *24eeed11* provides a MILP‑based method to optimise platform assignments and use train coupling to raise capacity, directly applicable to Milano Centrale.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_2816",
+              "FR_9703",
+              "REG_25512",
+              "FR_9717"
+            ],
+            "estimated_delay_reduction_sec": 240,
+            "side_effects": [],
+            "feasibility_score": 0.9,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Dynamic Platform Reassignment + Real‑time Slot Buffer (Hybrid Coupling‑Gate)",
+            "action_steps": [
+              "1. Activate the edge‑capacity gate for the Milano Centrale platform segment and set it to CLOSED.",
+              "2. Immediately query the real‑time occupancy database (ETCS Level 2) to identify which of the four trains, if any, is already inside the segment; allow that train to complete its movement.",
+              "3. Pull the historical‑case practice of “temporary platform reallocation”: re‑assign one of the adjacent non‑primary tracks (normally used for freight) as a provisional passenger platform for the next 30 minutes, installing a temporary signage update via the station control centre.",
+              "4. Run the MILP‑based coupling model (from Algorithm 3) on the remaining two regional trains (REG_2816, REG_25512) to determine if they can be physically coupled and dispatched as a single unit on the reassigned track, thereby freeing a slot on the primary platform.",
+              "5. Generate a time‑based slot schedule (Algorithm 1) for the two high‑speed services (FR_9703, FR_9717) on the original high‑speed tracks, spacing them by the minimum safe head‑way (≈8 min).",
+              "6. Communicate the new platform assignment, coupling plan, and slot times to drivers, crew, and the passenger information system (PIS).",
+              "7. Monitor occupancy; once the coupled regional unit departs, release the gate and revert the temporary platform to its original freight use.",
+              "8. Log the event and feed the outcome back into the predictive dispatch engine to refine future hybrid decisions."
+            ],
+            "expected_outcome": "All four trains clear the overloaded segment without exceeding the two‑train capacity, while preserving high‑speed service punctuality and minimizing regional train delays.",
+            "reasoning": "The hybrid merges the proven gate‑control and slot‑allocation logic (Algorithm 1) with the historical success of temporary platform reallocation used in past Milan congestion events. Adding the MILP coupling step (Algorithm 3) further compresses capacity needs, turning a 4‑train overflow into a manageable 3‑train occupancy. This layered approach leverages real‑time data, historical operational flexibility, and optimization models for a robust, low‑delay solution.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.8160000000000001,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_2816",
+              "FR_9703",
+              "REG_25512",
+              "FR_9717"
+            ],
+            "estimated_delay_reduction_sec": 420,
+            "side_effects": [
+              "Temporary reassignment of a freight track may delay scheduled freight movements.",
+              "Coupling two regional units requires compatible rolling stock and crew coordination, adding operational complexity.",
+              "Passenger wayfinding changes could cause short‑term confusion until signage updates propagate."
+            ],
+            "feasibility_score": 0.86,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        ],
+        "layer1_count": 3,
+        "layer2_refinements": {
+          "historical_cases_found": 10,
+          "algorithm_resolutions": 3,
+          "hybrid_resolutions_generated": 2,
+          "total_candidates_evaluated": 5,
+          "historical_success_rates": {
+            "total_cases": 10,
+            "average_similarity": 0.1470589084,
+            "outcome_distribution": {
+              "resolved": 9,
+              "unknown": 1
+            }
+          }
+        },
+        "generation_time_sec": 7.935484
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 3
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 1605,
+      "raw_result": {
+        "solver_used": "greedy",
+        "overall_fitness": 1.0,
+        "total_delay_min": 0,
+        "passenger_impact": 0,
+        "propagation_depth": 0,
+        "recovery_smoothness": 1.0,
+        "actions": [
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "REG_2816",
+            "parameters": {
+              "speed_factor": 1.0
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: 00e8b97e-469c-4809-a374-776dc65a95cc\nType: edge_capacity_overflow\nSeverity: 0.70\nAffected trains: REG_2816, FR_9703, REG_25512, FR_9717\nAffected stations: MILANO CENTRALE--MILANO CENTRALE\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using greedy):\n  1. SPEED_ADJUST - Train REG_2816\n      speed_factor: 1.00\n\nExpected Outcomes:\n  - Total delay: 0.0 minutes\n  - Passenger impact: 0 passenger-minutes\n  - Propagation depth: 0 trains\n  - Recovery smoothness: 1.00\n  - Overall fitness: 1.000"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "ok",
+    "execution_ms": 10364,
+    "ranked_resolutions": [
+      {
+        "rank": 1,
+        "resolution_number": 1,
+        "resolution_id": "R1",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Issue an emergency stop command to all inbound movements toward the Milano Centrale platform segment for the four trains (REG_2816, FR_9703, REG_25512, FR_9717).",
+            "Allow any train already occupying the segment to complete its movement and clear the block.",
+            "Activate the entry gate (signal) for the segment in a closed state until the occupancy count falls below the capacity limit (2 trains).",
+            "Generate a time‑based slot schedule for the next accesses, spacing slots by at least the minimum headway required for safe occupancy (e.g., 8 min).",
+            "Communicate the new slots to the train drivers/ETCS and update the dispatch system.",
+            "Adjust upstream departure times of the affected services in the next planning horizon to avoid re‑creating the overflow."
+          ]
+        },
+        "overall_score": 82,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 9.5,
+        "robustness_rating": 8.5,
+        "justification": "The gate‑control and slot allocation directly eliminate the capacity breach with minimal operational disruption, scoring highest on safety and feasibility. Its simplicity also gives it strong robustness against unforeseen variations.",
+        "full_resolution": {
+          "resolution_id": "algo_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Immediate Gate Control & Slot Allocation",
+          "actions": [
+            "1. Issue an emergency stop command to all inbound movements toward the Milano Centrale platform segment for the four trains (REG_2816, FR_9703, REG_25512, FR_9717).",
+            "2. Allow any train already occupying the segment to complete its movement and clear the block.",
+            "3. Activate the entry gate (signal) for the segment in a closed state until the occupancy count falls below the capacity limit (2 trains).",
+            "4. Generate a time‑based slot schedule for the next accesses, spacing slots by at least the minimum headway required for safe occupancy (e.g., 8 min).",
+            "5. Communicate the new slots to the train drivers/ETCS and update the dispatch system.",
+            "6. Adjust upstream departure times of the affected services in the next planning horizon to avoid re‑creating the overflow."
+          ],
+          "expected_outcome": "The segment will never host more than its safe capacity, eliminating the collision risk and restoring normal flow after the current trains have cleared.",
+          "reasoning": "The conflict is an edge‑capacity overflow on the Milano Centrale platform track. Algorithm *edge_overflow_resolution_1* directly addresses this situation with gate control, clearing, and slot‑based access, which matches the required safety actions.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.95,
+          "overall_fitness": 0.875,
+          "estimated_delay_min": 5.0,
+          "affected_trains": [
+            "REG_2816",
+            "FR_9703",
+            "REG_25512",
+            "FR_9717"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_1",
+            "strategy_name": "Immediate Gate Control & Slot Allocation",
+            "action_steps": [
+              "1. Issue an emergency stop command to all inbound movements toward the Milano Centrale platform segment for the four trains (REG_2816, FR_9703, REG_25512, FR_9717).",
+              "2. Allow any train already occupying the segment to complete its movement and clear the block.",
+              "3. Activate the entry gate (signal) for the segment in a closed state until the occupancy count falls below the capacity limit (2 trains).",
+              "4. Generate a time‑based slot schedule for the next accesses, spacing slots by at least the minimum headway required for safe occupancy (e.g., 8 min).",
+              "5. Communicate the new slots to the train drivers/ETCS and update the dispatch system.",
+              "6. Adjust upstream departure times of the affected services in the next planning horizon to avoid re‑creating the overflow."
+            ],
+            "expected_outcome": "The segment will never host more than its safe capacity, eliminating the collision risk and restoring normal flow after the current trains have cleared.",
+            "reasoning": "The conflict is an edge‑capacity overflow on the Milano Centrale platform track. Algorithm *edge_overflow_resolution_1* directly addresses this situation with gate control, clearing, and slot‑based access, which matches the required safety actions.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: edge_overflow_resolution_1"
+            ],
+            "confidence_score": 0.875,
+            "algorithm_name": "edge_overflow_resolution_1",
+            "algorithm_reasoning": "The conflict is an edge‑capacity overflow on the Milano Centrale platform track. Algorithm *edge_overflow_resolution_1* directly addresses this situation with gate control, clearing, and slot‑based access, which matches the required safety actions.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_2816",
+              "FR_9703",
+              "REG_25512",
+              "FR_9717"
+            ],
+            "estimated_delay_reduction_sec": 300,
+            "side_effects": [],
+            "feasibility_score": 0.95,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      },
+      {
+        "rank": 2,
+        "resolution_number": 2,
+        "resolution_id": "R2",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Run a short‑term MILP model (rolling‑horizon) that includes the current occupancy of the Milano Centrale platform tracks and the four pending trains.",
+            "Allow compatible regional trains (e.g., REG_2816 and REG_25512) to be coupled on a single platform track, effectively doubling the usable capacity.",
+            "Assign FR_9703 and FR_9717 to separate high‑speed tracks that are already reserved for fast services.",
+            "Generate adjusted arrival/departure times that stagger the releases by the minimum safe headway, ensuring no more than two train units occupy the same track simultaneously.",
+            "Communicate the coupling plan and revised timings to train crews and update the dispatch system.",
+            "Monitor the platform occupancy; if the coupling is not feasible (e.g., due to equipment incompatibility), fall back to the slot‑allocation steps from resolution 1."
+          ]
+        },
+        "overall_score": 79,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 9.0,
+        "robustness_rating": 7.5,
+        "justification": "Coupling regional services raises effective capacity while keeping the plan within existing infrastructure, yielding strong safety and feasibility scores. The fallback to the simpler slot‑allocation ensures reasonable robustness.",
+        "full_resolution": {
+          "resolution_id": "algo_3",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Platform‑Track Optimization via MILP Coupling",
+          "actions": [
+            "1. Run a short‑term MILP model (rolling‑horizon) that includes the current occupancy of the Milano Centrale platform tracks and the four pending trains.",
+            "2. Allow compatible regional trains (e.g., REG_2816 and REG_25512) to be coupled on a single platform track, effectively doubling the usable capacity.",
+            "3. Assign FR_9703 and FR_9717 to separate high‑speed tracks that are already reserved for fast services.",
+            "4. Generate adjusted arrival/departure times that stagger the releases by the minimum safe headway, ensuring no more than two train units occupy the same track simultaneously.",
+            "5. Communicate the coupling plan and revised timings to train crews and update the dispatch system.",
+            "6. Monitor the platform occupancy; if the coupling is not feasible (e.g., due to equipment incompatibility), fall back to the slot‑allocation steps from resolution 1."
+          ],
+          "expected_outcome": "By coupling compatible regional services, the effective platform capacity is increased, allowing all four trains to be handled without additional delays beyond the minimal staggering required.",
+          "reasoning": "The conflict occurs on a station platform track, which is a classic resource‑capacity problem. Algorithm *24eeed11* provides a MILP‑based method to optimise platform assignments and use train coupling to raise capacity, directly applicable to Milano Centrale.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.9,
+          "overall_fitness": 0.845,
+          "estimated_delay_min": 4.0,
+          "affected_trains": [
+            "REG_2816",
+            "FR_9703",
+            "REG_25512",
+            "FR_9717"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_3",
+            "strategy_name": "Platform‑Track Optimization via MILP Coupling",
+            "action_steps": [
+              "1. Run a short‑term MILP model (rolling‑horizon) that includes the current occupancy of the Milano Centrale platform tracks and the four pending trains.",
+              "2. Allow compatible regional trains (e.g., REG_2816 and REG_25512) to be coupled on a single platform track, effectively doubling the usable capacity.",
+              "3. Assign FR_9703 and FR_9717 to separate high‑speed tracks that are already reserved for fast services.",
+              "4. Generate adjusted arrival/departure times that stagger the releases by the minimum safe headway, ensuring no more than two train units occupy the same track simultaneously.",
+              "5. Communicate the coupling plan and revised timings to train crews and update the dispatch system.",
+              "6. Monitor the platform occupancy; if the coupling is not feasible (e.g., due to equipment incompatibility), fall back to the slot‑allocation steps from resolution 1."
+            ],
+            "expected_outcome": "By coupling compatible regional services, the effective platform capacity is increased, allowing all four trains to be handled without additional delays beyond the minimal staggering required.",
+            "reasoning": "The conflict occurs on a station platform track, which is a classic resource‑capacity problem. Algorithm *24eeed11* provides a MILP‑based method to optimise platform assignments and use train coupling to raise capacity, directly applicable to Milano Centrale.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: 24eeed11"
+            ],
+            "confidence_score": 0.845,
+            "algorithm_name": "24eeed11",
+            "algorithm_reasoning": "The conflict occurs on a station platform track, which is a classic resource‑capacity problem. Algorithm *24eeed11* provides a MILP‑based method to optimise platform assignments and use train coupling to raise capacity, directly applicable to Milano Centrale.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_2816",
+              "FR_9703",
+              "REG_25512",
+              "FR_9717"
+            ],
+            "estimated_delay_reduction_sec": 240,
+            "side_effects": [],
+            "feasibility_score": 0.9,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      },
+      {
+        "rank": 3,
+        "resolution_number": 3,
+        "resolution_id": "R3",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Activate the edge‑capacity gate for the Milano Centrale platform segment and set it to CLOSED.",
+            "Immediately query the real‑time occupancy database (ETCS Level 2) to identify which of the four trains, if any, is already inside the segment; allow that train to complete its movement.",
+            "Pull the historical‑case practice of “temporary platform reallocation”: re‑assign one of the adjacent non‑primary tracks (normally used for freight) as a provisional passenger platform for the next 30 minutes, installing a temporary signage update via the station control centre.",
+            "Run the MILP‑based coupling model (from Algorithm 3) on the remaining two regional trains (REG_2816, REG_25512) to determine if they can be physically coupled and dispatched as a single unit on the reassigned track, thereby freeing a slot on the primary platform.",
+            "Generate a time‑based slot schedule (Algorithm 1) for the two high‑speed services (FR_9703, FR_9717) on the original high‑speed tracks, spacing them by the minimum safe head‑way (≈8 min).",
+            "Communicate the new platform assignment, coupling plan, and slot times to drivers, crew, and the passenger information system (PIS).",
+            "Monitor occupancy; once the coupled regional unit departs, release the gate and revert the temporary platform to its original freight use.",
+            "Log the event and feed the outcome back into the predictive dispatch engine to refine future hybrid decisions."
+          ]
+        },
+        "overall_score": 76,
+        "safety_rating": 7.5,
+        "efficiency_rating": 7.5,
+        "feasibility_rating": 8.6,
+        "robustness_rating": 6.5,
+        "justification": "The hybrid approach combines gate control, temporary platform use, and MILP coupling, achieving good safety and efficiency while staying feasible. However, the added operational complexity and side‑effects lower its robustness relative to simpler solutions.",
+        "full_resolution": {
+          "resolution_id": "hybrid_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Dynamic Platform Reassignment + Real‑time Slot Buffer (Hybrid Coupling‑Gate)",
+          "actions": [
+            "1. Activate the edge‑capacity gate for the Milano Centrale platform segment and set it to CLOSED.",
+            "2. Immediately query the real‑time occupancy database (ETCS Level 2) to identify which of the four trains, if any, is already inside the segment; allow that train to complete its movement.",
+            "3. Pull the historical‑case practice of “temporary platform reallocation”: re‑assign one of the adjacent non‑primary tracks (normally used for freight) as a provisional passenger platform for the next 30 minutes, installing a temporary signage update via the station control centre.",
+            "4. Run the MILP‑based coupling model (from Algorithm 3) on the remaining two regional trains (REG_2816, REG_25512) to determine if they can be physically coupled and dispatched as a single unit on the reassigned track, thereby freeing a slot on the primary platform.",
+            "5. Generate a time‑based slot schedule (Algorithm 1) for the two high‑speed services (FR_9703, FR_9717) on the original high‑speed tracks, spacing them by the minimum safe head‑way (≈8 min).",
+            "6. Communicate the new platform assignment, coupling plan, and slot times to drivers, crew, and the passenger information system (PIS).",
+            "7. Monitor occupancy; once the coupled regional unit departs, release the gate and revert the temporary platform to its original freight use.",
+            "8. Log the event and feed the outcome back into the predictive dispatch engine to refine future hybrid decisions."
+          ],
+          "expected_outcome": "All four trains clear the overloaded segment without exceeding the two‑train capacity, while preserving high‑speed service punctuality and minimizing regional train delays.",
+          "reasoning": "The hybrid merges the proven gate‑control and slot‑allocation logic (Algorithm 1) with the historical success of temporary platform reallocation used in past Milan congestion events. Adding the MILP coupling step (Algorithm 3) further compresses capacity needs, turning a 4‑train overflow into a manageable 3‑train occupancy. This layered approach leverages real‑time data, historical operational flexibility, and optimization models for a robust, low‑delay solution.",
+          "safety_score": 0.75,
+          "efficiency_score": 0.75,
+          "feasibility_score": 0.86,
+          "overall_fitness": 0.8160000000000001,
+          "estimated_delay_min": 7.0,
+          "affected_trains": [
+            "REG_2816",
+            "FR_9703",
+            "REG_25512",
+            "FR_9717"
+          ],
+          "side_effects": [
+            "Temporary reassignment of a freight track may delay scheduled freight movements.",
+            "Coupling two regional units requires compatible rolling stock and crew coordination, adding operational complexity.",
+            "Passenger wayfinding changes could cause short‑term confusion until signage updates propagate."
+          ],
+          "algorithm_type": "hybrid",
+          "raw_data": {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Dynamic Platform Reassignment + Real‑time Slot Buffer (Hybrid Coupling‑Gate)",
+            "action_steps": [
+              "1. Activate the edge‑capacity gate for the Milano Centrale platform segment and set it to CLOSED.",
+              "2. Immediately query the real‑time occupancy database (ETCS Level 2) to identify which of the four trains, if any, is already inside the segment; allow that train to complete its movement.",
+              "3. Pull the historical‑case practice of “temporary platform reallocation”: re‑assign one of the adjacent non‑primary tracks (normally used for freight) as a provisional passenger platform for the next 30 minutes, installing a temporary signage update via the station control centre.",
+              "4. Run the MILP‑based coupling model (from Algorithm 3) on the remaining two regional trains (REG_2816, REG_25512) to determine if they can be physically coupled and dispatched as a single unit on the reassigned track, thereby freeing a slot on the primary platform.",
+              "5. Generate a time‑based slot schedule (Algorithm 1) for the two high‑speed services (FR_9703, FR_9717) on the original high‑speed tracks, spacing them by the minimum safe head‑way (≈8 min).",
+              "6. Communicate the new platform assignment, coupling plan, and slot times to drivers, crew, and the passenger information system (PIS).",
+              "7. Monitor occupancy; once the coupled regional unit departs, release the gate and revert the temporary platform to its original freight use.",
+              "8. Log the event and feed the outcome back into the predictive dispatch engine to refine future hybrid decisions."
+            ],
+            "expected_outcome": "All four trains clear the overloaded segment without exceeding the two‑train capacity, while preserving high‑speed service punctuality and minimizing regional train delays.",
+            "reasoning": "The hybrid merges the proven gate‑control and slot‑allocation logic (Algorithm 1) with the historical success of temporary platform reallocation used in past Milan congestion events. Adding the MILP coupling step (Algorithm 3) further compresses capacity needs, turning a 4‑train overflow into a manageable 3‑train occupancy. This layered approach leverages real‑time data, historical operational flexibility, and optimization models for a robust, low‑delay solution.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.8160000000000001,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_2816",
+              "FR_9703",
+              "REG_25512",
+              "FR_9717"
+            ],
+            "estimated_delay_reduction_sec": 420,
+            "side_effects": [
+              "Temporary reassignment of a freight track may delay scheduled freight movements.",
+              "Coupling two regional units requires compatible rolling stock and crew coordination, adding operational complexity.",
+              "Passenger wayfinding changes could cause short‑term confusion until signage updates propagate."
+            ],
+            "feasibility_score": 0.86,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        }
+      }
+    ],
+    "raw_llm_response": "{\n  \"ranked_resolutions\": [\n    {\n      \"rank\": 1,\n      \"resolution_number\": 1,\n      \"resolution_id\": \"R1\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Issue an emergency stop command to all inbound movements toward the Milano Centrale platform segment for the four trains (REG_2816, FR_9703, REG_25512, FR_9717).\",\n          \"Allow any train already occupying the segment to complete its movement and clear the block.\",\n          \"Activate the entry gate (signal) for the segment in a closed state until the occupancy count falls below the capacity limit (2 trains).\",\n          \"Generate a time‑based slot schedule for the next accesses, spacing slots by at least the minimum headway required for safe occupancy (e.g., 8 min).\",\n          \"Communicate the new slots to the train drivers/ETCS and update the dispatch system.\",\n          \"Adjust upstream departure times of the affected services in the next planning horizon to avoid re‑creating the overflow.\"\n        ]\n      },\n      \"overall_score\": 82,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 9.5,\n      \"robustness_rating\": 8.5,\n      \"justification\": \"The gate‑control and slot allocation directly eliminate the capacity breach with minimal operational disruption, scoring highest on safety and feasibility. Its simplicity also gives it strong robustness against unforeseen variations.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"R1\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Immediate Gate Control & Slot Allocation\",\n        \"actions\": [\n          \"Issue an emergency stop command to all inbound movements toward the Milano Centrale platform segment for the four trains (REG_2816, FR_9703, REG_25512, FR_9717).\",\n          \"Allow any train already occupying the segment to complete its movement and clear the block.\",\n          \"Activate the entry gate (signal) for the segment in a closed state until the occupancy count falls below the capacity limit (2 trains).\",\n          \"Generate a time‑based slot schedule for the next accesses, spacing slots by at least the minimum headway required for safe occupancy (e.g., 8 min).\",\n          \"Communicate the new slots to the train drivers/ETCS and update the dispatch system.\",\n          \"Adjust upstream departure times of the affected services in the next planning horizon to avoid re‑creating the overflow.\"\n        ],\n        \"expected_outcome\": \"The segment will never host more than its safe capacity, eliminating the collision risk and restoring normal flow after the current trains have cleared.\",\n        \"reasoning\": \"The conflict is an edge‑capacity overflow on the Milano Centrale platform track. Algorithm edge_overflow_resolution_1 directly addresses this situation with gate control, clearing, and slot‑based access, which matches the required safety actions.\",\n        \"safety_score\": 0.8,\n        \"efficiency_score\": 0.7,\n        \"feasibility_score\": 0.95,\n        \"overall_fitness\": 0.875,\n        \"estimated_delay_min\": 5.0,\n        \"affected_trains\": [\"REG_2816\", \"FR_9703\", \"REG_25512\", \"FR_9717\"],\n        \"side_effects\": \"None\",\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 2,\n      \"resolution_number\": 2,\n      \"resolution_id\": \"R2\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Run a short‑term MILP model (rolling‑horizon) that includes the current occupancy of the Milano Centrale platform tracks and the four pending trains.\",\n          \"Allow compatible regional trains (e.g., REG_2816 and REG_25512) to be coupled on a single platform track, effectively doubling the usable capacity.\",\n          \"Assign FR_9703 and FR_9717 to separate high‑speed tracks that are already reserved for fast services.\",\n          \"Generate adjusted arrival/departure times that stagger the releases by the minimum safe headway, ensuring no more than two train units occupy the same track simultaneously.\",\n          \"Communicate the coupling plan and revised timings to train crews and update the dispatch system.\",\n          \"Monitor the platform occupancy; if the coupling is not feasible (e.g., due to equipment incompatibility), fall back to the slot‑allocation steps from resolution 1.\"\n        ]\n      },\n      \"overall_score\": 79,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 9.0,\n      \"robustness_rating\": 7.5,\n      \"justification\": \"Coupling regional services raises effective capacity while keeping the plan within existing infrastructure, yielding strong safety and feasibility scores. The fallback to the simpler slot‑allocation ensures reasonable robustness.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"R2\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Platform‑Track Optimization via MILP Coupling\",\n        \"actions\": [\n          \"Run a short‑term MILP model (rolling‑horizon) that includes the current occupancy of the Milano Centrale platform tracks and the four pending trains.\",\n          \"Allow compatible regional trains (e.g., REG_2816 and REG_25512) to be coupled on a single platform track, effectively doubling the usable capacity.\",\n          \"Assign FR_9703 and FR_9717 to separate high‑speed tracks that are already reserved for fast services.\",\n          \"Generate adjusted arrival/departure times that stagger the releases by the minimum safe headway, ensuring no more than two train units occupy the same track simultaneously.\",\n          \"Communicate the coupling plan and revised timings to train crews and update the dispatch system.\",\n          \"Monitor the platform occupancy; if the coupling is not feasible (e.g., due to equipment incompatibility), fall back to the slot‑allocation steps from resolution 1.\"\n        ],\n        \"expected_outcome\": \"By coupling compatible regional services, the effective platform capacity is increased, allowing all four trains to be handled without additional delays beyond the minimal staggering required.\",\n        \"reasoning\": \"The conflict occurs on a station platform track, which is a classic resource‑capacity problem. Algorithm 24eeed11 provides a MILP‑based method to optimise platform assignments and use train coupling to raise capacity, directly applicable to Milano Centrale.\",\n        \"safety_score\": 0.8,\n        \"efficiency_score\": 0.7,\n        \"feasibility_score\": 0.9,\n        \"overall_fitness\": 0.845,\n        \"estimated_delay_min\": 4.0,\n        \"affected_trains\": [\"REG_2816\", \"FR_9703\", \"REG_25512\", \"FR_9717\"],\n        \"side_effects\": \"None\",\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 3,\n      \"resolution_number\": 3,\n      \"resolution_id\": \"R3\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Activate the edge‑capacity gate for the Milano Centrale platform segment and set it to CLOSED.\",\n          \"Immediately query the real‑time occupancy database (ETCS Level 2) to identify which of the four trains, if any, is already inside the segment; allow that train to complete its movement.\",\n          \"Pull the historical‑case practice of “temporary platform reallocation”: re‑assign one of the adjacent non‑primary tracks (normally used for freight) as a provisional passenger platform for the next 30 minutes, installing a temporary signage update via the station control centre.\",\n          \"Run the MILP‑based coupling model (from Algorithm 3) on the remaining two regional trains (REG_2816, REG_25512) to determine if they can be physically coupled and dispatched as a single unit on the reassigned track, thereby freeing a slot on the primary platform.\",\n          \"Generate a time‑based slot schedule (Algorithm 1) for the two high‑speed services (FR_9703, FR_9717) on the original high‑speed tracks, spacing them by the minimum safe head‑way (≈8 min).\",\n          \"Communicate the new platform assignment, coupling plan, and slot times to drivers, crew, and the passenger information system (PIS).\",\n          \"Monitor occupancy; once the coupled regional unit departs, release the gate and revert the temporary platform to its original freight use.\",\n          \"Log the event and feed the outcome back into the predictive dispatch engine to refine future hybrid decisions.\"\n        ]\n      },\n      \"overall_score\": 76,\n      \"safety_rating\": 7.5,\n      \"efficiency_rating\": 7.5,\n      \"feasibility_rating\": 8.6,\n      \"robustness_rating\": 6.5,\n      \"justification\": \"The hybrid approach combines gate control, temporary platform use, and MILP coupling, achieving good safety and efficiency while staying feasible. However, the added operational complexity and side‑effects lower its robustness relative to simpler solutions.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"R3\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Dynamic Platform Reassignment + Real‑time Slot Buffer (Hybrid Coupling‑Gate)\",\n        \"actions\": [\n          \"Activate the edge‑capacity gate for the Milano Centrale platform segment and set it to CLOSED.\",\n          \"Immediately query the real‑time occupancy database (ETCS Level 2) to identify which of the four trains, if any, is already inside the segment; allow that train to complete its movement.\",\n          \"Pull the historical‑case practice of “temporary platform reallocation”: re‑assign one of the adjacent non‑primary tracks (normally used for freight) as a provisional passenger platform for the next 30 minutes, installing a temporary signage update via the station control centre.\",\n          \"Run the MILP‑based coupling model (from Algorithm 3) on the remaining two regional trains (REG_2816, REG_25512) to determine if they can be physically coupled and dispatched as a single unit on the reassigned track, thereby freeing a slot on the primary platform.\",\n          \"Generate a time‑based slot schedule (Algorithm 1) for the two high‑speed services (FR_9703, FR_9717) on the original high‑speed tracks, spacing them by the minimum safe head‑way (≈8 min).\",\n          \"Communicate the new platform assignment, coupling plan, and slot times to drivers, crew, and the passenger information system (PIS).\",\n          \"Monitor occupancy; once the coupled regional unit departs, release the gate and revert the temporary platform to its original freight use.\",\n          \"Log the event and feed the outcome back into the predictive dispatch engine to refine future hybrid decisions.\"\n        ],\n        \"expected_outcome\": \"All four trains clear the overloaded segment without exceeding the two‑train capacity, while preserving high‑speed service punctuality and minimizing regional train delays.\",\n        \"reasoning\": \"The hybrid merges the proven gate‑control and slot‑allocation logic (Algorithm 1) with the historical success of temporary platform reallocation used in past Milan congestion events. Adding the MILP coupling step (Algorithm 3) further compresses capacity needs, turning a 4‑train overflow into a manageable 3‑train occupancy. This layered approach leverages real‑time data, historical operational flexibility, and optimization models for a robust, low‑delay solution.\",\n        \"safety_score\": 0.75,\n        \"efficiency_score\": 0.75,\n        \"feasibility_score\": 0.86,\n        \"overall_fitness\": 0.816,\n        \"estimated_delay_min\": 7.0,\n        \"affected_trains\": [\"REG_2816\", \"FR_9703\", \"REG_25512\", \"FR_9717\"],\n        \"side_effects\": \"Temporary reassignment of a freight track may delay scheduled freight movements., Coupling two regional units requires compatible rolling stock and crew coordination, adding operational complexity., Passenger wayfinding changes could cause short‑term confusion until signage updates propagate.\",\n        \"algorithm_type\": \"hybrid\",\n        \"raw_data\": null\n      }\n    }\n  ]\n}",
+    "error": null
+  }
+}

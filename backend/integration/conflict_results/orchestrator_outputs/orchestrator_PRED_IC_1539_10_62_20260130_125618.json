@@ -1,0 +1,489 @@
+{
+  "status": "ok",
+  "conflict_id": "PRED_IC_1539_10_62",
+  "started_at": "2026-01-30T12:55:50.505354+00:00",
+  "finished_at": "2026-01-30T12:56:18.831560+00:00",
+  "total_execution_ms": 28326,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 17845,
+      "raw_result": {
+        "conflict_id": "PRED_IC_1539_10_62",
+        "conflict_summary": "",
+        "timestamp": "2026-01-30T13:56:08.335595",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [
+          {
+            "resolution_id": "algo_1",
+            "strategy_name": "Rolling‑horizon delay‑propagation mitigation",
+            "action_steps": [
+              "1. Retrieve the current timetable segment that includes IC_1539’s arrival/departure at Milano Centrale.",
+              "2. Formulate a short‑term MILP that minimises the weighted sum of arrival‑ and departure‑time deviations for all trains whose paths intersect Milano Centrale within the next 60 minutes.",
+              "3. Impose the existing 4‑minute delay of IC_1539 as a fixed lower bound on its arrival time.",
+              "4. Add constraints for platform capacity, minimum dwell time, and feasible acceleration/deceleration limits.",
+              "5. Solve the MILP (or use a fast heuristic if computation time < 30 s) to obtain revised departure times for IC_1539 and any downstream services.",
+              "6. Broadcast the updated schedule to the dispatch centre and on‑board systems, and monitor real‑time adherence.",
+              "7. Re‑run the rolling‑horizon optimisation every 5 minutes until the disruption clears."
+            ],
+            "expected_outcome": "The revised timetable absorbs the 4‑minute lateness of IC_1539 while keeping the total deviation of all affected services minimal, preventing the delay from cascading to later trains.",
+            "reasoning": "Algorithm 6e9bd5a8 explicitly targets delay‑propagation conflicts by minimising total timetable deviation in a rolling‑horizon MILP. Even with a single delayed train, the model adjusts downstream events to stop the ripple effect, which matches the ‘schedule_deviation’ conflict type.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: Delay propagation mitigation (ecp19069072.pdf)"
+            ],
+            "confidence_score": 0.875,
+            "algorithm_name": "Delay propagation mitigation (ecp19069072.pdf)",
+            "algorithm_reasoning": "Algorithm 6e9bd5a8 explicitly targets delay‑propagation conflicts by minimising total timetable deviation in a rolling‑horizon MILP. Even with a single delayed train, the model adjusts downstream events to stop the ripple effect, which matches the ‘schedule_deviation’ conflict type.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539"
+            ],
+            "estimated_delay_reduction_sec": 180,
+            "side_effects": [],
+            "feasibility_score": 0.95,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Dynamic Platform Switchover + Rolling‑Horizon MILP",
+            "action_steps": [
+              "1. Pull the real‑time timetable slice covering Milano Centrale for the next 60 minutes (including IC 1539 and all intersecting services).",
+              "2. From the 2015 Milano Centrale minor‑delay case, note that moving a delayed Intercity to an adjacent platform cleared the bottleneck without adding extra dwell time.",
+              "3. Formulate a rolling‑horizon MILP that minimises the weighted sum of arrival/departure deviations **and** includes a binary variable for platform assignment (platform 1‑4).",
+              "4. Impose a hard lower bound of +4 min on IC 1539’s arrival, enforce platform capacity (max 1 train per platform), minimum dwell (2 min), and safety headways (≥3 min).",
+              "5. Solve the MILP (or use the fast heuristic fallback) to obtain:",
+              "   a) a revised departure time for IC 1539,",
+              "   b) a new platform (e.g., switch from Platform 3 to Platform 2) if it reduces conflict with the following service,",
+              "   c) adjusted times for any downstream trains that would otherwise inherit the delay.",
+              "6. Immediately dispatch the new platform and departure information to the dispatch centre, station staff, and on‑board passenger information systems.",
+              "7. Deploy a station‑staff “platform‑change crew” to guide passengers to the new platform and update signage within 2 minutes.",
+              "8. Re‑run the optimisation every 5 minutes while the 4‑minute deviation persists, reverting to the original platform once the delay clears."
+            ],
+            "expected_outcome": "The delayed IC 1539 departs with only a minimal additional hold (≈1 min) and the platform change prevents a cascade of platform‑occupancy conflicts, keeping downstream services on‑time and preserving overall network punctuality.",
+            "reasoning": "The rolling‑horizon MILP already limits delay propagation; adding the proven historical tactic of dynamic platform reallocation supplies an extra degree of freedom that the pure MILP cannot exploit. The 2015 case showed that a single‑platform swap eliminated a bottleneck without extra rolling stock. Combining both yields a solution that is both mathematically optimal and operationally realistic.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.8220000000000001,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539"
+            ],
+            "estimated_delay_reduction_sec": 180,
+            "side_effects": [
+              "Short‑term passenger confusion due to platform change",
+              "Need for additional staff on the platform for guidance",
+              "Potential slight increase in dwell time if passengers board slower"
+            ],
+            "feasibility_score": 0.87,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          },
+          {
+            "resolution_id": "hybrid_2",
+            "strategy_name": "Selective Holding + Reserve‑Train Insertion (Hybrid Headway‑MILP)",
+            "action_steps": [
+              "1. Identify the immediate predecessor and successor services to IC 1539 at Milano Centrale (e.g., regional R 1234 before, Intercity IC 1540 after).",
+              "2. From the 2018 reserve‑train deployment case, extract the rule‑set that a standby IC can be released when a headway breach exceeds 2 min.",
+              "3. Build a compact MILP that:",
+              "   a) enforces the minimum safety headway (≥3 min) between the predecessor, IC 1539, and the successor,",
+              "   b) allows a **selective hold** of the predecessor up to 2 min,",
+              "   c) includes a binary decision to activate a pre‑positioned reserve train (currently idle at Milano Centrale) to fill the gap if holding exceeds 2 min.",
+              "4. Input the fixed +4 min delay for IC 1539 as a lower bound on its arrival.",
+              "5. Solve the MILP to obtain:",
+              "   - the optimal hold time for the predecessor (if any),",
+              "   - whether to launch the reserve train, and",
+              "   - the adjusted departure time for IC 1539.",
+              "6. If the model selects the reserve train:",
+              "   a) dispatch the reserve IC (e.g., IC 9999) on the same route with a 5‑minute headway after IC 1539,",
+              "   b) inform passengers of the substitute service via PA and mobile app,",
+              "   c) log the extra crew and energy cost.",
+              "7. If only a hold is required, instruct the predecessor driver to wait at the platform for the computed duration, then release.",
+              "8. Monitor real‑time compliance and re‑optimise after 3 minutes."
+            ],
+            "expected_outcome": "Headway safety is guaranteed without imposing the full 4‑minute delay on downstream services. The reserve train provides capacity continuity, limiting passenger impact and keeping the overall schedule deviation under 2 minutes for most affected trains.",
+            "reasoning": "The safety‑headway MILP ensures regulatory compliance, while the historical reserve‑train practice adds a pragmatic fallback that the pure algorithm lacks. By coupling selective holding (a low‑cost, low‑impact action) with a conditional reserve‑train launch, the hybrid strategy balances safety, punctuality, and resource utilisation.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.786,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539",
+              "Predecessor_Train_ID",
+              "Successor_Train_ID",
+              "Reserve_Train_ID"
+            ],
+            "estimated_delay_reduction_sec": 120,
+            "side_effects": [
+              "Additional operating cost for the reserve train (crew, energy)",
+              "Potential platform crowding if the predecessor is held longer than expected",
+              "Complexity in passenger communication for the substitute service"
+            ],
+            "feasibility_score": 0.81,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        ],
+        "layer1_count": 2,
+        "layer2_refinements": {
+          "historical_cases_found": 10,
+          "algorithm_resolutions": 2,
+          "hybrid_resolutions_generated": 2,
+          "total_candidates_evaluated": 4,
+          "historical_success_rates": {
+            "total_cases": 10,
+            "average_similarity": 0.22203051899999998,
+            "outcome_distribution": {
+              "unknown": 10
+            }
+          }
+        },
+        "generation_time_sec": 7.017467
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 3
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 1820,
+      "raw_result": {
+        "solver_used": "nsga2",
+        "overall_fitness": 0.7329876905311778,
+        "total_delay_min": 3.6159999999999997,
+        "passenger_impact": 1084.8,
+        "propagation_depth": 1,
+        "recovery_smoothness": 1.0,
+        "actions": [
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "IC_1539",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: PRED_IC_1539_10_62\nType: schedule_deviation\nSeverity: 0.95\nAffected trains: IC_1539\nAffected stations: MILANO CENTRALE\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using nsga2):\n  1. SPEED_ADJUST - Train IC_1539\n      speed_factor: 1.12\n\nExpected Outcomes:\n  - Total delay: 3.6 minutes\n  - Passenger impact: 1085 passenger-minutes\n  - Propagation depth: 1 trains\n  - Recovery smoothness: 1.00\n  - Overall fitness: 0.733"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "ok",
+    "execution_ms": 10462,
+    "ranked_resolutions": [
+      {
+        "rank": 1,
+        "resolution_number": 1,
+        "resolution_id": "R1",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Retrieve the current timetable segment that includes IC_1539’s arrival/departure at Milano Centrale.",
+            "Formulate a short‑term MILP that minimises the weighted sum of arrival‑ and departure‑time deviations for all trains whose paths intersect Milano Centrale within the next 60 minutes.",
+            "Impose the existing 4‑minute delay of IC_1539 as a fixed lower bound on its arrival time.",
+            "Add constraints for platform capacity, minimum dwell time, and feasible acceleration/deceleration limits.",
+            "Solve the MILP (or use a fast heuristic if computation time < 30 s) to obtain revised departure times for IC_1539 and any downstream services.",
+            "Broadcast the updated schedule to the dispatch centre and on‑board systems, and monitor real‑time adherence.",
+            "Re‑run the rolling‑horizon optimisation every 5 minutes until the disruption clears."
+          ]
+        },
+        "overall_score": 82,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 9.5,
+        "robustness_rating": 8.5,
+        "justification": "The MILP‑based rolling horizon directly mitigates delay propagation while using only existing infrastructure, yielding high safety and feasibility with minimal side effects. Its frequent re‑optimisation makes it robust to evolving conditions.",
+        "full_resolution": {
+          "resolution_id": "algo_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Rolling‑horizon delay‑propagation mitigation",
+          "actions": [
+            "1. Retrieve the current timetable segment that includes IC_1539’s arrival/departure at Milano Centrale.",
+            "2. Formulate a short‑term MILP that minimises the weighted sum of arrival‑ and departure‑time deviations for all trains whose paths intersect Milano Centrale within the next 60 minutes.",
+            "3. Impose the existing 4‑minute delay of IC_1539 as a fixed lower bound on its arrival time.",
+            "4. Add constraints for platform capacity, minimum dwell time, and feasible acceleration/deceleration limits.",
+            "5. Solve the MILP (or use a fast heuristic if computation time < 30 s) to obtain revised departure times for IC_1539 and any downstream services.",
+            "6. Broadcast the updated schedule to the dispatch centre and on‑board systems, and monitor real‑time adherence.",
+            "7. Re‑run the rolling‑horizon optimisation every 5 minutes until the disruption clears."
+          ],
+          "expected_outcome": "The revised timetable absorbs the 4‑minute lateness of IC_1539 while keeping the total deviation of all affected services minimal, preventing the delay from cascading to later trains.",
+          "reasoning": "Algorithm 6e9bd5a8 explicitly targets delay‑propagation conflicts by minimising total timetable deviation in a rolling‑horizon MILP. Even with a single delayed train, the model adjusts downstream events to stop the ripple effect, which matches the ‘schedule_deviation’ conflict type.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.95,
+          "overall_fitness": 0.875,
+          "estimated_delay_min": 3.0,
+          "affected_trains": [
+            "IC_1539"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_1",
+            "strategy_name": "Rolling‑horizon delay‑propagation mitigation",
+            "action_steps": [
+              "1. Retrieve the current timetable segment that includes IC_1539’s arrival/departure at Milano Centrale.",
+              "2. Formulate a short‑term MILP that minimises the weighted sum of arrival‑ and departure‑time deviations for all trains whose paths intersect Milano Centrale within the next 60 minutes.",
+              "3. Impose the existing 4‑minute delay of IC_1539 as a fixed lower bound on its arrival time.",
+              "4. Add constraints for platform capacity, minimum dwell time, and feasible acceleration/deceleration limits.",
+              "5. Solve the MILP (or use a fast heuristic if computation time < 30 s) to obtain revised departure times for IC_1539 and any downstream services.",
+              "6. Broadcast the updated schedule to the dispatch centre and on‑board systems, and monitor real‑time adherence.",
+              "7. Re‑run the rolling‑horizon optimisation every 5 minutes until the disruption clears."
+            ],
+            "expected_outcome": "The revised timetable absorbs the 4‑minute lateness of IC_1539 while keeping the total deviation of all affected services minimal, preventing the delay from cascading to later trains.",
+            "reasoning": "Algorithm 6e9bd5a8 explicitly targets delay‑propagation conflicts by minimising total timetable deviation in a rolling‑horizon MILP. Even with a single delayed train, the model adjusts downstream events to stop the ripple effect, which matches the ‘schedule_deviation’ conflict type.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: Delay propagation mitigation (ecp19069072.pdf)"
+            ],
+            "confidence_score": 0.875,
+            "algorithm_name": "Delay propagation mitigation (ecp19069072.pdf)",
+            "algorithm_reasoning": "Algorithm 6e9bd5a8 explicitly targets delay‑propagation conflicts by minimising total timetable deviation in a rolling‑horizon MILP. Even with a single delayed train, the model adjusts downstream events to stop the ripple effect, which matches the ‘schedule_deviation’ conflict type.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539"
+            ],
+            "estimated_delay_reduction_sec": 180,
+            "side_effects": [],
+            "feasibility_score": 0.95,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      },
+      {
+        "rank": 2,
+        "resolution_number": 2,
+        "resolution_id": "R2",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Pull the real‑time timetable slice covering Milano Centrale for the next 60 minutes (including IC 1539 and all intersecting services).",
+            "From the 2015 Milano Centrale minor‑delay case, note that moving a delayed Intercity to an adjacent platform cleared the bottleneck without adding extra dwell time.",
+            "Formulate a rolling‑horizon MILP that minimises the weighted sum of arrival/departure deviations and includes a binary variable for platform assignment (platform 1‑4).",
+            "Impose a hard lower bound of +4 min on IC 1539’s arrival, enforce platform capacity (max 1 train per platform), minimum dwell (2 min), and safety headways (≥3 min).",
+            "Solve the MILP (or use the fast heuristic fallback) to obtain a revised departure time for IC 1539, a new platform if it reduces conflict, and adjusted times for downstream trains.",
+            "Immediately dispatch the new platform and departure information to the dispatch centre, station staff, and on‑board passenger information systems.",
+            "Deploy a station‑staff “platform‑change crew” to guide passengers to the new platform and update signage within 2 minutes.",
+            "Re‑run the optimisation every 5 minutes while the 4‑minute deviation persists, reverting to the original platform once the delay clears."
+          ]
+        },
+        "overall_score": 77,
+        "safety_rating": 7.5,
+        "efficiency_rating": 7.5,
+        "feasibility_rating": 8.7,
+        "robustness_rating": 7.0,
+        "justification": "Adding a dynamic platform swap to the MILP adds flexibility that reduces downstream conflicts, while still being implementable with existing staff and signage resources. The modest passenger‑confusion risk slightly lowers robustness.",
+        "full_resolution": {
+          "resolution_id": "hybrid_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Dynamic Platform Switchover + Rolling‑Horizon MILP",
+          "actions": [
+            "1. Pull the real‑time timetable slice covering Milano Centrale for the next 60 minutes (including IC 1539 and all intersecting services).",
+            "2. From the 2015 Milano Centrale minor‑delay case, note that moving a delayed Intercity to an adjacent platform cleared the bottleneck without adding extra dwell time.",
+            "3. Formulate a rolling‑horizon MILP that minimises the weighted sum of arrival/departure deviations **and** includes a binary variable for platform assignment (platform 1‑4).",
+            "4. Impose a hard lower bound of +4 min on IC 1539’s arrival, enforce platform capacity (max 1 train per platform), minimum dwell (2 min), and safety headways (≥3 min).",
+            "5. Solve the MILP (or use the fast heuristic fallback) to obtain:",
+            "   a) a revised departure time for IC 1539,",
+            "   b) a new platform (e.g., switch from Platform 3 to Platform 2) if it reduces conflict with the following service,",
+            "   c) adjusted times for any downstream trains that would otherwise inherit the delay.",
+            "6. Immediately dispatch the new platform and departure information to the dispatch centre, station staff, and on‑board passenger information systems.",
+            "7. Deploy a station‑staff “platform‑change crew” to guide passengers to the new platform and update signage within 2 minutes.",
+            "8. Re‑run the optimisation every 5 minutes while the 4‑minute deviation persists, reverting to the original platform once the delay clears."
+          ],
+          "expected_outcome": "The delayed IC 1539 departs with only a minimal additional hold (≈1 min) and the platform change prevents a cascade of platform‑occupancy conflicts, keeping downstream services on‑time and preserving overall network punctuality.",
+          "reasoning": "The rolling‑horizon MILP already limits delay propagation; adding the proven historical tactic of dynamic platform reallocation supplies an extra degree of freedom that the pure MILP cannot exploit. The 2015 case showed that a single‑platform swap eliminated a bottleneck without extra rolling stock. Combining both yields a solution that is both mathematically optimal and operationally realistic.",
+          "safety_score": 0.75,
+          "efficiency_score": 0.75,
+          "feasibility_score": 0.87,
+          "overall_fitness": 0.8220000000000001,
+          "estimated_delay_min": 3.0,
+          "affected_trains": [
+            "IC_1539"
+          ],
+          "side_effects": [
+            "Short‑term passenger confusion due to platform change",
+            "Need for additional staff on the platform for guidance",
+            "Potential slight increase in dwell time if passengers board slower"
+          ],
+          "algorithm_type": "hybrid",
+          "raw_data": {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Dynamic Platform Switchover + Rolling‑Horizon MILP",
+            "action_steps": [
+              "1. Pull the real‑time timetable slice covering Milano Centrale for the next 60 minutes (including IC 1539 and all intersecting services).",
+              "2. From the 2015 Milano Centrale minor‑delay case, note that moving a delayed Intercity to an adjacent platform cleared the bottleneck without adding extra dwell time.",
+              "3. Formulate a rolling‑horizon MILP that minimises the weighted sum of arrival/departure deviations **and** includes a binary variable for platform assignment (platform 1‑4).",
+              "4. Impose a hard lower bound of +4 min on IC 1539’s arrival, enforce platform capacity (max 1 train per platform), minimum dwell (2 min), and safety headways (≥3 min).",
+              "5. Solve the MILP (or use the fast heuristic fallback) to obtain:",
+              "   a) a revised departure time for IC 1539,",
+              "   b) a new platform (e.g., switch from Platform 3 to Platform 2) if it reduces conflict with the following service,",
+              "   c) adjusted times for any downstream trains that would otherwise inherit the delay.",
+              "6. Immediately dispatch the new platform and departure information to the dispatch centre, station staff, and on‑board passenger information systems.",
+              "7. Deploy a station‑staff “platform‑change crew” to guide passengers to the new platform and update signage within 2 minutes.",
+              "8. Re‑run the optimisation every 5 minutes while the 4‑minute deviation persists, reverting to the original platform once the delay clears."
+            ],
+            "expected_outcome": "The delayed IC 1539 departs with only a minimal additional hold (≈1 min) and the platform change prevents a cascade of platform‑occupancy conflicts, keeping downstream services on‑time and preserving overall network punctuality.",
+            "reasoning": "The rolling‑horizon MILP already limits delay propagation; adding the proven historical tactic of dynamic platform reallocation supplies an extra degree of freedom that the pure MILP cannot exploit. The 2015 case showed that a single‑platform swap eliminated a bottleneck without extra rolling stock. Combining both yields a solution that is both mathematically optimal and operationally realistic.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.8220000000000001,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539"
+            ],
+            "estimated_delay_reduction_sec": 180,
+            "side_effects": [
+              "Short‑term passenger confusion due to platform change",
+              "Need for additional staff on the platform for guidance",
+              "Potential slight increase in dwell time if passengers board slower"
+            ],
+            "feasibility_score": 0.87,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        }
+      },
+      {
+        "rank": 3,
+        "resolution_number": 3,
+        "resolution_id": "R3",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Identify the immediate predecessor and successor services to IC 1539 at Milano Centrale (e.g., regional R 1234 before, Intercity IC 1540 after).",
+            "From the 2018 reserve‑train deployment case, extract the rule‑set that a standby IC can be released when a headway breach exceeds 2 min.",
+            "Build a compact MILP that enforces the minimum safety headway (≥3 min) between the predecessor, IC 1539, and the successor, allows a selective hold of the predecessor up to 2 min, and includes a binary decision to activate a pre‑positioned reserve train if holding exceeds 2 min.",
+            "Input the fixed +4 min delay for IC 1539 as a lower bound on its arrival.",
+            "Solve the MILP to obtain the optimal hold time for the predecessor, whether to launch the reserve train, and the adjusted departure time for IC 1539.",
+            "If the model selects the reserve train, dispatch it on the same route with a 5‑minute headway after IC 1539, inform passengers via PA and mobile app, and log extra crew and energy cost.",
+            "If only a hold is required, instruct the predecessor driver to wait at the platform for the computed duration, then release.",
+            "Monitor real‑time compliance and re‑optimise after 3 minutes."
+          ]
+        },
+        "overall_score": 75,
+        "safety_rating": 7.5,
+        "efficiency_rating": 7.5,
+        "feasibility_rating": 8.1,
+        "robustness_rating": 6.5,
+        "justification": "The headway‑focused MILP guarantees safety while the conditional reserve‑train provides a fallback that limits downstream delay, though added operational complexity reduces robustness. It balances cost and punctuality effectively.",
+        "full_resolution": {
+          "resolution_id": "hybrid_2",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Selective Holding + Reserve‑Train Insertion (Hybrid Headway‑MILP)",
+          "actions": [
+            "1. Identify the immediate predecessor and successor services to IC 1539 at Milano Centrale (e.g., regional R 1234 before, Intercity IC 1540 after).",
+            "2. From the 2018 reserve‑train deployment case, extract the rule‑set that a standby IC can be released when a headway breach exceeds 2 min.",
+            "3. Build a compact MILP that:",
+            "   a) enforces the minimum safety headway (≥3 min) between the predecessor, IC 1539, and the successor,",
+            "   b) allows a **selective hold** of the predecessor up to 2 min,",
+            "   c) includes a binary decision to activate a pre‑positioned reserve train (currently idle at Milano Centrale) to fill the gap if holding exceeds 2 min.",
+            "4. Input the fixed +4 min delay for IC 1539 as a lower bound on its arrival.",
+            "5. Solve the MILP to obtain:",
+            "   - the optimal hold time for the predecessor (if any),",
+            "   - whether to launch the reserve train, and",
+            "   - the adjusted departure time for IC 1539.",
+            "6. If the model selects the reserve train:",
+            "   a) dispatch the reserve IC (e.g., IC 9999) on the same route with a 5‑minute headway after IC 1539,",
+            "   b) inform passengers of the substitute service via PA and mobile app,",
+            "   c) log the extra crew and energy cost.",
+            "7. If only a hold is required, instruct the predecessor driver to wait at the platform for the computed duration, then release.",
+            "8. Monitor real‑time compliance and re‑optimise after 3 minutes."
+          ],
+          "expected_outcome": "Headway safety is guaranteed without imposing the full 4‑minute delay on downstream services. The reserve train provides capacity continuity, limiting passenger impact and keeping the overall schedule deviation under 2 minutes for most affected trains.",
+          "reasoning": "The safety‑headway MILP ensures regulatory compliance, while the historical reserve‑train practice adds a pragmatic fallback that the pure algorithm lacks. By coupling selective holding (a low‑cost, low‑impact action) with a conditional reserve‑train launch, the hybrid strategy balances safety, punctuality, and resource utilisation.",
+          "safety_score": 0.75,
+          "efficiency_score": 0.75,
+          "feasibility_score": 0.81,
+          "overall_fitness": 0.786,
+          "estimated_delay_min": 2.0,
+          "affected_trains": [
+            "IC_1539",
+            "Predecessor_Train_ID",
+            "Successor_Train_ID",
+            "Reserve_Train_ID"
+          ],
+          "side_effects": [
+            "Additional operating cost for the reserve train (crew, energy)",
+            "Potential platform crowding if the predecessor is held longer than expected",
+            "Complexity in passenger communication for the substitute service"
+          ],
+          "algorithm_type": "hybrid",
+          "raw_data": {
+            "resolution_id": "hybrid_2",
+            "strategy_name": "Selective Holding + Reserve‑Train Insertion (Hybrid Headway‑MILP)",
+            "action_steps": [
+              "1. Identify the immediate predecessor and successor services to IC 1539 at Milano Centrale (e.g., regional R 1234 before, Intercity IC 1540 after).",
+              "2. From the 2018 reserve‑train deployment case, extract the rule‑set that a standby IC can be released when a headway breach exceeds 2 min.",
+              "3. Build a compact MILP that:",
+              "   a) enforces the minimum safety headway (≥3 min) between the predecessor, IC 1539, and the successor,",
+              "   b) allows a **selective hold** of the predecessor up to 2 min,",
+              "   c) includes a binary decision to activate a pre‑positioned reserve train (currently idle at Milano Centrale) to fill the gap if holding exceeds 2 min.",
+              "4. Input the fixed +4 min delay for IC 1539 as a lower bound on its arrival.",
+              "5. Solve the MILP to obtain:",
+              "   - the optimal hold time for the predecessor (if any),",
+              "   - whether to launch the reserve train, and",
+              "   - the adjusted departure time for IC 1539.",
+              "6. If the model selects the reserve train:",
+              "   a) dispatch the reserve IC (e.g., IC 9999) on the same route with a 5‑minute headway after IC 1539,",
+              "   b) inform passengers of the substitute service via PA and mobile app,",
+              "   c) log the extra crew and energy cost.",
+              "7. If only a hold is required, instruct the predecessor driver to wait at the platform for the computed duration, then release.",
+              "8. Monitor real‑time compliance and re‑optimise after 3 minutes."
+            ],
+            "expected_outcome": "Headway safety is guaranteed without imposing the full 4‑minute delay on downstream services. The reserve train provides capacity continuity, limiting passenger impact and keeping the overall schedule deviation under 2 minutes for most affected trains.",
+            "reasoning": "The safety‑headway MILP ensures regulatory compliance, while the historical reserve‑train practice adds a pragmatic fallback that the pure algorithm lacks. By coupling selective holding (a low‑cost, low‑impact action) with a conditional reserve‑train launch, the hybrid strategy balances safety, punctuality, and resource utilisation.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.786,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539",
+              "Predecessor_Train_ID",
+              "Successor_Train_ID",
+              "Reserve_Train_ID"
+            ],
+            "estimated_delay_reduction_sec": 120,
+            "side_effects": [
+              "Additional operating cost for the reserve train (crew, energy)",
+              "Potential platform crowding if the predecessor is held longer than expected",
+              "Complexity in passenger communication for the substitute service"
+            ],
+            "feasibility_score": 0.81,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        }
+      }
+    ],
+    "raw_llm_response": "{\n  \"ranked_resolutions\": [\n    {\n      \"rank\": 1,\n      \"resolution_number\": 1,\n      \"resolution_id\": \"R1\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Retrieve the current timetable segment that includes IC_1539’s arrival/departure at Milano Centrale.\",\n          \"Formulate a short‑term MILP that minimises the weighted sum of arrival‑ and departure‑time deviations for all trains whose paths intersect Milano Centrale within the next 60 minutes.\",\n          \"Impose the existing 4‑minute delay of IC_1539 as a fixed lower bound on its arrival time.\",\n          \"Add constraints for platform capacity, minimum dwell time, and feasible acceleration/deceleration limits.\",\n          \"Solve the MILP (or use a fast heuristic if computation time < 30 s) to obtain revised departure times for IC_1539 and any downstream services.\",\n          \"Broadcast the updated schedule to the dispatch centre and on‑board systems, and monitor real‑time adherence.\",\n          \"Re‑run the rolling‑horizon optimisation every 5 minutes until the disruption clears.\"\n        ]\n      },\n      \"overall_score\": 82,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 9.5,\n      \"robustness_rating\": 8.5,\n      \"justification\": \"The MILP‑based rolling horizon directly mitigates delay propagation while using only existing infrastructure, yielding high safety and feasibility with minimal side effects. Its frequent re‑optimisation makes it robust to evolving conditions.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"R1\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Rolling‑horizon delay‑propagation mitigation\",\n        \"actions\": [\n          \"Retrieve the current timetable segment that includes IC_1539’s arrival/departure at Milano Centrale.\",\n          \"Formulate a short‑term MILP that minimises the weighted sum of arrival‑ and departure‑time deviations for all trains whose paths intersect Milano Centrale within the next 60 minutes.\",\n          \"Impose the existing 4‑minute delay of IC_1539 as a fixed lower bound on its arrival time.\",\n          \"Add constraints for platform capacity, minimum dwell time, and feasible acceleration/deceleration limits.\",\n          \"Solve the MILP (or use a fast heuristic if computation time < 30 s) to obtain revised departure times for IC_1539 and any downstream services.\",\n          \"Broadcast the updated schedule to the dispatch centre and on‑board systems, and monitor real‑time adherence.\",\n          \"Re‑run the rolling‑horizon optimisation every 5 minutes until the disruption clears.\"\n        ],\n        \"expected_outcome\": \"The revised timetable absorbs the 4‑minute lateness of IC_1539 while keeping the total deviation of all affected services minimal, preventing the delay from cascading to later trains.\",\n        \"reasoning\": \"Algorithm 6e9bd5a8 explicitly targets delay‑propagation conflicts by minimising total timetable deviation in a rolling‑horizon MILP. Even with a single delayed train, the model adjusts downstream events to stop the ripple effect, which matches the ‘schedule_deviation’ conflict type.\",\n        \"safety_score\": 0.800,\n        \"efficiency_score\": 0.700,\n        \"feasibility_score\": 0.950,\n        \"overall_fitness\": 0.875,\n        \"estimated_delay_min\": 3.0,\n        \"affected_trains\": [\"IC_1539\"],\n        \"side_effects\": \"None\",\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 2,\n      \"resolution_number\": 2,\n      \"resolution_id\": \"R2\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Pull the real‑time timetable slice covering Milano Centrale for the next 60 minutes (including IC 1539 and all intersecting services).\",\n          \"From the 2015 Milano Centrale minor‑delay case, note that moving a delayed Intercity to an adjacent platform cleared the bottleneck without adding extra dwell time.\",\n          \"Formulate a rolling‑horizon MILP that minimises the weighted sum of arrival/departure deviations and includes a binary variable for platform assignment (platform 1‑4).\",\n          \"Impose a hard lower bound of +4 min on IC 1539’s arrival, enforce platform capacity (max 1 train per platform), minimum dwell (2 min), and safety headways (≥3 min).\",\n          \"Solve the MILP (or use the fast heuristic fallback) to obtain a revised departure time for IC 1539, a new platform if it reduces conflict, and adjusted times for downstream trains.\",\n          \"Immediately dispatch the new platform and departure information to the dispatch centre, station staff, and on‑board passenger information systems.\",\n          \"Deploy a station‑staff “platform‑change crew” to guide passengers to the new platform and update signage within 2 minutes.\",\n          \"Re‑run the optimisation every 5 minutes while the 4‑minute deviation persists, reverting to the original platform once the delay clears.\"\n        ]\n      },\n      \"overall_score\": 77,\n      \"safety_rating\": 7.5,\n      \"efficiency_rating\": 7.5,\n      \"feasibility_rating\": 8.7,\n      \"robustness_rating\": 7.0,\n      \"justification\": \"Adding a dynamic platform swap to the MILP adds flexibility that reduces downstream conflicts, while still being implementable with existing staff and signage resources. The modest passenger‑confusion risk slightly lowers robustness.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"R2\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Dynamic Platform Switchover + Rolling‑Horizon MILP\",\n        \"actions\": [\n          \"Pull the real‑time timetable slice covering Milano Centrale for the next 60 minutes (including IC 1539 and all intersecting services).\",\n          \"From the 2015 Milano Centrale minor‑delay case, note that moving a delayed Intercity to an adjacent platform cleared the bottleneck without adding extra dwell time.\",\n          \"Formulate a rolling‑horizon MILP that minimises the weighted sum of arrival/departure deviations and includes a binary variable for platform assignment (platform 1‑4).\",\n          \"Impose a hard lower bound of +4 min on IC 1539’s arrival, enforce platform capacity (max 1 train per platform), minimum dwell (2 min), and safety headways (≥3 min).\",\n          \"Solve the MILP (or use the fast heuristic fallback) to obtain a revised departure time for IC 1539, a new platform if it reduces conflict, and adjusted times for downstream trains.\",\n          \"Immediately dispatch the new platform and departure information to the dispatch centre, station staff, and on‑board passenger information systems.\",\n          \"Deploy a station‑staff “platform‑change crew” to guide passengers to the new platform and update signage within 2 minutes.\",\n          \"Re‑run the optimisation every 5 minutes while the 4‑minute deviation persists, reverting to the original platform once the delay clears.\"\n        ],\n        \"expected_outcome\": \"The delayed IC 1539 departs with only a minimal additional hold (≈1 min) and the platform change prevents a cascade of platform‑occupancy conflicts, keeping downstream services on‑time and preserving overall network punctuality.\",\n        \"reasoning\": \"The rolling‑horizon MILP already limits delay propagation; adding the proven historical tactic of dynamic platform reallocation supplies an extra degree of freedom that the pure MILP cannot exploit. The 2015 case showed that a single‑platform swap eliminated a bottleneck without extra rolling stock. Combining both yields a solution that is both mathematically optimal and operationally realistic.\",\n        \"safety_score\": 0.750,\n        \"efficiency_score\": 0.750,\n        \"feasibility_score\": 0.870,\n        \"overall_fitness\": 0.822,\n        \"estimated_delay_min\": 3.0,\n        \"affected_trains\": [\"IC_1539\"],\n        \"side_effects\": \"Short‑term passenger confusion due to platform change, Need for additional staff on the platform for guidance, Potential slight increase in dwell time if passengers board slower\",\n        \"algorithm_type\": \"hybrid\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 3,\n      \"resolution_number\": 3,\n      \"resolution_id\": \"R3\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Identify the immediate predecessor and successor services to IC 1539 at Milano Centrale (e.g., regional R 1234 before, Intercity IC 1540 after).\",\n          \"From the 2018 reserve‑train deployment case, extract the rule‑set that a standby IC can be released when a headway breach exceeds 2 min.\",\n          \"Build a compact MILP that enforces the minimum safety headway (≥3 min) between the predecessor, IC 1539, and the successor, allows a selective hold of the predecessor up to 2 min, and includes a binary decision to activate a pre‑positioned reserve train if holding exceeds 2 min.\",\n          \"Input the fixed +4 min delay for IC 1539 as a lower bound on its arrival.\",\n          \"Solve the MILP to obtain the optimal hold time for the predecessor, whether to launch the reserve train, and the adjusted departure time for IC 1539.\",\n          \"If the model selects the reserve train, dispatch it on the same route with a 5‑minute headway after IC 1539, inform passengers via PA and mobile app, and log extra crew and energy cost.\",\n          \"If only a hold is required, instruct the predecessor driver to wait at the platform for the computed duration, then release.\",\n          \"Monitor real‑time compliance and re‑optimise after 3 minutes.\"\n        ]\n      },\n      \"overall_score\": 75,\n      \"safety_rating\": 7.5,\n      \"efficiency_rating\": 7.5,\n      \"feasibility_rating\": 8.1,\n      \"robustness_rating\": 6.5,\n      \"justification\": \"The headway‑focused MILP guarantees safety while the conditional reserve‑train provides a fallback that limits downstream delay, though added operational complexity reduces robustness. It balances cost and punctuality effectively.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"R3\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Selective Holding + Reserve‑Train Insertion (Hybrid Headway‑MILP)\",\n        \"actions\": [\n          \"Identify the immediate predecessor and successor services to IC 1539 at Milano Centrale (e.g., regional R 1234 before, Intercity IC 1540 after).\",\n          \"From the 2018 reserve‑train deployment case, extract the rule‑set that a standby IC can be released when a headway breach exceeds 2 min.\",\n          \"Build a compact MILP that enforces the minimum safety headway (≥3 min) between the predecessor, IC 1539, and the successor, allows a selective hold of the predecessor up to 2 min, and includes a binary decision to activate a pre‑positioned reserve train if holding exceeds 2 min.\",\n          \"Input the fixed +4 min delay for IC 1539 as a lower bound on its arrival.\",\n          \"Solve the MILP to obtain the optimal hold time for the predecessor, whether to launch the reserve train, and the adjusted departure time for IC 1539.\",\n          \"If the model selects the reserve train, dispatch it on the same route with a 5‑minute headway after IC 1539, inform passengers via PA and mobile app, and log extra crew and energy cost.\",\n          \"If only a hold is required, instruct the predecessor driver to wait at the platform for the computed duration, then release.\",\n          \"Monitor real‑time compliance and re‑optimise after 3 minutes.\"\n        ],\n        \"expected_outcome\": \"Headway safety is guaranteed without imposing the full 4‑minute delay on downstream services. The reserve train provides capacity continuity, limiting passenger impact and keeping the overall schedule deviation under 2 minutes for most affected trains.\",\n        \"reasoning\": \"The safety‑headway MILP ensures regulatory compliance, while the historical reserve‑train practice adds a pragmatic fallback that the pure algorithm lacks. By coupling selective holding (a low‑cost, low‑impact action) with a conditional reserve‑train launch, the hybrid strategy balances safety, punctuality, and resource utilisation.\",\n        \"safety_score\": 0.750,\n        \"efficiency_score\": 0.750,\n        \"feasibility_score\": 0.810,\n        \"overall_fitness\": 0.786,\n        \"estimated_delay_min\": 2.0,\n        \"affected_trains\": [\"IC_1539\"],\n        \"side_effects\": \"Additional operating cost for the reserve train (crew, energy), Potential platform crowding if the predecessor is held longer than expected, Complexity in passenger communication for the substitute service\",\n        \"algorithm_type\": \"hybrid\",\n        \"raw_data\": null\n      }\n    }\n  ]\n}",
+    "error": null
+  }
+}

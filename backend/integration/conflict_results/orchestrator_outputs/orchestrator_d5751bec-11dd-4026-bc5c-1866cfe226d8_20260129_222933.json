@@ -1,0 +1,437 @@
+{
+  "status": "ok",
+  "conflict_id": "d5751bec-11dd-4026-bc5c-1866cfe226d8",
+  "started_at": "2026-01-29T22:28:59.540961+00:00",
+  "finished_at": "2026-01-29T22:29:33.955132+00:00",
+  "total_execution_ms": 34414,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 26397,
+      "raw_result": {
+        "conflict_id": "d5751bec-11dd-4026-bc5c-1866cfe226d8",
+        "conflict_summary": "",
+        "timestamp": "2026-01-29T23:29:25.933570",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [
+          {
+            "resolution_id": "algo_1",
+            "strategy_name": "Immediate gate control with time‑slot allocation",
+            "action_steps": [
+              "Issue a stop command to all four trains (IC_1539, REG_2512, REG_10207, REG_33137) before they enter the VOGHERA‑PAVIA segment.",
+              "Allow the trains already inside the segment to clear it completely.",
+              "Create 5‑minute time slots for segment access, assigning the earliest slot to the high‑speed IC_1539, then to REG_2512, REG_10207 and finally REG_33137.",
+              "If after 10 minutes the segment is still at capacity, reroute REG_10207 and REG_33137 via any available parallel track or hold them at the preceding station (VOGHERA).",
+              "Adjust upstream departure times of the next trains on the line to respect the newly created slots and avoid future bunching."
+            ],
+            "expected_outcome": "The VOGHERA‑PAVIA segment will never host more trains than its safe capacity, eliminating the collision risk while keeping additional waiting times to a minimum.",
+            "reasoning": "The conflict is an edge‑capacity overflow. Algorithm *edge_overflow_resolution_1* explicitly prescribes stopping entry, clearing the segment, and then using slot‑based allocation, which directly matches the situation.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: edge_overflow_resolution_1"
+            ],
+            "confidence_score": 0.869,
+            "algorithm_name": "edge_overflow_resolution_1",
+            "algorithm_reasoning": "The conflict is an edge‑capacity overflow. Algorithm *edge_overflow_resolution_1* explicitly prescribes stopping entry, clearing the segment, and then using slot‑based allocation, which directly matches the situation.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539",
+              "REG_2512",
+              "REG_10207",
+              "REG_33137"
+            ],
+            "estimated_delay_reduction_sec": 90,
+            "side_effects": [],
+            "feasibility_score": 0.94,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "algo_2",
+            "strategy_name": "Priority‑based rescheduling (high‑speed precedence)",
+            "action_steps": [
+              "Immediately halt any further entry into the VOGHERA‑PAVIA segment.",
+              "Grant priority access to the high‑speed train IC_1539; allow it to enter the segment right away.",
+              "Hold REG_2512, REG_10207 and REG_33137 at VOGHERA (or the previous station) until the segment is free.",
+              "Delay REG_2512 and REG_10207 by approximately 10 minutes each and REG_33137 by about 12 minutes, staggering their releases.",
+              "After the conflict is cleared, switch to a slot‑based control regime for all subsequent trains on this corridor."
+            ],
+            "expected_outcome": "The most time‑critical service (IC_1539) proceeds without additional delay, while the remaining trains are staggered enough to respect the segment’s capacity, removing the overflow condition.",
+            "reasoning": "Algorithm *synthetic_edge_overflow_milano_pavia* resolves a similar four‑train overflow by giving priority to a high‑speed service and delaying the others, which is directly applicable to the current set of trains.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: synthetic_edge_overflow_milano_pavia"
+            ],
+            "confidence_score": 0.857,
+            "algorithm_name": "synthetic_edge_overflow_milano_pavia",
+            "algorithm_reasoning": "Algorithm *synthetic_edge_overflow_milano_pavia* resolves a similar four‑train overflow by giving priority to a high‑speed service and delaying the others, which is directly applicable to the current set of trains.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539",
+              "REG_2512",
+              "REG_10207",
+              "REG_33137"
+            ],
+            "estimated_delay_reduction_sec": 60,
+            "side_effects": [],
+            "feasibility_score": 0.92,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "algo_3",
+            "strategy_name": "MILP‑based hard‑capacity enforcement",
+            "action_steps": [
+              "Formulate a short‑term MILP model with the objective of minimizing total delay for the four trains.",
+              "Add a hard capacity constraint for the VOGHERA‑PAVIA edge (e.g., max 2 trains simultaneously).",
+              "Solve the model in real time to obtain revised departure times for each train.",
+              "Implement the computed schedule: hold two of the trains at VOGHERA (or the preceding node) while the other two traverse the segment, then release the held trains according to the optimal sequence.",
+              "Feed the new schedule back into the traffic management system and monitor for any secondary conflicts."
+            ],
+            "expected_outcome": "The segment’s capacity limit is respected at every instant, and the delay distribution is optimized across all affected services, yielding the smallest possible total delay under the constraint.",
+            "reasoning": "The e2c6e12f algorithm addresses any resource‑capacity violation by enforcing hard limits through rescheduling. Applying its MILP‑based approach to the edge overflow guarantees feasibility and optimality.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: e2c6e12f-2f05-59c3-bcb1-7a0082af4cf2"
+            ],
+            "confidence_score": 0.815,
+            "algorithm_name": "e2c6e12f-2f05-59c3-bcb1-7a0082af4cf2",
+            "algorithm_reasoning": "The e2c6e12f algorithm addresses any resource‑capacity violation by enforcing hard limits through rescheduling. Applying its MILP‑based approach to the edge overflow guarantees feasibility and optimality.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539",
+              "REG_2512",
+              "REG_10207",
+              "REG_33137"
+            ],
+            "estimated_delay_reduction_sec": 70,
+            "side_effects": [],
+            "feasibility_score": 0.85,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        ],
+        "layer1_count": 3,
+        "layer2_refinements": {
+          "historical_cases_found": 10,
+          "algorithm_resolutions": 3,
+          "hybrid_resolutions_generated": 2,
+          "total_candidates_evaluated": 5,
+          "historical_success_rates": {
+            "total_cases": 10,
+            "average_similarity": 0.1470589084,
+            "outcome_distribution": {
+              "resolved": 9,
+              "unknown": 1
+            }
+          }
+        },
+        "generation_time_sec": 9.255748
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 3
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 2632,
+      "raw_result": {
+        "solver_used": "genetic_algorithm",
+        "overall_fitness": 0.6445954568606568,
+        "total_delay_min": 13.924,
+        "passenger_impact": 8177.2,
+        "propagation_depth": 2,
+        "recovery_smoothness": 0.6821195484357674,
+        "actions": [
+          {
+            "action_type": "reroute",
+            "target_train_id": "IC_1539",
+            "parameters": {
+              "alternate_route": 1
+            }
+          },
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "REG_33137",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          },
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "REG_2512",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          },
+          {
+            "action_type": "reroute",
+            "target_train_id": "REG_10207",
+            "parameters": {
+              "alternate_route": 1
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: d5751bec-11dd-4026-bc5c-1866cfe226d8\nType: edge_capacity_overflow\nSeverity: 0.50\nAffected trains: IC_1539, REG_2512, REG_10207, REG_33137\nAffected stations: VOGHERA--PAVIA\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using genetic_algorithm):\n  1. REROUTE - Train IC_1539\n      alternate_route: 1\n  2. SPEED_ADJUST - Train REG_33137\n      speed_factor: 1.12\n  3. SPEED_ADJUST - Train REG_2512\n      speed_factor: 1.12\n  4. REROUTE - Train REG_10207\n      alternate_route: 1\n\nExpected Outcomes:\n  - Total delay: 13.9 minutes\n  - Passenger impact: 8177 passenger-minutes\n  - Propagation depth: 2 trains\n  - Recovery smoothness: 0.68\n  - Overall fitness: 0.645"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "ok",
+    "execution_ms": 7997,
+    "ranked_resolutions": [
+      {
+        "rank": 1,
+        "resolution_number": 1,
+        "resolution_id": "R1",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Issue a stop command to all four trains before they enter the VOGHERA‑PAVIA segment.",
+            "Allow the trains already inside the segment to clear it completely.",
+            "Create 5‑minute time slots for segment access, giving the earliest slot to IC_1539, then REG_2512, REG_10207 and REG_33137.",
+            "If after 10 minutes the segment is still at capacity, reroute REG_10207 and REG_33137 via any available parallel track or hold them at VOGHERA.",
+            "Adjust upstream departure times of subsequent trains to respect the new slots and avoid future bunching."
+          ]
+        },
+        "overall_score": 81,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 9.4,
+        "robustness_rating": 8.0,
+        "justification": "The plan directly eliminates the capacity overflow with minimal waiting time and uses only existing signalling controls, making it safe, efficient and highly feasible. Its deterministic slot‑based approach also handles uncertainties well.",
+        "full_resolution": {
+          "resolution_id": "algo_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Immediate gate control with time‑slot allocation",
+          "actions": [
+            "Issue a stop command to all four trains (IC_1539, REG_2512, REG_10207, REG_33137) before they enter the VOGHERA‑PAVIA segment.",
+            "Allow the trains already inside the segment to clear it completely.",
+            "Create 5‑minute time slots for segment access, assigning the earliest slot to the high‑speed IC_1539, then to REG_2512, REG_10207 and finally REG_33137.",
+            "If after 10 minutes the segment is still at capacity, reroute REG_10207 and REG_33137 via any available parallel track or hold them at the preceding station (VOGHERA).",
+            "Adjust upstream departure times of the next trains on the line to respect the newly created slots and avoid future bunching."
+          ],
+          "expected_outcome": "The VOGHERA‑PAVIA segment will never host more trains than its safe capacity, eliminating the collision risk while keeping additional waiting times to a minimum.",
+          "reasoning": "The conflict is an edge‑capacity overflow. Algorithm *edge_overflow_resolution_1* explicitly prescribes stopping entry, clearing the segment, and then using slot‑based allocation, which directly matches the situation.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.94,
+          "overall_fitness": 0.869,
+          "estimated_delay_min": 1.5,
+          "affected_trains": [
+            "IC_1539",
+            "REG_2512",
+            "REG_10207",
+            "REG_33137"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_1",
+            "strategy_name": "Immediate gate control with time‑slot allocation",
+            "action_steps": [
+              "Issue a stop command to all four trains (IC_1539, REG_2512, REG_10207, REG_33137) before they enter the VOGHERA‑PAVIA segment.",
+              "Allow the trains already inside the segment to clear it completely.",
+              "Create 5‑minute time slots for segment access, assigning the earliest slot to the high‑speed IC_1539, then to REG_2512, REG_10207 and finally REG_33137.",
+              "If after 10 minutes the segment is still at capacity, reroute REG_10207 and REG_33137 via any available parallel track or hold them at the preceding station (VOGHERA).",
+              "Adjust upstream departure times of the next trains on the line to respect the newly created slots and avoid future bunching."
+            ],
+            "expected_outcome": "The VOGHERA‑PAVIA segment will never host more trains than its safe capacity, eliminating the collision risk while keeping additional waiting times to a minimum.",
+            "reasoning": "The conflict is an edge‑capacity overflow. Algorithm *edge_overflow_resolution_1* explicitly prescribes stopping entry, clearing the segment, and then using slot‑based allocation, which directly matches the situation.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: edge_overflow_resolution_1"
+            ],
+            "confidence_score": 0.869,
+            "algorithm_name": "edge_overflow_resolution_1",
+            "algorithm_reasoning": "The conflict is an edge‑capacity overflow. Algorithm *edge_overflow_resolution_1* explicitly prescribes stopping entry, clearing the segment, and then using slot‑based allocation, which directly matches the situation.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539",
+              "REG_2512",
+              "REG_10207",
+              "REG_33137"
+            ],
+            "estimated_delay_reduction_sec": 90,
+            "side_effects": [],
+            "feasibility_score": 0.94,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      },
+      {
+        "rank": 2,
+        "resolution_number": 2,
+        "resolution_id": "R2",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Immediately halt any further entry into the VOGHERA‑PAVIA segment.",
+            "Grant priority access to the high‑speed train IC_1539 and let it enter the segment right away.",
+            "Hold REG_2512, REG_10207 and REG_33137 at VOGHERA (or the previous station) until the segment is free.",
+            "Delay REG_2512 and REG_10207 by about 10 minutes each and REG_33137 by about 12 minutes, staggering their releases.",
+            "After the conflict is cleared, switch to a slot‑based control regime for all subsequent trains on this corridor."
+          ]
+        },
+        "overall_score": 79,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 9.2,
+        "robustness_rating": 7.5,
+        "justification": "Prioritising the high‑speed service reduces its delay while still clearing the overflow, and the required holds are simple to implement with existing signalling. The approach is slightly less robust than the first because it relies on precise timing of staggered releases.",
+        "full_resolution": {
+          "resolution_id": "algo_2",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Priority‑based rescheduling (high‑speed precedence)",
+          "actions": [
+            "Immediately halt any further entry into the VOGHERA‑PAVIA segment.",
+            "Grant priority access to the high‑speed train IC_1539; allow it to enter the segment right away.",
+            "Hold REG_2512, REG_10207 and REG_33137 at VOGHERA (or the previous station) until the segment is free.",
+            "Delay REG_2512 and REG_10207 by approximately 10 minutes each and REG_33137 by about 12 minutes, staggering their releases.",
+            "After the conflict is cleared, switch to a slot‑based control regime for all subsequent trains on this corridor."
+          ],
+          "expected_outcome": "The most time‑critical service (IC_1539) proceeds without additional delay, while the remaining trains are staggered enough to respect the segment’s capacity, removing the overflow condition.",
+          "reasoning": "Algorithm *synthetic_edge_overflow_milano_pavia* resolves a similar four‑train overflow by giving priority to a high‑speed service and delaying the others, which is directly applicable to the current set of trains.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.92,
+          "overall_fitness": 0.857,
+          "estimated_delay_min": 1.0,
+          "affected_trains": [
+            "IC_1539",
+            "REG_2512",
+            "REG_10207",
+            "REG_33137"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_2",
+            "strategy_name": "Priority‑based rescheduling (high‑speed precedence)",
+            "action_steps": [
+              "Immediately halt any further entry into the VOGHERA‑PAVIA segment.",
+              "Grant priority access to the high‑speed train IC_1539; allow it to enter the segment right away.",
+              "Hold REG_2512, REG_10207 and REG_33137 at VOGHERA (or the previous station) until the segment is free.",
+              "Delay REG_2512 and REG_10207 by approximately 10 minutes each and REG_33137 by about 12 minutes, staggering their releases.",
+              "After the conflict is cleared, switch to a slot‑based control regime for all subsequent trains on this corridor."
+            ],
+            "expected_outcome": "The most time‑critical service (IC_1539) proceeds without additional delay, while the remaining trains are staggered enough to respect the segment’s capacity, removing the overflow condition.",
+            "reasoning": "Algorithm *synthetic_edge_overflow_milano_pavia* resolves a similar four‑train overflow by giving priority to a high‑speed service and delaying the others, which is directly applicable to the current set of trains.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: synthetic_edge_overflow_milano_pavia"
+            ],
+            "confidence_score": 0.857,
+            "algorithm_name": "synthetic_edge_overflow_milano_pavia",
+            "algorithm_reasoning": "Algorithm *synthetic_edge_overflow_milano_pavia* resolves a similar four‑train overflow by giving priority to a high‑speed service and delaying the others, which is directly applicable to the current set of trains.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539",
+              "REG_2512",
+              "REG_10207",
+              "REG_33137"
+            ],
+            "estimated_delay_reduction_sec": 60,
+            "side_effects": [],
+            "feasibility_score": 0.92,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      },
+      {
+        "rank": 3,
+        "resolution_number": 3,
+        "resolution_id": "R3",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Formulate a short‑term MILP model with the objective of minimizing total delay for the four trains.",
+            "Add a hard capacity constraint for the VOGHERA‑PAVIA edge (max 2 trains simultaneously).",
+            "Solve the model in real time to obtain revised departure times for each train.",
+            "Implement the computed schedule: hold two trains at VOGHERA while the other two traverse the segment, then release the held trains according to the optimal sequence.",
+            "Feed the new schedule back into the traffic management system and monitor for any secondary conflicts."
+          ]
+        },
+        "overall_score": 77,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 8.5,
+        "robustness_rating": 7.0,
+        "justification": "The MILP provides an optimal delay distribution while strictly enforcing the capacity limit, but its reliance on real‑time optimization introduces moderate implementation risk. Nonetheless it remains safe and reasonably efficient.",
+        "full_resolution": {
+          "resolution_id": "algo_3",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "MILP‑based hard‑capacity enforcement",
+          "actions": [
+            "Formulate a short‑term MILP model with the objective of minimizing total delay for the four trains.",
+            "Add a hard capacity constraint for the VOGHERA‑PAVIA edge (e.g., max 2 trains simultaneously).",
+            "Solve the model in real time to obtain revised departure times for each train.",
+            "Implement the computed schedule: hold two of the trains at VOGHERA (or the preceding node) while the other two traverse the segment, then release the held trains according to the optimal sequence.",
+            "Feed the new schedule back into the traffic management system and monitor for any secondary conflicts."
+          ],
+          "expected_outcome": "The segment’s capacity limit is respected at every instant, and the delay distribution is optimized across all affected services, yielding the smallest possible total delay under the constraint.",
+          "reasoning": "The e2c6e12f algorithm addresses any resource‑capacity violation by enforcing hard limits through rescheduling. Applying its MILP‑based approach to the edge overflow guarantees feasibility and optimality.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.85,
+          "overall_fitness": 0.815,
+          "estimated_delay_min": 1.1666666666666667,
+          "affected_trains": [
+            "IC_1539",
+            "REG_2512",
+            "REG_10207",
+            "REG_33137"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_3",
+            "strategy_name": "MILP‑based hard‑capacity enforcement",
+            "action_steps": [
+              "Formulate a short‑term MILP model with the objective of minimizing total delay for the four trains.",
+              "Add a hard capacity constraint for the VOGHERA‑PAVIA edge (e.g., max 2 trains simultaneously).",
+              "Solve the model in real time to obtain revised departure times for each train.",
+              "Implement the computed schedule: hold two of the trains at VOGHERA (or the preceding node) while the other two traverse the segment, then release the held trains according to the optimal sequence.",
+              "Feed the new schedule back into the traffic management system and monitor for any secondary conflicts."
+            ],
+            "expected_outcome": "The segment’s capacity limit is respected at every instant, and the delay distribution is optimized across all affected services, yielding the smallest possible total delay under the constraint.",
+            "reasoning": "The e2c6e12f algorithm addresses any resource‑capacity violation by enforcing hard limits through rescheduling. Applying its MILP‑based approach to the edge overflow guarantees feasibility and optimality.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: e2c6e12f-2f05-59c3-bcb1-7a0082af4cf2"
+            ],
+            "confidence_score": 0.815,
+            "algorithm_name": "e2c6e12f-2f05-59c3-bcb1-7a0082af4cf2",
+            "algorithm_reasoning": "The e2c6e12f algorithm addresses any resource‑capacity violation by enforcing hard limits through rescheduling. Applying its MILP‑based approach to the edge overflow guarantees feasibility and optimality.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539",
+              "REG_2512",
+              "REG_10207",
+              "REG_33137"
+            ],
+            "estimated_delay_reduction_sec": 70,
+            "side_effects": [],
+            "feasibility_score": 0.85,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      }
+    ],
+    "raw_llm_response": "{\n  \"ranked_resolutions\": [\n    {\n      \"rank\": 1,\n      \"resolution_number\": 1,\n      \"resolution_id\": \"R1\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Issue a stop command to all four trains before they enter the VOGHERA‑PAVIA segment.\",\n          \"Allow the trains already inside the segment to clear it completely.\",\n          \"Create 5‑minute time slots for segment access, giving the earliest slot to IC_1539, then REG_2512, REG_10207 and REG_33137.\",\n          \"If after 10 minutes the segment is still at capacity, reroute REG_10207 and REG_33137 via any available parallel track or hold them at VOGHERA.\",\n          \"Adjust upstream departure times of subsequent trains to respect the new slots and avoid future bunching.\"\n        ]\n      },\n      \"overall_score\": 81,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 9.4,\n      \"robustness_rating\": 8.0,\n      \"justification\": \"The plan directly eliminates the capacity overflow with minimal waiting time and uses only existing signalling controls, making it safe, efficient and highly feasible. Its deterministic slot‑based approach also handles uncertainties well.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"R1\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"edge_overflow_resolution_1\",\n        \"actions\": [\n          \"Issue a stop command to all four trains before they enter the VOGHERA‑PAVIA segment.\",\n          \"Allow the trains already inside the segment to clear it completely.\",\n          \"Create 5‑minute time slots for segment access, giving the earliest slot to IC_1539, then REG_2512, REG_10207 and REG_33137.\",\n          \"If after 10 minutes the segment is still at capacity, reroute REG_10207 and REG_33137 via any available parallel track or hold them at VOGHERA.\",\n          \"Adjust upstream departure times of subsequent trains to respect the new slots and avoid future bunching.\"\n        ],\n        \"expected_outcome\": \"The VOGHERA‑PAVIA segment will never host more trains than its safe capacity, eliminating the collision risk while keeping additional waiting times to a minimum.\",\n        \"reasoning\": \"The conflict is an edge‑capacity overflow. Algorithm edge_overflow_resolution_1 explicitly prescribes stopping entry, clearing the segment, and then using slot‑based allocation, which directly matches the situation.\",\n        \"safety_score\": 0.800,\n        \"efficiency_score\": 0.700,\n        \"feasibility_score\": 0.940,\n        \"overall_fitness\": 0.869,\n        \"estimated_delay_min\": 1.5,\n        \"affected_trains\": [\"IC_1539\", \"REG_2512\", \"REG_10207\", \"REG_33137\"],\n        \"side_effects\": \"None\",\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 2,\n      \"resolution_number\": 2,\n      \"resolution_id\": \"R2\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Immediately halt any further entry into the VOGHERA‑PAVIA segment.\",\n          \"Grant priority access to the high‑speed train IC_1539 and let it enter the segment right away.\",\n          \"Hold REG_2512, REG_10207 and REG_33137 at VOGHERA (or the previous station) until the segment is free.\",\n          \"Delay REG_2512 and REG_10207 by about 10 minutes each and REG_33137 by about 12 minutes, staggering their releases.\",\n          \"After the conflict is cleared, switch to a slot‑based control regime for all subsequent trains on this corridor.\"\n        ]\n      },\n      \"overall_score\": 79,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 9.2,\n      \"robustness_rating\": 7.5,\n      \"justification\": \"Prioritising the high‑speed service reduces its delay while still clearing the overflow, and the required holds are simple to implement with existing signalling. The approach is slightly less robust than the first because it relies on precise timing of staggered releases.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"R2\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"synthetic_edge_overflow_milano_pavia\",\n        \"actions\": [\n          \"Immediately halt any further entry into the VOGHERA‑PAVIA segment.\",\n          \"Grant priority access to the high‑speed train IC_1539 and let it enter the segment right away.\",\n          \"Hold REG_2512, REG_10207 and REG_33137 at VOGHERA (or the previous station) until the segment is free.\",\n          \"Delay REG_2512 and REG_10207 by about 10 minutes each and REG_33137 by about 12 minutes, staggering their releases.\",\n          \"After the conflict is cleared, switch to a slot‑based control regime for all subsequent trains on this corridor.\"\n        ],\n        \"expected_outcome\": \"The most time‑critical service (IC_1539) proceeds without additional delay, while the remaining trains are staggered enough to respect the segment’s capacity, removing the overflow condition.\",\n        \"reasoning\": \"Algorithm synthetic_edge_overflow_milano_pavia resolves a similar four‑train overflow by giving priority to a high‑speed service and delaying the others, which is directly applicable to the current set of trains.\",\n        \"safety_score\": 0.800,\n        \"efficiency_score\": 0.700,\n        \"feasibility_score\": 0.920,\n        \"overall_fitness\": 0.857,\n        \"estimated_delay_min\": 1.0,\n        \"affected_trains\": [\"IC_1539\", \"REG_2512\", \"REG_10207\", \"REG_33137\"],\n        \"side_effects\": \"None\",\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 3,\n      \"resolution_number\": 3,\n      \"resolution_id\": \"R3\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Formulate a short‑term MILP model with the objective of minimizing total delay for the four trains.\",\n          \"Add a hard capacity constraint for the VOGHERA‑PAVIA edge (max 2 trains simultaneously).\",\n          \"Solve the model in real time to obtain revised departure times for each train.\",\n          \"Implement the computed schedule: hold two trains at VOGHERA while the other two traverse the segment, then release the held trains according to the optimal sequence.\",\n          \"Feed the new schedule back into the traffic management system and monitor for any secondary conflicts.\"\n        ]\n      },\n      \"overall_score\": 77,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 8.5,\n      \"robustness_rating\": 7.0,\n      \"justification\": \"The MILP provides an optimal delay distribution while strictly enforcing the capacity limit, but its reliance on real‑time optimization introduces moderate implementation risk. Nonetheless it remains safe and reasonably efficient.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"R3\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"e2c6e12f\",\n        \"actions\": [\n          \"Formulate a short‑term MILP model with the objective of minimizing total delay for the four trains.\",\n          \"Add a hard capacity constraint for the VOGHERA‑PAVIA edge (max 2 trains simultaneously).\",\n          \"Solve the model in real time to obtain revised departure times for each train.\",\n          \"Implement the computed schedule: hold two trains at VOGHERA while the other two traverse the segment, then release the held trains according to the optimal sequence.\",\n          \"Feed the new schedule back into the traffic management system and monitor for any secondary conflicts.\"\n        ],\n        \"expected_outcome\": \"The segment’s capacity limit is respected at every instant, and the delay distribution is optimized across all affected services, yielding the smallest possible total delay under the constraint.\",\n        \"reasoning\": \"The e2c6e12f algorithm addresses any resource‑capacity violation by enforcing hard limits through rescheduling. Applying its MILP‑based approach to the edge overflow guarantees feasibility and optimality.\",\n        \"safety_score\": 0.800,\n        \"efficiency_score\": 0.700,\n        \"feasibility_score\": 0.850,\n        \"overall_fitness\": 0.815,\n        \"estimated_delay_min\": 1.2,\n        \"affected_trains\": [\"IC_1539\", \"REG_2512\", \"REG_10207\", \"REG_33137\"],\n        \"side_effects\": \"None\",\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    }\n  ]\n}",
+    "error": null
+  }
+}

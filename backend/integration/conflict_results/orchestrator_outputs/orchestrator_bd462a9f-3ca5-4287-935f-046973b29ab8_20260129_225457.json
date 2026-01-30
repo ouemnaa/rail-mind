@@ -1,0 +1,457 @@
+{
+  "status": "ok",
+  "conflict_id": "bd462a9f-3ca5-4287-935f-046973b29ab8",
+  "started_at": "2026-01-29T22:54:29.936234+00:00",
+  "finished_at": "2026-01-29T22:54:57.133268+00:00",
+  "total_execution_ms": 27197,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 19552,
+      "raw_result": {
+        "conflict_id": "bd462a9f-3ca5-4287-935f-046973b29ab8",
+        "conflict_summary": "",
+        "timestamp": "2026-01-29T23:54:49.506124",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [
+          {
+            "resolution_id": "algo_1",
+            "strategy_name": "Immediate gate control with time‑slot allocation",
+            "action_steps": [
+              "1. Issue an automatic stop command to block further entry of any train onto the Pavia‑Milano Centrale segment.",
+              "2. Allow the trains already inside the segment (the four listed services) to clear the block section under normal speed.",
+              "3. Once the segment is empty, open the entry gate only for the next train according to a pre‑computed time‑slot schedule (e.g., 5‑minute slots).",
+              "4. Adjust departure times of upstream trains (at Milano Rogoredo, Pavia, etc.) so that their arrival at the segment matches the allocated slots.",
+              "5. Monitor the segment occupancy in real‑time; if a new overflow is detected, repeat the procedure."
+            ],
+            "expected_outcome": "The segment occupancy never exceeds its capacity of 2 trains, eliminating the risk of collision and clearing the current backlog within the next 10 minutes. All four trains resume normal running with reduced waiting time.",
+            "reasoning": "Algorithm *edge_overflow_resolution_1* is explicitly designed for edge‑capacity overflow situations. It prescribes stopping further entry, letting the segment clear, and then using slot‑based access – exactly the steps needed for the Pavia‑Milano Centrale conflict.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: edge_overflow_resolution_1"
+            ],
+            "confidence_score": 0.875,
+            "algorithm_name": "edge_overflow_resolution_1",
+            "algorithm_reasoning": "Algorithm *edge_overflow_resolution_1* is explicitly designed for edge‑capacity overflow situations. It prescribes stopping further entry, letting the segment clear, and then using slot‑based access – exactly the steps needed for the Pavia‑Milano Centrale conflict.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539",
+              "REG_2014",
+              "FR_9752",
+              "REG_10207"
+            ],
+            "estimated_delay_reduction_sec": 180,
+            "side_effects": [],
+            "feasibility_score": 0.95,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "algo_2",
+            "strategy_name": "Priority‑based staggered entry (high‑speed first)",
+            "action_steps": [
+              "1. Immediately halt entry of all trains to the segment.",
+              "2. Grant access priority to the high‑speed service (FR_9752) and allow it to enter the segment first.",
+              "3. Hold IC_1539 at the upstream signal (Milano Rogoredo) until the segment is free.",
+              "4. Delay REG_2014 and REG_10207 by a fixed buffer (e.g., 15 minutes) before permitting their entry, creating staggered slots.",
+              "5. After each train clears, open the gate for the next scheduled train according to the new priority‑based timetable."
+            ],
+            "expected_outcome": "The most time‑critical service (FR_9752) proceeds with minimal additional delay, while the remaining services are spaced out to respect the segment capacity, removing the overflow condition.",
+            "reasoning": "The *synthetic_edge_overflow_milano_pavia* algorithm deals with the same corridor and recommends a priority rule combined with staggered delays. Applying the same logic to the current four‑train set resolves the overflow while protecting high‑value traffic.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: synthetic_edge_overflow_milano_pavia"
+            ],
+            "confidence_score": 0.845,
+            "algorithm_name": "synthetic_edge_overflow_milano_pavia",
+            "algorithm_reasoning": "The *synthetic_edge_overflow_milano_pavia* algorithm deals with the same corridor and recommends a priority rule combined with staggered delays. Applying the same logic to the current four‑train set resolves the overflow while protecting high‑value traffic.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539",
+              "REG_2014",
+              "FR_9752",
+              "REG_10207"
+            ],
+            "estimated_delay_reduction_sec": 120,
+            "side_effects": [],
+            "feasibility_score": 0.9,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Dynamic Slot‑Control with Adaptive Speed Harmonisation",
+            "action_steps": [
+              "1. Activate the edge‑capacity gate on the Pavia‑Milano Centrale segment and freeze new entries for 2 minutes to capture the current occupancy snapshot.",
+              "2. Using the pre‑computed time‑slot schedule (Algorithm 1), assign 5‑minute entry windows to the four trains, but adjust the windows in real‑time based on the historical practice of speed‑harmonisation used on the 2019 Milan‑Bologna overload incident.",
+              "3. For the high‑speed service FR_9752, keep the original slot but raise its permitted line speed by 10 km/h (within safety limits) to shorten its traversal time, as successfully done in the 2021 Torino‑Aosta case.",
+              "4. For the remaining three services, apply a modest speed reduction of 5 km/h to create a larger head‑way buffer, mirroring the 2020 Veneto regional delay‑recovery technique.",
+              "5. Communicate the revised departure times to upstream stations (Pavia, Milano Rogoredo) and automatically adjust crew‑change timers to avoid additional dwell.",
+              "6. Continuously monitor segment occupancy; if a new overflow is detected, recompute the next slot set and repeat steps 2‑5.",
+              "7. Once the segment clears, lift the gate and resume normal signalling."
+            ],
+            "expected_outcome": "The segment clears within one slot cycle, high‑speed traffic retains most of its schedule while regional services experience only a minimal, coordinated slowdown, resulting in an overall reduction of cumulative delay and avoidance of a cascade effect downstream.",
+            "reasoning": "Algorithmic gate‑control guarantees capacity safety, while the historical speed‑harmonisation approach proved effective at smoothing traffic peaks without full stoppage. Merging the two leverages deterministic slot allocation and the proven flexibility of adaptive speed limits, delivering a balanced solution that respects both capacity and service priority.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.786,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539",
+              "REG_2014",
+              "FR_9752",
+              "REG_10207"
+            ],
+            "estimated_delay_reduction_sec": 210,
+            "side_effects": [
+              "Slight increase in energy consumption for the accelerated high‑speed train",
+              "Minor passenger inconvenience due to slower regional services",
+              "Potential need for crew overtime if speed adjustments push arrival beyond scheduled crew‑change windows"
+            ],
+            "feasibility_score": 0.81,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        ],
+        "layer1_count": 3,
+        "layer2_refinements": {
+          "historical_cases_found": 10,
+          "algorithm_resolutions": 3,
+          "hybrid_resolutions_generated": 2,
+          "total_candidates_evaluated": 5,
+          "historical_success_rates": {
+            "total_cases": 10,
+            "average_similarity": 0.1470589084,
+            "outcome_distribution": {
+              "resolved": 9,
+              "unknown": 1
+            }
+          }
+        },
+        "generation_time_sec": 7.342922
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 3
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 2720,
+      "raw_result": {
+        "solver_used": "genetic_algorithm",
+        "overall_fitness": 0.7047189096873131,
+        "total_delay_min": 10.832799999999999,
+        "passenger_impact": 5249.84,
+        "propagation_depth": 1,
+        "recovery_smoothness": 0.9587253033799936,
+        "actions": [
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "REG_10207",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          },
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "IC_1539",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          },
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "FR_9752",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          },
+          {
+            "action_type": "reroute",
+            "target_train_id": "REG_2014",
+            "parameters": {
+              "alternate_route": 1
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: bd462a9f-3ca5-4287-935f-046973b29ab8\nType: edge_capacity_overflow\nSeverity: 0.50\nAffected trains: IC_1539, REG_2014, FR_9752, REG_10207\nAffected stations: PAVIA--MILANO CENTRALE\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using genetic_algorithm):\n  1. SPEED_ADJUST - Train REG_10207\n      speed_factor: 1.12\n  2. SPEED_ADJUST - Train IC_1539\n      speed_factor: 1.12\n  3. SPEED_ADJUST - Train FR_9752\n      speed_factor: 1.12\n  4. REROUTE - Train REG_2014\n      alternate_route: 1\n\nExpected Outcomes:\n  - Total delay: 10.8 minutes\n  - Passenger impact: 5250 passenger-minutes\n  - Propagation depth: 1 trains\n  - Recovery smoothness: 0.96\n  - Overall fitness: 0.705"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "ok",
+    "execution_ms": 7617,
+    "ranked_resolutions": [
+      {
+        "rank": 1,
+        "resolution_number": 1,
+        "resolution_id": "R1",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Issue automatic stop command to block further entry onto the segment.",
+            "Allow the four trains already inside to clear the block section at normal speed.",
+            "Open the entry gate for the next train according to a 5‑minute time‑slot schedule.",
+            "Adjust upstream departure times to match allocated slots.",
+            "Monitor occupancy in real‑time and repeat if overflow recurs."
+          ]
+        },
+        "overall_score": 81,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 9.5,
+        "robustness_rating": 8.0,
+        "justification": "The solution guarantees capacity safety, clears the backlog quickly, and uses only existing signalling infrastructure, making it the most balanced across all criteria.",
+        "full_resolution": {
+          "resolution_id": "algo_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Immediate gate control with time‑slot allocation",
+          "actions": [
+            "1. Issue an automatic stop command to block further entry of any train onto the Pavia‑Milano Centrale segment.",
+            "2. Allow the trains already inside the segment (the four listed services) to clear the block section under normal speed.",
+            "3. Once the segment is empty, open the entry gate only for the next train according to a pre‑computed time‑slot schedule (e.g., 5‑minute slots).",
+            "4. Adjust departure times of upstream trains (at Milano Rogoredo, Pavia, etc.) so that their arrival at the segment matches the allocated slots.",
+            "5. Monitor the segment occupancy in real‑time; if a new overflow is detected, repeat the procedure."
+          ],
+          "expected_outcome": "The segment occupancy never exceeds its capacity of 2 trains, eliminating the risk of collision and clearing the current backlog within the next 10 minutes. All four trains resume normal running with reduced waiting time.",
+          "reasoning": "Algorithm *edge_overflow_resolution_1* is explicitly designed for edge‑capacity overflow situations. It prescribes stopping further entry, letting the segment clear, and then using slot‑based access – exactly the steps needed for the Pavia‑Milano Centrale conflict.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.95,
+          "overall_fitness": 0.875,
+          "estimated_delay_min": 3.0,
+          "affected_trains": [
+            "IC_1539",
+            "REG_2014",
+            "FR_9752",
+            "REG_10207"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_1",
+            "strategy_name": "Immediate gate control with time‑slot allocation",
+            "action_steps": [
+              "1. Issue an automatic stop command to block further entry of any train onto the Pavia‑Milano Centrale segment.",
+              "2. Allow the trains already inside the segment (the four listed services) to clear the block section under normal speed.",
+              "3. Once the segment is empty, open the entry gate only for the next train according to a pre‑computed time‑slot schedule (e.g., 5‑minute slots).",
+              "4. Adjust departure times of upstream trains (at Milano Rogoredo, Pavia, etc.) so that their arrival at the segment matches the allocated slots.",
+              "5. Monitor the segment occupancy in real‑time; if a new overflow is detected, repeat the procedure."
+            ],
+            "expected_outcome": "The segment occupancy never exceeds its capacity of 2 trains, eliminating the risk of collision and clearing the current backlog within the next 10 minutes. All four trains resume normal running with reduced waiting time.",
+            "reasoning": "Algorithm *edge_overflow_resolution_1* is explicitly designed for edge‑capacity overflow situations. It prescribes stopping further entry, letting the segment clear, and then using slot‑based access – exactly the steps needed for the Pavia‑Milano Centrale conflict.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: edge_overflow_resolution_1"
+            ],
+            "confidence_score": 0.875,
+            "algorithm_name": "edge_overflow_resolution_1",
+            "algorithm_reasoning": "Algorithm *edge_overflow_resolution_1* is explicitly designed for edge‑capacity overflow situations. It prescribes stopping further entry, letting the segment clear, and then using slot‑based access – exactly the steps needed for the Pavia‑Milano Centrale conflict.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539",
+              "REG_2014",
+              "FR_9752",
+              "REG_10207"
+            ],
+            "estimated_delay_reduction_sec": 180,
+            "side_effects": [],
+            "feasibility_score": 0.95,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      },
+      {
+        "rank": 2,
+        "resolution_number": 2,
+        "resolution_id": "R2",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Halt entry of all trains to the segment.",
+            "Give priority to high‑speed service FR_9752 and allow it to enter first.",
+            "Hold IC_1539 at Milano Rogoredo until the segment is free.",
+            "Delay REG_2014 and REG_10207 by a fixed 15‑minute buffer.",
+            "Open the gate for the next train according to the new priority‑based timetable."
+          ]
+        },
+        "overall_score": 79,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 9.0,
+        "robustness_rating": 7.5,
+        "justification": "Prioritising the high‑speed train reduces the most critical delay while the simple staggered schedule keeps the segment within capacity, though it is slightly less flexible than the top‑ranked plan.",
+        "full_resolution": {
+          "resolution_id": "algo_2",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Priority‑based staggered entry (high‑speed first)",
+          "actions": [
+            "1. Immediately halt entry of all trains to the segment.",
+            "2. Grant access priority to the high‑speed service (FR_9752) and allow it to enter the segment first.",
+            "3. Hold IC_1539 at the upstream signal (Milano Rogoredo) until the segment is free.",
+            "4. Delay REG_2014 and REG_10207 by a fixed buffer (e.g., 15 minutes) before permitting their entry, creating staggered slots.",
+            "5. After each train clears, open the gate for the next scheduled train according to the new priority‑based timetable."
+          ],
+          "expected_outcome": "The most time‑critical service (FR_9752) proceeds with minimal additional delay, while the remaining services are spaced out to respect the segment capacity, removing the overflow condition.",
+          "reasoning": "The *synthetic_edge_overflow_milano_pavia* algorithm deals with the same corridor and recommends a priority rule combined with staggered delays. Applying the same logic to the current four‑train set resolves the overflow while protecting high‑value traffic.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.9,
+          "overall_fitness": 0.845,
+          "estimated_delay_min": 2.0,
+          "affected_trains": [
+            "IC_1539",
+            "REG_2014",
+            "FR_9752",
+            "REG_10207"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_2",
+            "strategy_name": "Priority‑based staggered entry (high‑speed first)",
+            "action_steps": [
+              "1. Immediately halt entry of all trains to the segment.",
+              "2. Grant access priority to the high‑speed service (FR_9752) and allow it to enter the segment first.",
+              "3. Hold IC_1539 at the upstream signal (Milano Rogoredo) until the segment is free.",
+              "4. Delay REG_2014 and REG_10207 by a fixed buffer (e.g., 15 minutes) before permitting their entry, creating staggered slots.",
+              "5. After each train clears, open the gate for the next scheduled train according to the new priority‑based timetable."
+            ],
+            "expected_outcome": "The most time‑critical service (FR_9752) proceeds with minimal additional delay, while the remaining services are spaced out to respect the segment capacity, removing the overflow condition.",
+            "reasoning": "The *synthetic_edge_overflow_milano_pavia* algorithm deals with the same corridor and recommends a priority rule combined with staggered delays. Applying the same logic to the current four‑train set resolves the overflow while protecting high‑value traffic.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: synthetic_edge_overflow_milano_pavia"
+            ],
+            "confidence_score": 0.845,
+            "algorithm_name": "synthetic_edge_overflow_milano_pavia",
+            "algorithm_reasoning": "The *synthetic_edge_overflow_milano_pavia* algorithm deals with the same corridor and recommends a priority rule combined with staggered delays. Applying the same logic to the current four‑train set resolves the overflow while protecting high‑value traffic.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539",
+              "REG_2014",
+              "FR_9752",
+              "REG_10207"
+            ],
+            "estimated_delay_reduction_sec": 120,
+            "side_effects": [],
+            "feasibility_score": 0.9,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      },
+      {
+        "rank": 3,
+        "resolution_number": 3,
+        "resolution_id": "R3",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Freeze new entries for 2 minutes to capture occupancy snapshot.",
+            "Assign 5‑minute entry windows to the four trains, adjusting in real‑time.",
+            "Increase FR_9752 speed by 10 km/h within safety limits.",
+            "Reduce speed of the three regional services by 5 km/h to create head‑way buffer.",
+            "Communicate revised departure times upstream and adjust crew‑change timers.",
+            "Continuously monitor occupancy and recompute slots if needed.",
+            "Lift the gate once the segment clears."
+          ]
+        },
+        "overall_score": 75,
+        "safety_rating": 7.5,
+        "efficiency_rating": 7.5,
+        "feasibility_rating": 8.1,
+        "robustness_rating": 6.5,
+        "justification": "Combining gate control with adaptive speed limits yields a balanced outcome, but the added complexity and side‑effects lower its robustness compared with the simpler slot‑only approaches.",
+        "full_resolution": {
+          "resolution_id": "hybrid_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Dynamic Slot‑Control with Adaptive Speed Harmonisation",
+          "actions": [
+            "1. Activate the edge‑capacity gate on the Pavia‑Milano Centrale segment and freeze new entries for 2 minutes to capture the current occupancy snapshot.",
+            "2. Using the pre‑computed time‑slot schedule (Algorithm 1), assign 5‑minute entry windows to the four trains, but adjust the windows in real‑time based on the historical practice of speed‑harmonisation used on the 2019 Milan‑Bologna overload incident.",
+            "3. For the high‑speed service FR_9752, keep the original slot but raise its permitted line speed by 10 km/h (within safety limits) to shorten its traversal time, as successfully done in the 2021 Torino‑Aosta case.",
+            "4. For the remaining three services, apply a modest speed reduction of 5 km/h to create a larger head‑way buffer, mirroring the 2020 Veneto regional delay‑recovery technique.",
+            "5. Communicate the revised departure times to upstream stations (Pavia, Milano Rogoredo) and automatically adjust crew‑change timers to avoid additional dwell.",
+            "6. Continuously monitor segment occupancy; if a new overflow is detected, recompute the next slot set and repeat steps 2‑5.",
+            "7. Once the segment clears, lift the gate and resume normal signalling."
+          ],
+          "expected_outcome": "The segment clears within one slot cycle, high‑speed traffic retains most of its schedule while regional services experience only a minimal, coordinated slowdown, resulting in an overall reduction of cumulative delay and avoidance of a cascade effect downstream.",
+          "reasoning": "Algorithmic gate‑control guarantees capacity safety, while the historical speed‑harmonisation approach proved effective at smoothing traffic peaks without full stoppage. Merging the two leverages deterministic slot allocation and the proven flexibility of adaptive speed limits, delivering a balanced solution that respects both capacity and service priority.",
+          "safety_score": 0.75,
+          "efficiency_score": 0.75,
+          "feasibility_score": 0.81,
+          "overall_fitness": 0.786,
+          "estimated_delay_min": 3.5,
+          "affected_trains": [
+            "IC_1539",
+            "REG_2014",
+            "FR_9752",
+            "REG_10207"
+          ],
+          "side_effects": [
+            "Slight increase in energy consumption for the accelerated high‑speed train",
+            "Minor passenger inconvenience due to slower regional services",
+            "Potential need for crew overtime if speed adjustments push arrival beyond scheduled crew‑change windows"
+          ],
+          "algorithm_type": "hybrid",
+          "raw_data": {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Dynamic Slot‑Control with Adaptive Speed Harmonisation",
+            "action_steps": [
+              "1. Activate the edge‑capacity gate on the Pavia‑Milano Centrale segment and freeze new entries for 2 minutes to capture the current occupancy snapshot.",
+              "2. Using the pre‑computed time‑slot schedule (Algorithm 1), assign 5‑minute entry windows to the four trains, but adjust the windows in real‑time based on the historical practice of speed‑harmonisation used on the 2019 Milan‑Bologna overload incident.",
+              "3. For the high‑speed service FR_9752, keep the original slot but raise its permitted line speed by 10 km/h (within safety limits) to shorten its traversal time, as successfully done in the 2021 Torino‑Aosta case.",
+              "4. For the remaining three services, apply a modest speed reduction of 5 km/h to create a larger head‑way buffer, mirroring the 2020 Veneto regional delay‑recovery technique.",
+              "5. Communicate the revised departure times to upstream stations (Pavia, Milano Rogoredo) and automatically adjust crew‑change timers to avoid additional dwell.",
+              "6. Continuously monitor segment occupancy; if a new overflow is detected, recompute the next slot set and repeat steps 2‑5.",
+              "7. Once the segment clears, lift the gate and resume normal signalling."
+            ],
+            "expected_outcome": "The segment clears within one slot cycle, high‑speed traffic retains most of its schedule while regional services experience only a minimal, coordinated slowdown, resulting in an overall reduction of cumulative delay and avoidance of a cascade effect downstream.",
+            "reasoning": "Algorithmic gate‑control guarantees capacity safety, while the historical speed‑harmonisation approach proved effective at smoothing traffic peaks without full stoppage. Merging the two leverages deterministic slot allocation and the proven flexibility of adaptive speed limits, delivering a balanced solution that respects both capacity and service priority.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.786,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "IC_1539",
+              "REG_2014",
+              "FR_9752",
+              "REG_10207"
+            ],
+            "estimated_delay_reduction_sec": 210,
+            "side_effects": [
+              "Slight increase in energy consumption for the accelerated high‑speed train",
+              "Minor passenger inconvenience due to slower regional services",
+              "Potential need for crew overtime if speed adjustments push arrival beyond scheduled crew‑change windows"
+            ],
+            "feasibility_score": 0.81,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        }
+      }
+    ],
+    "raw_llm_response": "{\n  \"ranked_resolutions\": [\n    {\n      \"rank\": 1,\n      \"resolution_number\": 1,\n      \"resolution_id\": \"R1\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Issue automatic stop command to block further entry onto the segment.\",\n          \"Allow the four trains already inside to clear the block section at normal speed.\",\n          \"Open the entry gate for the next train according to a 5‑minute time‑slot schedule.\",\n          \"Adjust upstream departure times to match allocated slots.\",\n          \"Monitor occupancy in real‑time and repeat if overflow recurs.\"\n        ]\n      },\n      \"overall_score\": 81,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 9.5,\n      \"robustness_rating\": 8.0,\n      \"justification\": \"The solution guarantees capacity safety, clears the backlog quickly, and uses only existing signalling infrastructure, making it the most balanced across all criteria.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"R1\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"edge_overflow_resolution_1\",\n        \"actions\": [\n          \"Issue an automatic stop command to block further entry of any train onto the Pavia‑Milano Centrale segment.\",\n          \"Allow the trains already inside the segment (the four listed services) to clear the block section under normal speed.\",\n          \"Once the segment is empty, open the entry gate only for the next train according to a pre‑computed time‑slot schedule (e.g., 5‑minute slots).\",\n          \"Adjust departure times of upstream trains (at Milano Rogoredo, Pavia, etc.) so that their arrival at the segment matches the allocated slots.\",\n          \"Monitor the segment occupancy in real‑time; if a new overflow is detected, repeat the procedure.\"\n        ],\n        \"expected_outcome\": \"The segment occupancy never exceeds its capacity of 2 trains, eliminating the risk of collision and clearing the current backlog within the next 10 minutes. All four trains resume normal running with reduced waiting time.\",\n        \"reasoning\": \"Algorithm edge_overflow_resolution_1 is explicitly designed for edge‑capacity overflow situations. It prescribes stopping further entry, letting the segment clear, and then using slot‑based access – exactly the steps needed for the Pavia‑Milano Centrale conflict.\",\n        \"safety_score\": 0.800,\n        \"efficiency_score\": 0.700,\n        \"feasibility_score\": 0.950,\n        \"overall_fitness\": 0.875,\n        \"estimated_delay_min\": 3.0,\n        \"affected_trains\": [\"IC_1539\", \"REG_2014\", \"FR_9752\", \"REG_10207\"],\n        \"side_effects\": \"None\",\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 2,\n      \"resolution_number\": 2,\n      \"resolution_id\": \"R2\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Halt entry of all trains to the segment.\",\n          \"Give priority to high‑speed service FR_9752 and allow it to enter first.\",\n          \"Hold IC_1539 at Milano Rogoredo until the segment is free.\",\n          \"Delay REG_2014 and REG_10207 by a fixed 15‑minute buffer.\",\n          \"Open the gate for the next train according to the new priority‑based timetable.\"\n        ]\n      },\n      \"overall_score\": 79,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 9.0,\n      \"robustness_rating\": 7.5,\n      \"justification\": \"Prioritising the high‑speed train reduces the most critical delay while the simple staggered schedule keeps the segment within capacity, though it is slightly less flexible than the top‑ranked plan.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"R2\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"synthetic_edge_overflow_milano_pavia\",\n        \"actions\": [\n          \"Immediately halt entry of all trains to the segment.\",\n          \"Grant access priority to the high‑speed service (FR_9752) and allow it to enter the segment first.\",\n          \"Hold IC_1539 at the upstream signal (Milano Rogoredo) until the segment is free.\",\n          \"Delay REG_2014 and REG_10207 by a fixed buffer (e.g., 15 minutes) before permitting their entry, creating staggered slots.\",\n          \"After each train clears, open the gate for the next scheduled train according to the new priority‑based timetable.\"\n        ],\n        \"expected_outcome\": \"The most time‑critical service (FR_9752) proceeds with minimal additional delay, while the remaining services are spaced out to respect the segment capacity, removing the overflow condition.\",\n        \"reasoning\": \"The synthetic_edge_overflow_milano_pavia algorithm deals with the same corridor and recommends a priority rule combined with staggered delays. Applying the same logic to the current four‑train set resolves the overflow while protecting high‑value traffic.\",\n        \"safety_score\": 0.800,\n        \"efficiency_score\": 0.700,\n        \"feasibility_score\": 0.900,\n        \"overall_fitness\": 0.845,\n        \"estimated_delay_min\": 2.0,\n        \"affected_trains\": [\"IC_1539\", \"REG_2014\", \"FR_9752\", \"REG_10207\"],\n        \"side_effects\": \"None\",\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 3,\n      \"resolution_number\": 3,\n      \"resolution_id\": \"R3\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Freeze new entries for 2 minutes to capture occupancy snapshot.\",\n          \"Assign 5‑minute entry windows to the four trains, adjusting in real‑time.\",\n          \"Increase FR_9752 speed by 10 km/h within safety limits.\",\n          \"Reduce speed of the three regional services by 5 km/h to create head‑way buffer.\",\n          \"Communicate revised departure times upstream and adjust crew‑change timers.\",\n          \"Continuously monitor occupancy and recompute slots if needed.\",\n          \"Lift the gate once the segment clears.\"\n        ]\n      },\n      \"overall_score\": 75,\n      \"safety_rating\": 7.5,\n      \"efficiency_rating\": 7.5,\n      \"feasibility_rating\": 8.1,\n      \"robustness_rating\": 6.5,\n      \"justification\": \"Combining gate control with adaptive speed limits yields a balanced outcome, but the added complexity and side‑effects lower its robustness compared with the simpler slot‑only approaches.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"R3\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"dynamic_slot_control_adaptive_speed\",\n        \"actions\": [\n          \"Activate the edge‑capacity gate on the Pavia‑Milano Centrale segment and freeze new entries for 2 minutes to capture the current occupancy snapshot.\",\n          \"Using the pre‑computed time‑slot schedule (Algorithm 1), assign 5‑minute entry windows to the four trains, but adjust the windows in real‑time based on the historical practice of speed‑harmonisation used on the 2019 Milan‑Bologna overload incident.\",\n          \"For the high‑speed service FR_9752, keep the original slot but raise its permitted line speed by 10 km/h (within safety limits) to shorten its traversal time, as successfully done in the 2021 Torino‑Aosta case.\",\n          \"For the remaining three services, apply a modest speed reduction of 5 km/h to create a larger head‑way buffer, mirroring the 2020 Veneto regional delay‑recovery technique.\",\n          \"Communicate the revised departure times to upstream stations (Pavia, Milano Rogoredo) and automatically adjust crew‑change timers to avoid additional dwell.\",\n          \"Continuously monitor segment occupancy; if a new overflow is detected, recompute the next slot set and repeat steps 2‑5.\",\n          \"Once the segment clears, lift the gate and resume normal signalling.\"\n        ],\n        \"expected_outcome\": \"The segment clears within one slot cycle, high‑speed traffic retains most of its schedule while regional services experience only a minimal, coordinated slowdown, resulting in an overall reduction of cumulative delay and avoidance of a cascade effect downstream.\",\n        \"reasoning\": \"Algorithmic gate‑control guarantees capacity safety, while the historical speed‑harmonisation approach proved effective at smoothing traffic peaks without full stoppage. Merging the two leverages deterministic slot allocation and the proven flexibility of adaptive speed limits, delivering a balanced solution that respects both capacity and service priority.\",\n        \"safety_score\": 0.750,\n        \"efficiency_score\": 0.750,\n        \"feasibility_score\": 0.810,\n        \"overall_fitness\": 0.786,\n        \"estimated_delay_min\": 3.5,\n        \"affected_trains\": [\"IC_1539\", \"REG_2014\", \"FR_9752\", \"REG_10207\"],\n        \"side_effects\": \"Slight increase in energy consumption for the accelerated high‑speed train, Minor passenger inconvenience due to slower regional services, Potential need for crew overtime if speed adjustments push arrival beyond scheduled crew‑change windows\",\n        \"algorithm_type\": \"hybrid\",\n        \"raw_data\": null\n      }\n    }\n  ]\n}",
+    "error": null
+  }
+}

@@ -1,0 +1,410 @@
+{
+  "status": "ok",
+  "conflict_id": "TF-20260130000121",
+  "started_at": "2026-01-29T23:01:28.046165+00:00",
+  "finished_at": "2026-01-29T23:01:55.401361+00:00",
+  "total_execution_ms": 27355,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 17702,
+      "raw_result": {
+        "conflict_id": "TF-20260130000121",
+        "conflict_summary": "",
+        "timestamp": "2026-01-30T00:01:45.737657",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [
+          {
+            "resolution_id": "algo_1",
+            "strategy_name": "Immediate Speed Restriction & On‑Site Verification",
+            "action_steps": [
+              "Impose a temporary speed restriction of 30‑50 km/h on the Milano Lambrate‑Treviglio segment.",
+              "Broadcast the restriction to all train drivers and update the dispatch system.",
+              "Dispatch a track inspection team to the affected location within 15 minutes.",
+              "If the inspection confirms a critical defect (AI confidence > 70 %), halt all traffic on the segment and arrange an alternative bus bridge.",
+              "If the defect is minor, maintain the speed restriction and schedule a maintenance window during off‑peak hours.",
+              "Notify the control centre and log the incident in the safety management system."
+            ],
+            "expected_outcome": "Ensures safety by limiting train speed while allowing limited service, prevents a derailment, and provides a clear path to either full closure or continued operation, cutting the projected 4‑minute delay roughly in half.",
+            "reasoning": "The conflict is a track‑fault detected by a vision system. Algorithm track_fault_vision_detection_1 directly addresses this scenario with a step‑by‑step safety protocol, making it the most applicable solution.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: track_fault_vision_detection_1"
+            ],
+            "confidence_score": 0.875,
+            "algorithm_name": "track_fault_vision_detection_1",
+            "algorithm_reasoning": "The conflict is a track‑fault detected by a vision system. Algorithm track_fault_vision_detection_1 directly addresses this scenario with a step‑by‑step safety protocol, making it the most applicable solution.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "MAINTENANCE_REQUIRED"
+            ],
+            "estimated_delay_reduction_sec": 120,
+            "side_effects": [],
+            "feasibility_score": 0.95,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "algo_2",
+            "strategy_name": "Sensor‑Based Precautionary Speed Limit & Contingency Timetable",
+            "action_steps": [
+              "Automatically flag the Milano Lambrate‑Treviglio segment for inspection in the sensor monitoring system.",
+              "Apply a precautionary speed limit of 40 km/h to all trains entering the segment.",
+              "Cross‑reference the sensor alert with any available visual inspection data.",
+              "Prepare a contingency timetable that reduces capacity on the affected route by 20 % and holds upstream departures if needed.",
+              "Notify train crews and update the passenger information system about the speed restriction."
+            ],
+            "expected_outcome": "Reduces risk by slowing trains and prepares the network for possible capacity loss, limiting additional delays and keeping the line operational under reduced speed.",
+            "reasoning": "Although the current alert originates from a vision system, the sensor‑based algorithm offers complementary verification and a structured capacity‑management response, which is valuable for soft‑blocking faults.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: track_fault_sensor_detection_1"
+            ],
+            "confidence_score": 0.845,
+            "algorithm_name": "track_fault_sensor_detection_1",
+            "algorithm_reasoning": "Although the current alert originates from a vision system, the sensor‑based algorithm offers complementary verification and a structured capacity‑management response, which is valuable for soft‑blocking faults.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "MAINTENANCE_REQUIRED"
+            ],
+            "estimated_delay_reduction_sec": 150,
+            "side_effects": [],
+            "feasibility_score": 0.9,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Dynamic Speed Restriction + Real‑Time Passenger Re‑booking",
+            "action_steps": [
+              "1. Immediately impose a 35 km/h speed restriction on the Milano Lambrate‑Treviglio segment and broadcast it to all train crews via the ETCS overlay.",
+              "2. Activate the real‑time passenger‑information platform to display the restriction and automatically offer affected passengers alternative services (next‑available train, bus‑bridge, or re‑booking on parallel routes).",
+              "3. Deploy a mixed vision‑sensor inspection team to the fault location within 12 minutes; use AI confidence > 70 % as the trigger for escalation.",
+              "4. If the inspection confirms a critical defect, trigger a full segment closure and launch the pre‑planned bus‑bridge (2 buses per hour, capacity 80 passengers each).",
+              "5. If the defect is minor, keep the speed restriction, log the issue, and schedule a targeted maintenance window during the next low‑traffic period (02:00‑04:00).",
+              "6. Update the timetable engine to insert a 2‑minute buffer for all upstream services, reducing cascading delays.",
+              "7. Log all actions in the Safety Management System and send a post‑event report to the regional operations board."
+            ],
+            "expected_outcome": "Maintains safe train operation while minimizing passenger inconvenience; expected to cut the projected 4‑minute delay to under 1 minute for most services and keep the segment operational when possible.",
+            "reasoning": "Combines the algorithmic speed‑restriction and inspection workflow with the historical success of proactive passenger re‑booking and bus‑bridge deployment. This hybrid leverages proven communication tactics to reduce perceived delay, while still respecting safety protocols derived from AI‑driven fault detection.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.8280000000000001,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "MAINTENANCE_REQUIRED"
+            ],
+            "estimated_delay_reduction_sec": 180,
+            "side_effects": [
+              "Increased workload for the passenger‑information centre during the first 30 minutes",
+              "Potential short‑term capacity reduction on adjacent bus routes"
+            ],
+            "feasibility_score": 0.88,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        ],
+        "layer1_count": 3,
+        "layer2_refinements": {
+          "historical_cases_found": 10,
+          "algorithm_resolutions": 3,
+          "hybrid_resolutions_generated": 2,
+          "total_candidates_evaluated": 5,
+          "historical_success_rates": {
+            "total_cases": 10,
+            "average_similarity": 0.319787899,
+            "outcome_distribution": {
+              "resolved": 6,
+              "unknown": 4
+            }
+          }
+        },
+        "generation_time_sec": 6.656427
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 3
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 1218,
+      "raw_result": {
+        "solver_used": "nsga2",
+        "overall_fitness": 0.7329876905311778,
+        "total_delay_min": 3.6159999999999997,
+        "passenger_impact": 1084.8,
+        "propagation_depth": 1,
+        "recovery_smoothness": 1.0,
+        "actions": [
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "MAINTENANCE_REQUIRED",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: TF-20260130000121\nType: track_fault\nSeverity: 0.95\nAffected trains: MAINTENANCE_REQUIRED\nAffected stations: MILANO LAMBRATE--TREVIGLIO\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using nsga2):\n  1. SPEED_ADJUST - Train MAINTENANCE_REQUIRED\n      speed_factor: 1.12\n\nExpected Outcomes:\n  - Total delay: 3.6 minutes\n  - Passenger impact: 1085 passenger-minutes\n  - Propagation depth: 1 trains\n  - Recovery smoothness: 1.00\n  - Overall fitness: 0.733"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "ok",
+    "execution_ms": 9636,
+    "ranked_resolutions": [
+      {
+        "rank": 1,
+        "resolution_number": 1,
+        "resolution_id": "R1",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Impose a temporary speed restriction of 30‑50 km/h on the Milano Lambrate‑Treviglio segment.",
+            "Broadcast the restriction to all train drivers and update the dispatch system.",
+            "Dispatch a track inspection team to the affected location within 15 minutes.",
+            "If the inspection confirms a critical defect (AI confidence > 70 %), halt all traffic on the segment and arrange an alternative bus bridge.",
+            "If the defect is minor, maintain the speed restriction and schedule a maintenance window during off‑peak hours.",
+            "Notify the control centre and log the incident in the safety management system."
+          ]
+        },
+        "overall_score": 82.3,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 9.5,
+        "robustness_rating": 9.0,
+        "justification": "The plan offers the highest safety and feasibility scores while keeping robustness high, resulting in the best weighted overall performance. It also yields the lowest estimated delay.",
+        "full_resolution": {
+          "resolution_id": "algo_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Immediate Speed Restriction & On‑Site Verification",
+          "actions": [
+            "Impose a temporary speed restriction of 30‑50 km/h on the Milano Lambrate‑Treviglio segment.",
+            "Broadcast the restriction to all train drivers and update the dispatch system.",
+            "Dispatch a track inspection team to the affected location within 15 minutes.",
+            "If the inspection confirms a critical defect (AI confidence > 70 %), halt all traffic on the segment and arrange an alternative bus bridge.",
+            "If the defect is minor, maintain the speed restriction and schedule a maintenance window during off‑peak hours.",
+            "Notify the control centre and log the incident in the safety management system."
+          ],
+          "expected_outcome": "Ensures safety by limiting train speed while allowing limited service, prevents a derailment, and provides a clear path to either full closure or continued operation, cutting the projected 4‑minute delay roughly in half.",
+          "reasoning": "The conflict is a track‑fault detected by a vision system. Algorithm track_fault_vision_detection_1 directly addresses this scenario with a step‑by‑step safety protocol, making it the most applicable solution.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.95,
+          "overall_fitness": 0.875,
+          "estimated_delay_min": 2.0,
+          "affected_trains": [
+            "MAINTENANCE_REQUIRED"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_1",
+            "strategy_name": "Immediate Speed Restriction & On‑Site Verification",
+            "action_steps": [
+              "Impose a temporary speed restriction of 30‑50 km/h on the Milano Lambrate‑Treviglio segment.",
+              "Broadcast the restriction to all train drivers and update the dispatch system.",
+              "Dispatch a track inspection team to the affected location within 15 minutes.",
+              "If the inspection confirms a critical defect (AI confidence > 70 %), halt all traffic on the segment and arrange an alternative bus bridge.",
+              "If the defect is minor, maintain the speed restriction and schedule a maintenance window during off‑peak hours.",
+              "Notify the control centre and log the incident in the safety management system."
+            ],
+            "expected_outcome": "Ensures safety by limiting train speed while allowing limited service, prevents a derailment, and provides a clear path to either full closure or continued operation, cutting the projected 4‑minute delay roughly in half.",
+            "reasoning": "The conflict is a track‑fault detected by a vision system. Algorithm track_fault_vision_detection_1 directly addresses this scenario with a step‑by‑step safety protocol, making it the most applicable solution.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: track_fault_vision_detection_1"
+            ],
+            "confidence_score": 0.875,
+            "algorithm_name": "track_fault_vision_detection_1",
+            "algorithm_reasoning": "The conflict is a track‑fault detected by a vision system. Algorithm track_fault_vision_detection_1 directly addresses this scenario with a step‑by‑step safety protocol, making it the most applicable solution.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "MAINTENANCE_REQUIRED"
+            ],
+            "estimated_delay_reduction_sec": 120,
+            "side_effects": [],
+            "feasibility_score": 0.95,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      },
+      {
+        "rank": 2,
+        "resolution_number": 2,
+        "resolution_id": "R2",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Automatically flag the Milano Lambrate‑Treviglio segment for inspection in the sensor monitoring system.",
+            "Apply a precautionary speed limit of 40 km/h to all trains entering the segment.",
+            "Cross‑reference the sensor alert with any available visual inspection data.",
+            "Prepare a contingency timetable that reduces capacity on the affected route by 20 % and holds upstream departures if needed.",
+            "Notify train crews and update the passenger information system about the speed restriction."
+          ]
+        },
+        "overall_score": 80.3,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 9.0,
+        "robustness_rating": 8.5,
+        "justification": "Provides comparable safety and efficiency to the top solution while slightly lower feasibility and robustness, resulting in a strong second‑place ranking. Delay reduction remains modest but acceptable.",
+        "full_resolution": {
+          "resolution_id": "algo_2",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Sensor‑Based Precautionary Speed Limit & Contingency Timetable",
+          "actions": [
+            "Automatically flag the Milano Lambrate‑Treviglio segment for inspection in the sensor monitoring system.",
+            "Apply a precautionary speed limit of 40 km/h to all trains entering the segment.",
+            "Cross‑reference the sensor alert with any available visual inspection data.",
+            "Prepare a contingency timetable that reduces capacity on the affected route by 20 % and holds upstream departures if needed.",
+            "Notify train crews and update the passenger information system about the speed restriction."
+          ],
+          "expected_outcome": "Reduces risk by slowing trains and prepares the network for possible capacity loss, limiting additional delays and keeping the line operational under reduced speed.",
+          "reasoning": "Although the current alert originates from a vision system, the sensor‑based algorithm offers complementary verification and a structured capacity‑management response, which is valuable for soft‑blocking faults.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.9,
+          "overall_fitness": 0.845,
+          "estimated_delay_min": 2.5,
+          "affected_trains": [
+            "MAINTENANCE_REQUIRED"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_2",
+            "strategy_name": "Sensor‑Based Precautionary Speed Limit & Contingency Timetable",
+            "action_steps": [
+              "Automatically flag the Milano Lambrate‑Treviglio segment for inspection in the sensor monitoring system.",
+              "Apply a precautionary speed limit of 40 km/h to all trains entering the segment.",
+              "Cross‑reference the sensor alert with any available visual inspection data.",
+              "Prepare a contingency timetable that reduces capacity on the affected route by 20 % and holds upstream departures if needed.",
+              "Notify train crews and update the passenger information system about the speed restriction."
+            ],
+            "expected_outcome": "Reduces risk by slowing trains and prepares the network for possible capacity loss, limiting additional delays and keeping the line operational under reduced speed.",
+            "reasoning": "Although the current alert originates from a vision system, the sensor‑based algorithm offers complementary verification and a structured capacity‑management response, which is valuable for soft‑blocking faults.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: track_fault_sensor_detection_1"
+            ],
+            "confidence_score": 0.845,
+            "algorithm_name": "track_fault_sensor_detection_1",
+            "algorithm_reasoning": "Although the current alert originates from a vision system, the sensor‑based algorithm offers complementary verification and a structured capacity‑management response, which is valuable for soft‑blocking faults.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "MAINTENANCE_REQUIRED"
+            ],
+            "estimated_delay_reduction_sec": 150,
+            "side_effects": [],
+            "feasibility_score": 0.9,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      },
+      {
+        "rank": 3,
+        "resolution_number": 3,
+        "resolution_id": "R3",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Immediately impose a 35 km/h speed restriction on the Milano Lambrate‑Treviglio segment and broadcast it to all train crews via the ETCS overlay.",
+            "Activate the real‑time passenger‑information platform to display the restriction and automatically offer affected passengers alternative services (next‑available train, bus‑bridge, or re‑booking on parallel routes).",
+            "Deploy a mixed vision‑sensor inspection team to the fault location within 12 minutes; use AI confidence > 70 % as the trigger for escalation.",
+            "If the inspection confirms a critical defect, trigger a full segment closure and launch the pre‑planned bus‑bridge (2 buses per hour, capacity 80 passengers each).",
+            "If the defect is minor, keep the speed restriction, log the issue, and schedule a targeted maintenance window during the next low‑traffic period (02:00‑04:00).",
+            "Update the timetable engine to insert a 2‑minute buffer for all upstream services, reducing cascading delays.",
+            "Log all actions in the Safety Management System and send a post‑event report to the regional operations board."
+          ]
+        },
+        "overall_score": 78.3,
+        "safety_rating": 7.5,
+        "efficiency_rating": 7.5,
+        "feasibility_rating": 8.8,
+        "robustness_rating": 7.5,
+        "justification": "Combines safety and efficiency well but introduces additional operational load and passenger‑information side effects, lowering its robustness rating. Still ranks third due to balanced scores across all criteria.",
+        "full_resolution": {
+          "resolution_id": "hybrid_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Dynamic Speed Restriction + Real‑Time Passenger Re‑booking",
+          "actions": [
+            "1. Immediately impose a 35 km/h speed restriction on the Milano Lambrate‑Treviglio segment and broadcast it to all train crews via the ETCS overlay.",
+            "2. Activate the real‑time passenger‑information platform to display the restriction and automatically offer affected passengers alternative services (next‑available train, bus‑bridge, or re‑booking on parallel routes).",
+            "3. Deploy a mixed vision‑sensor inspection team to the fault location within 12 minutes; use AI confidence > 70 % as the trigger for escalation.",
+            "4. If the inspection confirms a critical defect, trigger a full segment closure and launch the pre‑planned bus‑bridge (2 buses per hour, capacity 80 passengers each).",
+            "5. If the defect is minor, keep the speed restriction, log the issue, and schedule a targeted maintenance window during the next low‑traffic period (02:00‑04:00).",
+            "6. Update the timetable engine to insert a 2‑minute buffer for all upstream services, reducing cascading delays.",
+            "7. Log all actions in the Safety Management System and send a post‑event report to the regional operations board."
+          ],
+          "expected_outcome": "Maintains safe train operation while minimizing passenger inconvenience; expected to cut the projected 4‑minute delay to under 1 minute for most services and keep the segment operational when possible.",
+          "reasoning": "Combines the algorithmic speed‑restriction and inspection workflow with the historical success of proactive passenger re‑booking and bus‑bridge deployment. This hybrid leverages proven communication tactics to reduce perceived delay, while still respecting safety protocols derived from AI‑driven fault detection.",
+          "safety_score": 0.75,
+          "efficiency_score": 0.75,
+          "feasibility_score": 0.88,
+          "overall_fitness": 0.8280000000000001,
+          "estimated_delay_min": 3.0,
+          "affected_trains": [
+            "MAINTENANCE_REQUIRED"
+          ],
+          "side_effects": [
+            "Increased workload for the passenger‑information centre during the first 30 minutes",
+            "Potential short‑term capacity reduction on adjacent bus routes"
+          ],
+          "algorithm_type": "hybrid",
+          "raw_data": {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Dynamic Speed Restriction + Real‑Time Passenger Re‑booking",
+            "action_steps": [
+              "1. Immediately impose a 35 km/h speed restriction on the Milano Lambrate‑Treviglio segment and broadcast it to all train crews via the ETCS overlay.",
+              "2. Activate the real‑time passenger‑information platform to display the restriction and automatically offer affected passengers alternative services (next‑available train, bus‑bridge, or re‑booking on parallel routes).",
+              "3. Deploy a mixed vision‑sensor inspection team to the fault location within 12 minutes; use AI confidence > 70 % as the trigger for escalation.",
+              "4. If the inspection confirms a critical defect, trigger a full segment closure and launch the pre‑planned bus‑bridge (2 buses per hour, capacity 80 passengers each).",
+              "5. If the defect is minor, keep the speed restriction, log the issue, and schedule a targeted maintenance window during the next low‑traffic period (02:00‑04:00).",
+              "6. Update the timetable engine to insert a 2‑minute buffer for all upstream services, reducing cascading delays.",
+              "7. Log all actions in the Safety Management System and send a post‑event report to the regional operations board."
+            ],
+            "expected_outcome": "Maintains safe train operation while minimizing passenger inconvenience; expected to cut the projected 4‑minute delay to under 1 minute for most services and keep the segment operational when possible.",
+            "reasoning": "Combines the algorithmic speed‑restriction and inspection workflow with the historical success of proactive passenger re‑booking and bus‑bridge deployment. This hybrid leverages proven communication tactics to reduce perceived delay, while still respecting safety protocols derived from AI‑driven fault detection.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.8280000000000001,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "MAINTENANCE_REQUIRED"
+            ],
+            "estimated_delay_reduction_sec": 180,
+            "side_effects": [
+              "Increased workload for the passenger‑information centre during the first 30 minutes",
+              "Potential short‑term capacity reduction on adjacent bus routes"
+            ],
+            "feasibility_score": 0.88,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        }
+      }
+    ],
+    "raw_llm_response": "{\n  \"ranked_resolutions\": [\n    {\n      \"rank\": 1,\n      \"resolution_number\": 1,\n      \"resolution_id\": \"R1\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Impose a temporary speed restriction of 30‑50 km/h on the Milano Lambrate‑Treviglio segment.\",\n          \"Broadcast the restriction to all train drivers and update the dispatch system.\",\n          \"Dispatch a track inspection team to the affected location within 15 minutes.\",\n          \"If the inspection confirms a critical defect (AI confidence > 70 %), halt all traffic on the segment and arrange an alternative bus bridge.\",\n          \"If the defect is minor, maintain the speed restriction and schedule a maintenance window during off‑peak hours.\",\n          \"Notify the control centre and log the incident in the safety management system.\"\n        ]\n      },\n      \"overall_score\": 82.3,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 9.5,\n      \"robustness_rating\": 9.0,\n      \"justification\": \"The plan offers the highest safety and feasibility scores while keeping robustness high, resulting in the best weighted overall performance. It also yields the lowest estimated delay.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"R1\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Immediate Speed Restriction & On‑Site Verification\",\n        \"actions\": [\n          \"Impose a temporary speed restriction of 30‑50 km/h on the Milano Lambrate‑Treviglio segment.\",\n          \"Broadcast the restriction to all train drivers and update the dispatch system.\",\n          \"Dispatch a track inspection team to the affected location within 15 minutes.\",\n          \"If the inspection confirms a critical defect (AI confidence > 70 %), halt all traffic on the segment and arrange an alternative bus bridge.\",\n          \"If the defect is minor, maintain the speed restriction and schedule a maintenance window during off‑peak hours.\",\n          \"Notify the control centre and log the incident in the safety management system.\"\n        ],\n        \"expected_outcome\": \"Ensures safety by limiting train speed while allowing limited service, prevents a derailment, and provides a clear path to either full closure or continued operation, cutting the projected 4‑minute delay roughly in half.\",\n        \"reasoning\": \"The conflict is a track‑fault detected by a vision system. Algorithm track_fault_vision_detection_1 directly addresses this scenario with a step‑by‑step safety protocol, making it the most applicable solution.\",\n        \"safety_score\": 0.800,\n        \"efficiency_score\": 0.700,\n        \"feasibility_score\": 0.950,\n        \"overall_fitness\": 0.875,\n        \"estimated_delay_min\": 2.0,\n        \"affected_trains\": \"MAINTENANCE_REQUIRED\",\n        \"side_effects\": \"None\",\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 2,\n      \"resolution_number\": 2,\n      \"resolution_id\": \"R2\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Automatically flag the Milano Lambrate‑Treviglio segment for inspection in the sensor monitoring system.\",\n          \"Apply a precautionary speed limit of 40 km/h to all trains entering the segment.\",\n          \"Cross‑reference the sensor alert with any available visual inspection data.\",\n          \"Prepare a contingency timetable that reduces capacity on the affected route by 20 % and holds upstream departures if needed.\",\n          \"Notify train crews and update the passenger information system about the speed restriction.\"\n        ]\n      },\n      \"overall_score\": 80.3,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 9.0,\n      \"robustness_rating\": 8.5,\n      \"justification\": \"Provides comparable safety and efficiency to the top solution while slightly lower feasibility and robustness, resulting in a strong second‑place ranking. Delay reduction remains modest but acceptable.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"R2\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Sensor‑Based Precautionary Speed Limit & Contingency Timetable\",\n        \"actions\": [\n          \"Automatically flag the Milano Lambrate‑Treviglio segment for inspection in the sensor monitoring system.\",\n          \"Apply a precautionary speed limit of 40 km/h to all trains entering the segment.\",\n          \"Cross‑reference the sensor alert with any available visual inspection data.\",\n          \"Prepare a contingency timetable that reduces capacity on the affected route by 20 % and holds upstream departures if needed.\",\n          \"Notify train crews and update the passenger information system about the speed restriction.\"\n        ],\n        \"expected_outcome\": \"Reduces risk by slowing trains and prepares the network for possible capacity loss, limiting additional delays and keeping the line operational under reduced speed.\",\n        \"reasoning\": \"Although the current alert originates from a vision system, the sensor‑based algorithm offers complementary verification and a structured capacity‑management response, which is valuable for soft‑blocking faults.\",\n        \"safety_score\": 0.800,\n        \"efficiency_score\": 0.700,\n        \"feasibility_score\": 0.900,\n        \"overall_fitness\": 0.845,\n        \"estimated_delay_min\": 2.5,\n        \"affected_trains\": \"MAINTENANCE_REQUIRED\",\n        \"side_effects\": \"None\",\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 3,\n      \"resolution_number\": 3,\n      \"resolution_id\": \"R3\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Immediately impose a 35 km/h speed restriction on the Milano Lambrate‑Treviglio segment and broadcast it to all train crews via the ETCS overlay.\",\n          \"Activate the real‑time passenger‑information platform to display the restriction and automatically offer affected passengers alternative services (next‑available train, bus‑bridge, or re‑booking on parallel routes).\",\n          \"Deploy a mixed vision‑sensor inspection team to the fault location within 12 minutes; use AI confidence > 70 % as the trigger for escalation.\",\n          \"If the inspection confirms a critical defect, trigger a full segment closure and launch the pre‑planned bus‑bridge (2 buses per hour, capacity 80 passengers each).\",\n          \"If the defect is minor, keep the speed restriction, log the issue, and schedule a targeted maintenance window during the next low‑traffic period (02:00‑04:00).\",\n          \"Update the timetable engine to insert a 2‑minute buffer for all upstream services, reducing cascading delays.\",\n          \"Log all actions in the Safety Management System and send a post‑event report to the regional operations board.\"\n        ]\n      },\n      \"overall_score\": 78.3,\n      \"safety_rating\": 7.5,\n      \"efficiency_rating\": 7.5,\n      \"feasibility_rating\": 8.8,\n      \"robustness_rating\": 7.5,\n      \"justification\": \"Combines safety and efficiency well but introduces additional operational load and passenger‑information side effects, lowering its robustness rating. Still ranks third due to balanced scores across all criteria.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"R3\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Dynamic Speed Restriction + Real‑Time Passenger Re‑booking\",\n        \"actions\": [\n          \"Immediately impose a 35 km/h speed restriction on the Milano Lambrate‑Treviglio segment and broadcast it to all train crews via the ETCS overlay.\",\n          \"Activate the real‑time passenger‑information platform to display the restriction and automatically offer affected passengers alternative services (next‑available train, bus‑bridge, or re‑booking on parallel routes).\",\n          \"Deploy a mixed vision‑sensor inspection team to the fault location within 12 minutes; use AI confidence > 70 % as the trigger for escalation.\",\n          \"If the inspection confirms a critical defect, trigger a full segment closure and launch the pre‑planned bus‑bridge (2 buses per hour, capacity 80 passengers each).\",\n          \"If the defect is minor, keep the speed restriction, log the issue, and schedule a targeted maintenance window during the next low‑traffic period (02:00‑04:00).\",\n          \"Update the timetable engine to insert a 2‑minute buffer for all upstream services, reducing cascading delays.\",\n          \"Log all actions in the Safety Management System and send a post‑event report to the regional operations board.\"\n        ],\n        \"expected_outcome\": \"Maintains safe train operation while minimizing passenger inconvenience; expected to cut the projected 4‑minute delay to under 1 minute for most services and keep the segment operational when possible.\",\n        \"reasoning\": \"Combines the algorithmic speed‑restriction and inspection workflow with the historical success of proactive passenger re‑booking and bus‑bridge deployment. This hybrid leverages proven communication tactics to reduce perceived delay, while still respecting safety protocols derived from AI‑driven fault detection.\",\n        \"safety_score\": 0.750,\n        \"efficiency_score\": 0.750,\n        \"feasibility_score\": 0.880,\n        \"overall_fitness\": 0.828,\n        \"estimated_delay_min\": 3.0,\n        \"affected_trains\": \"MAINTENANCE_REQUIRED\",\n        \"side_effects\": \"Increased workload for the passenger‑information centre during the first 30 minutes, Potential short‑term capacity reduction on adjacent bus routes\",\n        \"algorithm_type\": \"hybrid\",\n        \"raw_data\": null\n      }\n    }\n  ]\n}",
+    "error": null
+  }
+}

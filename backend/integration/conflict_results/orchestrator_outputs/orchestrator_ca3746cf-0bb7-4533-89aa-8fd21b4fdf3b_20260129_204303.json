@@ -1,0 +1,440 @@
+{
+  "status": "ok",
+  "conflict_id": "ca3746cf-0bb7-4533-89aa-8fd21b4fdf3b",
+  "started_at": "2026-01-29T20:42:33.398975+00:00",
+  "finished_at": "2026-01-29T20:43:03.235569+00:00",
+  "total_execution_ms": 29836,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 20143,
+      "raw_result": {
+        "conflict_id": "ca3746cf-0bb7-4533-89aa-8fd21b4fdf3b",
+        "conflict_summary": "",
+        "timestamp": "2026-01-29T21:42:53.528550",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [
+          {
+            "resolution_id": "algo_1",
+            "strategy_name": "Immediate Gate Control & Slot Allocation",
+            "action_steps": [
+              "1. Issue an emergency stop command for any train attempting to enter the segment MILANO CENTRALE–RHO FIERA MILANO.",
+              "2. Allow the four trains already inside the segment (REG_2014, FR_9700, REG_2553, REG_33137) to clear the block before releasing any new entry.",
+              "3. Define time‑based slots (e.g., 5‑minute windows) for each train to re‑enter the segment, respecting the hard capacity of 2 trains per slot.",
+              "4. Adjust departure times of upstream trains (at Milano Centrale) so that the next slot is not oversubscribed.",
+              "5. If the overflow persists for more than two slots, evaluate rerouting the delayed regional trains onto the parallel double‑track line."
+            ],
+            "expected_outcome": "The segment will never host more than its safe capacity, eliminating collision risk and restoring normal flow with only short, controlled holding times.",
+            "reasoning": "The conflict is a classic edge‑capacity overflow. The generic algorithm “edge_overflow_resolution_1” prescribes stopping further entry, clearing the segment, and then using slot‑based access – exactly the measures needed for the Milano‑Rho Fiera segment.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: edge_overflow_resolution_1"
+            ],
+            "confidence_score": 0.857,
+            "algorithm_name": "edge_overflow_resolution_1",
+            "algorithm_reasoning": "The conflict is a classic edge‑capacity overflow. The generic algorithm “edge_overflow_resolution_1” prescribes stopping further entry, clearing the segment, and then using slot‑based access – exactly the measures needed for the Milano‑Rho Fiera segment.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_2014",
+              "FR_9700",
+              "REG_2553",
+              "REG_33137"
+            ],
+            "estimated_delay_reduction_sec": 300,
+            "side_effects": [],
+            "feasibility_score": 0.92,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "algo_2",
+            "strategy_name": "Priority‑Based Rescheduling (High‑Speed First)",
+            "action_steps": [
+              "1. Immediately halt entry of all trains to the segment.",
+              "2. Grant the first slot exclusively to the high‑speed train FR_9700, allowing it to enter the segment.",
+              "3. Hold the remaining three regional trains (REG_2014, REG_2553, REG_33137) at Milano Centrale.",
+              "4. Apply a 15‑minute delay to the held regional services before releasing them in successive slots.",
+              "5. Activate a slot‑based control system to prevent simultaneous entry of more than two trains thereafter."
+            ],
+            "expected_outcome": "High‑speed service proceeds without delay, while regional services are staggered, keeping the segment within its capacity and avoiding a cascade of later delays.",
+            "reasoning": "The synthetic example “synthetic_edge_overflow_milano_pavia” deals with the same corridor and uses a priority rule that lets the fastest service continue while delaying others. Applying the same rule to the current four‑train set resolves the overflow efficiently.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: synthetic_edge_overflow_milano_pavia"
+            ],
+            "confidence_score": 0.821,
+            "algorithm_name": "synthetic_edge_overflow_milano_pavia",
+            "algorithm_reasoning": "The synthetic example “synthetic_edge_overflow_milano_pavia” deals with the same corridor and uses a priority rule that lets the fastest service continue while delaying others. Applying the same rule to the current four‑train set resolves the overflow efficiently.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_9700",
+              "REG_2014",
+              "REG_2553",
+              "REG_33137"
+            ],
+            "estimated_delay_reduction_sec": 600,
+            "side_effects": [],
+            "feasibility_score": 0.86,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          },
+          {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Dynamic Holding & Adaptive Slotting with Real‑Time Demand Balancing",
+            "action_steps": [
+              "1. Activate the edge‑capacity gate for MILANO CENTRALE‑RHO FIERA MILANO and issue an immediate stop for any train not yet inside the segment.",
+              "2. Use the nearby Milano Rho Staging Yard (historically employed in the 2015 Rho‑Fiera overload case) to hold the three regional services (REG_2014, REG_2553, REG_33137) for a short, controlled period.",
+              "3. Prioritise the high‑speed train FR_9700 to enter the segment first, granting it a 3‑minute exclusive slot.",
+              "4. Deploy the real‑time traffic‑balancing module (derived from the “adaptive slot allocation” algorithm) to calculate the next two‑train slots based on actual clearance times, not fixed 5‑minute windows.",
+              "5. Release REG_2014 and REG_2553 together as a coupled pair (if compatible) into the next slot; if coupling is not possible, release them sequentially in two 2‑minute slots.",
+              "6. Keep REG_33137 in the staging yard until the segment is confirmed empty, then release it in the following slot.",
+              "7. Continuously monitor segment occupancy via the ETCS Level 2 interface; if occupancy exceeds 2 trains for more than 30 seconds, automatically extend the holding time of the next train in the yard.",
+              "8. Communicate updated ETAs to passengers and adjust downstream dwell times to absorb the small delay."
+            ],
+            "expected_outcome": "All four trains clear the congested segment without exceeding the hard capacity of two trains, while the high‑speed service experiences minimal delay and regional services incur only a short, coordinated hold.",
+            "reasoning": "The hybrid draws on the proven emergency‑gate control from the algorithmic approach and the practical use of a nearby staging yard that resolved similar overloads in 2015. By replacing static 5‑minute slots with a real‑time adaptive scheduler, the solution reacts to actual clearance times, reducing idle waiting. Coupling regional trains (a MILP‑derived tactic) further frees a capacity slot, delivering a more efficient flow than pure slot‑allocation alone.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.804,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_2014",
+              "FR_9700",
+              "REG_2553",
+              "REG_33137"
+            ],
+            "estimated_delay_reduction_sec": 300,
+            "side_effects": [
+              "Requires availability of the Milano Rho staging yard and compatible coupling equipment for regional units.",
+              "Minor passenger inconvenience due to short holding time in the yard.",
+              "Increased operational complexity for dispatchers during the adaptive slot calculation."
+            ],
+            "feasibility_score": 0.84,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        ],
+        "layer1_count": 3,
+        "layer2_refinements": {
+          "historical_cases_found": 10,
+          "algorithm_resolutions": 3,
+          "hybrid_resolutions_generated": 2,
+          "total_candidates_evaluated": 5,
+          "historical_success_rates": {
+            "total_cases": 10,
+            "average_similarity": 0.1470589084,
+            "outcome_distribution": {
+              "resolved": 9,
+              "unknown": 1
+            }
+          }
+        },
+        "generation_time_sec": 7.880766
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 3
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 1250,
+      "raw_result": {
+        "solver_used": "greedy",
+        "overall_fitness": 1.0,
+        "total_delay_min": 0,
+        "passenger_impact": 0,
+        "propagation_depth": 0,
+        "recovery_smoothness": 1.0,
+        "actions": [
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "REG_2014",
+            "parameters": {
+              "speed_factor": 1.0
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: ca3746cf-0bb7-4533-89aa-8fd21b4fdf3b\nType: edge_capacity_overflow\nSeverity: 0.70\nAffected trains: REG_2014, FR_9700, REG_2553, REG_33137\nAffected stations: MILANO CENTRALE--RHO FIERA MILANO\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using greedy):\n  1. SPEED_ADJUST - Train REG_2014\n      speed_factor: 1.00\n\nExpected Outcomes:\n  - Total delay: 0.0 minutes\n  - Passenger impact: 0 passenger-minutes\n  - Propagation depth: 0 trains\n  - Recovery smoothness: 1.00\n  - Overall fitness: 1.000"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "ok",
+    "execution_ms": 9675,
+    "ranked_resolutions": [
+      {
+        "rank": 1,
+        "resolution_number": 1,
+        "resolution_id": "res1",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Issue an emergency stop command for any train attempting to enter the segment MILANO CENTRALE–RHO FIERA MILANO.",
+            "Allow the four trains already inside the segment (REG_2014, FR_9700, REG_2553, REG_33137) to clear the block before releasing any new entry.",
+            "Define time‑based slots (e.g., 5‑minute windows) for each train to re‑enter the segment, respecting the hard capacity of 2 trains per slot.",
+            "Adjust departure times of upstream trains (at Milano Centrale) so that the next slot is not oversubscribed.",
+            "If the overflow persists for more than two slots, evaluate rerouting the delayed regional trains onto the parallel double‑track line."
+          ]
+        },
+        "overall_score": 79,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 9.2,
+        "robustness_rating": 7.0,
+        "justification": "The plan enforces a hard stop and uses deterministic time slots, guaranteeing safety while keeping delays short and implementation straightforward. Its fallback rerouting adds robustness without significant complexity.",
+        "full_resolution": {
+          "resolution_id": "algo_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Immediate Gate Control & Slot Allocation",
+          "actions": [
+            "1. Issue an emergency stop command for any train attempting to enter the segment MILANO CENTRALE–RHO FIERA MILANO.",
+            "2. Allow the four trains already inside the segment (REG_2014, FR_9700, REG_2553, REG_33137) to clear the block before releasing any new entry.",
+            "3. Define time‑based slots (e.g., 5‑minute windows) for each train to re‑enter the segment, respecting the hard capacity of 2 trains per slot.",
+            "4. Adjust departure times of upstream trains (at Milano Centrale) so that the next slot is not oversubscribed.",
+            "5. If the overflow persists for more than two slots, evaluate rerouting the delayed regional trains onto the parallel double‑track line."
+          ],
+          "expected_outcome": "The segment will never host more than its safe capacity, eliminating collision risk and restoring normal flow with only short, controlled holding times.",
+          "reasoning": "The conflict is a classic edge‑capacity overflow. The generic algorithm “edge_overflow_resolution_1” prescribes stopping further entry, clearing the segment, and then using slot‑based access – exactly the measures needed for the Milano‑Rho Fiera segment.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.92,
+          "overall_fitness": 0.857,
+          "estimated_delay_min": 5.0,
+          "affected_trains": [
+            "REG_2014",
+            "FR_9700",
+            "REG_2553",
+            "REG_33137"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_1",
+            "strategy_name": "Immediate Gate Control & Slot Allocation",
+            "action_steps": [
+              "1. Issue an emergency stop command for any train attempting to enter the segment MILANO CENTRALE–RHO FIERA MILANO.",
+              "2. Allow the four trains already inside the segment (REG_2014, FR_9700, REG_2553, REG_33137) to clear the block before releasing any new entry.",
+              "3. Define time‑based slots (e.g., 5‑minute windows) for each train to re‑enter the segment, respecting the hard capacity of 2 trains per slot.",
+              "4. Adjust departure times of upstream trains (at Milano Centrale) so that the next slot is not oversubscribed.",
+              "5. If the overflow persists for more than two slots, evaluate rerouting the delayed regional trains onto the parallel double‑track line."
+            ],
+            "expected_outcome": "The segment will never host more than its safe capacity, eliminating collision risk and restoring normal flow with only short, controlled holding times.",
+            "reasoning": "The conflict is a classic edge‑capacity overflow. The generic algorithm “edge_overflow_resolution_1” prescribes stopping further entry, clearing the segment, and then using slot‑based access – exactly the measures needed for the Milano‑Rho Fiera segment.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: edge_overflow_resolution_1"
+            ],
+            "confidence_score": 0.857,
+            "algorithm_name": "edge_overflow_resolution_1",
+            "algorithm_reasoning": "The conflict is a classic edge‑capacity overflow. The generic algorithm “edge_overflow_resolution_1” prescribes stopping further entry, clearing the segment, and then using slot‑based access – exactly the measures needed for the Milano‑Rho Fiera segment.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_2014",
+              "FR_9700",
+              "REG_2553",
+              "REG_33137"
+            ],
+            "estimated_delay_reduction_sec": 300,
+            "side_effects": [],
+            "feasibility_score": 0.92,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      },
+      {
+        "rank": 2,
+        "resolution_number": 3,
+        "resolution_id": "res3",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Activate the edge‑capacity gate for MILANO CENTRALE‑RHO FIERA MILANO and issue an immediate stop for any train not yet inside the segment.",
+            "Use the nearby Milano Rho Staging Yard to hold the three regional services (REG_2014, REG_2553, REG_33137) for a short, controlled period.",
+            "Prioritise the high‑speed train FR_9700 to enter the segment first, granting it a 3‑minute exclusive slot.",
+            "Deploy the real‑time traffic‑balancing module to calculate the next two‑train slots based on actual clearance times.",
+            "Release REG_2014 and REG_2553 together as a coupled pair into the next slot; if coupling is not possible, release them sequentially in two 2‑minute slots.",
+            "Keep REG_33137 in the staging yard until the segment is confirmed empty, then release it in the following slot.",
+            "Continuously monitor segment occupancy via the ETCS Level 2 interface; if occupancy exceeds 2 trains for more than 30 seconds, automatically extend the holding time of the next train in the yard.",
+            "Communicate updated ETAs to passengers and adjust downstream dwell times to absorb the small delay."
+          ]
+        },
+        "overall_score": 78,
+        "safety_rating": 7.5,
+        "efficiency_rating": 7.5,
+        "feasibility_rating": 8.4,
+        "robustness_rating": 8.0,
+        "justification": "By combining gate control with real‑time adaptive slotting and a staging yard, it maintains safety and improves efficiency through dynamic coordination. The adaptive mechanism enhances robustness against variability.",
+        "full_resolution": {
+          "resolution_id": "hybrid_1",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Dynamic Holding & Adaptive Slotting with Real‑Time Demand Balancing",
+          "actions": [
+            "1. Activate the edge‑capacity gate for MILANO CENTRALE‑RHO FIERA MILANO and issue an immediate stop for any train not yet inside the segment.",
+            "2. Use the nearby Milano Rho Staging Yard (historically employed in the 2015 Rho‑Fiera overload case) to hold the three regional services (REG_2014, REG_2553, REG_33137) for a short, controlled period.",
+            "3. Prioritise the high‑speed train FR_9700 to enter the segment first, granting it a 3‑minute exclusive slot.",
+            "4. Deploy the real‑time traffic‑balancing module (derived from the “adaptive slot allocation” algorithm) to calculate the next two‑train slots based on actual clearance times, not fixed 5‑minute windows.",
+            "5. Release REG_2014 and REG_2553 together as a coupled pair (if compatible) into the next slot; if coupling is not possible, release them sequentially in two 2‑minute slots.",
+            "6. Keep REG_33137 in the staging yard until the segment is confirmed empty, then release it in the following slot.",
+            "7. Continuously monitor segment occupancy via the ETCS Level 2 interface; if occupancy exceeds 2 trains for more than 30 seconds, automatically extend the holding time of the next train in the yard.",
+            "8. Communicate updated ETAs to passengers and adjust downstream dwell times to absorb the small delay."
+          ],
+          "expected_outcome": "All four trains clear the congested segment without exceeding the hard capacity of two trains, while the high‑speed service experiences minimal delay and regional services incur only a short, coordinated hold.",
+          "reasoning": "The hybrid draws on the proven emergency‑gate control from the algorithmic approach and the practical use of a nearby staging yard that resolved similar overloads in 2015. By replacing static 5‑minute slots with a real‑time adaptive scheduler, the solution reacts to actual clearance times, reducing idle waiting. Coupling regional trains (a MILP‑derived tactic) further frees a capacity slot, delivering a more efficient flow than pure slot‑allocation alone.",
+          "safety_score": 0.75,
+          "efficiency_score": 0.75,
+          "feasibility_score": 0.84,
+          "overall_fitness": 0.804,
+          "estimated_delay_min": 5.0,
+          "affected_trains": [
+            "REG_2014",
+            "FR_9700",
+            "REG_2553",
+            "REG_33137"
+          ],
+          "side_effects": [
+            "Requires availability of the Milano Rho staging yard and compatible coupling equipment for regional units.",
+            "Minor passenger inconvenience due to short holding time in the yard.",
+            "Increased operational complexity for dispatchers during the adaptive slot calculation."
+          ],
+          "algorithm_type": "hybrid",
+          "raw_data": {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Dynamic Holding & Adaptive Slotting with Real‑Time Demand Balancing",
+            "action_steps": [
+              "1. Activate the edge‑capacity gate for MILANO CENTRALE‑RHO FIERA MILANO and issue an immediate stop for any train not yet inside the segment.",
+              "2. Use the nearby Milano Rho Staging Yard (historically employed in the 2015 Rho‑Fiera overload case) to hold the three regional services (REG_2014, REG_2553, REG_33137) for a short, controlled period.",
+              "3. Prioritise the high‑speed train FR_9700 to enter the segment first, granting it a 3‑minute exclusive slot.",
+              "4. Deploy the real‑time traffic‑balancing module (derived from the “adaptive slot allocation” algorithm) to calculate the next two‑train slots based on actual clearance times, not fixed 5‑minute windows.",
+              "5. Release REG_2014 and REG_2553 together as a coupled pair (if compatible) into the next slot; if coupling is not possible, release them sequentially in two 2‑minute slots.",
+              "6. Keep REG_33137 in the staging yard until the segment is confirmed empty, then release it in the following slot.",
+              "7. Continuously monitor segment occupancy via the ETCS Level 2 interface; if occupancy exceeds 2 trains for more than 30 seconds, automatically extend the holding time of the next train in the yard.",
+              "8. Communicate updated ETAs to passengers and adjust downstream dwell times to absorb the small delay."
+            ],
+            "expected_outcome": "All four trains clear the congested segment without exceeding the hard capacity of two trains, while the high‑speed service experiences minimal delay and regional services incur only a short, coordinated hold.",
+            "reasoning": "The hybrid draws on the proven emergency‑gate control from the algorithmic approach and the practical use of a nearby staging yard that resolved similar overloads in 2015. By replacing static 5‑minute slots with a real‑time adaptive scheduler, the solution reacts to actual clearance times, reducing idle waiting. Coupling regional trains (a MILP‑derived tactic) further frees a capacity slot, delivering a more efficient flow than pure slot‑allocation alone.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.804,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_2014",
+              "FR_9700",
+              "REG_2553",
+              "REG_33137"
+            ],
+            "estimated_delay_reduction_sec": 300,
+            "side_effects": [
+              "Requires availability of the Milano Rho staging yard and compatible coupling equipment for regional units.",
+              "Minor passenger inconvenience due to short holding time in the yard.",
+              "Increased operational complexity for dispatchers during the adaptive slot calculation."
+            ],
+            "feasibility_score": 0.84,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          }
+        }
+      },
+      {
+        "rank": 3,
+        "resolution_number": 2,
+        "resolution_id": "res2",
+        "bullet_resolution_actions": {
+          "actions": [
+            "Immediately halt entry of all trains to the segment.",
+            "Grant the first slot exclusively to the high‑speed train FR_9700, allowing it to enter the segment.",
+            "Hold the remaining three regional trains (REG_2014, REG_2553, REG_33137) at Milano Centrale.",
+            "Apply a 15‑minute delay to the held regional services before releasing them in successive slots.",
+            "Activate a slot‑based control system to prevent simultaneous entry of more than two trains thereafter."
+          ]
+        },
+        "overall_score": 76,
+        "safety_rating": 8.0,
+        "efficiency_rating": 7.0,
+        "feasibility_rating": 8.6,
+        "robustness_rating": 6.5,
+        "justification": "Prioritizing the high‑speed service protects its punctuality and respects capacity limits, though it imposes longer holds on regional trains. The approach is feasible but less flexible than adaptive alternatives.",
+        "full_resolution": {
+          "resolution_id": "algo_2",
+          "source_agent": "Agent 1 (Hybrid/Historical)",
+          "strategy_name": "Priority‑Based Rescheduling (High‑Speed First)",
+          "actions": [
+            "1. Immediately halt entry of all trains to the segment.",
+            "2. Grant the first slot exclusively to the high‑speed train FR_9700, allowing it to enter the segment.",
+            "3. Hold the remaining three regional trains (REG_2014, REG_2553, REG_33137) at Milano Centrale.",
+            "4. Apply a 15‑minute delay to the held regional services before releasing them in successive slots.",
+            "5. Activate a slot‑based control system to prevent simultaneous entry of more than two trains thereafter."
+          ],
+          "expected_outcome": "High‑speed service proceeds without delay, while regional services are staggered, keeping the segment within its capacity and avoiding a cascade of later delays.",
+          "reasoning": "The synthetic example “synthetic_edge_overflow_milano_pavia” deals with the same corridor and uses a priority rule that lets the fastest service continue while delaying others. Applying the same rule to the current four‑train set resolves the overflow efficiently.",
+          "safety_score": 0.8,
+          "efficiency_score": 0.7,
+          "feasibility_score": 0.86,
+          "overall_fitness": 0.821,
+          "estimated_delay_min": 10.0,
+          "affected_trains": [
+            "FR_9700",
+            "REG_2014",
+            "REG_2553",
+            "REG_33137"
+          ],
+          "side_effects": [],
+          "algorithm_type": "algorithm",
+          "raw_data": {
+            "resolution_id": "algo_2",
+            "strategy_name": "Priority‑Based Rescheduling (High‑Speed First)",
+            "action_steps": [
+              "1. Immediately halt entry of all trains to the segment.",
+              "2. Grant the first slot exclusively to the high‑speed train FR_9700, allowing it to enter the segment.",
+              "3. Hold the remaining three regional trains (REG_2014, REG_2553, REG_33137) at Milano Centrale.",
+              "4. Apply a 15‑minute delay to the held regional services before releasing them in successive slots.",
+              "5. Activate a slot‑based control system to prevent simultaneous entry of more than two trains thereafter."
+            ],
+            "expected_outcome": "High‑speed service proceeds without delay, while regional services are staggered, keeping the segment within its capacity and avoiding a cascade of later delays.",
+            "reasoning": "The synthetic example “synthetic_edge_overflow_milano_pavia” deals with the same corridor and uses a priority rule that lets the fastest service continue while delaying others. Applying the same rule to the current four‑train set resolves the overflow efficiently.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm: synthetic_edge_overflow_milano_pavia"
+            ],
+            "confidence_score": 0.821,
+            "algorithm_name": "synthetic_edge_overflow_milano_pavia",
+            "algorithm_reasoning": "The synthetic example “synthetic_edge_overflow_milano_pavia” deals with the same corridor and uses a priority rule that lets the fastest service continue while delaying others. Applying the same rule to the current four‑train set resolves the overflow efficiently.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "FR_9700",
+              "REG_2014",
+              "REG_2553",
+              "REG_33137"
+            ],
+            "estimated_delay_reduction_sec": 600,
+            "side_effects": [],
+            "feasibility_score": 0.86,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        }
+      }
+    ],
+    "raw_llm_response": "{\n  \"ranked_resolutions\": [\n    {\n      \"rank\": 1,\n      \"resolution_number\": 1,\n      \"resolution_id\": \"res1\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Issue an emergency stop command for any train attempting to enter the segment MILANO CENTRALE–RHO FIERA MILANO.\",\n          \"Allow the four trains already inside the segment (REG_2014, FR_9700, REG_2553, REG_33137) to clear the block before releasing any new entry.\",\n          \"Define time‑based slots (e.g., 5‑minute windows) for each train to re‑enter the segment, respecting the hard capacity of 2 trains per slot.\",\n          \"Adjust departure times of upstream trains (at Milano Centrale) so that the next slot is not oversubscribed.\",\n          \"If the overflow persists for more than two slots, evaluate rerouting the delayed regional trains onto the parallel double‑track line.\"\n        ]\n      },\n      \"overall_score\": 79,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 9.2,\n      \"robustness_rating\": 7.0,\n      \"justification\": \"The plan enforces a hard stop and uses deterministic time slots, guaranteeing safety while keeping delays short and implementation straightforward. Its fallback rerouting adds robustness without significant complexity.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"res1\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Immediate Gate Control & Slot Allocation\",\n        \"actions\": [\n          \"Issue an emergency stop command for any train attempting to enter the segment MILANO CENTRALE–RHO FIERA MILANO.\",\n          \"Allow the four trains already inside the segment (REG_2014, FR_9700, REG_2553, REG_33137) to clear the block before releasing any new entry.\",\n          \"Define time‑based slots (e.g., 5‑minute windows) for each train to re‑enter the segment, respecting the hard capacity of 2 trains per slot.\",\n          \"Adjust departure times of upstream trains (at Milano Centrale) so that the next slot is not oversubscribed.\",\n          \"If the overflow persists for more than two slots, evaluate rerouting the delayed regional trains onto the parallel double‑track line.\"\n        ],\n        \"expected_outcome\": \"The segment will never host more than its safe capacity, eliminating collision risk and restoring normal flow with only short, controlled holding times.\",\n        \"reasoning\": \"The conflict is a classic edge‑capacity overflow. The generic algorithm “edge_overflow_resolution_1” prescribes stopping further entry, clearing the segment, and then using slot‑based access – exactly the measures needed for the Milano‑Rho Fiera segment.\",\n        \"safety_score\": 0.800,\n        \"efficiency_score\": 0.700,\n        \"feasibility_score\": 0.920,\n        \"overall_fitness\": 0.857,\n        \"estimated_delay_min\": 5.0,\n        \"affected_trains\": [\"REG_2014\", \"FR_9700\", \"REG_2553\", \"REG_33137\"],\n        \"side_effects\": \"None\",\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 2,\n      \"resolution_number\": 3,\n      \"resolution_id\": \"res3\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Activate the edge‑capacity gate for MILANO CENTRALE‑RHO FIERA MILANO and issue an immediate stop for any train not yet inside the segment.\",\n          \"Use the nearby Milano Rho Staging Yard to hold the three regional services (REG_2014, REG_2553, REG_33137) for a short, controlled period.\",\n          \"Prioritise the high‑speed train FR_9700 to enter the segment first, granting it a 3‑minute exclusive slot.\",\n          \"Deploy the real‑time traffic‑balancing module to calculate the next two‑train slots based on actual clearance times.\",\n          \"Release REG_2014 and REG_2553 together as a coupled pair into the next slot; if coupling is not possible, release them sequentially in two 2‑minute slots.\",\n          \"Keep REG_33137 in the staging yard until the segment is confirmed empty, then release it in the following slot.\",\n          \"Continuously monitor segment occupancy via the ETCS Level 2 interface; if occupancy exceeds 2 trains for more than 30 seconds, automatically extend the holding time of the next train in the yard.\",\n          \"Communicate updated ETAs to passengers and adjust downstream dwell times to absorb the small delay.\"\n        ]\n      },\n      \"overall_score\": 78,\n      \"safety_rating\": 7.5,\n      \"efficiency_rating\": 7.5,\n      \"feasibility_rating\": 8.4,\n      \"robustness_rating\": 8.0,\n      \"justification\": \"By combining gate control with real‑time adaptive slotting and a staging yard, it maintains safety and improves efficiency through dynamic coordination. The adaptive mechanism enhances robustness against variability.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"res3\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Dynamic Holding & Adaptive Slotting with Real‑Time Demand Balancing\",\n        \"actions\": [\n          \"Activate the edge‑capacity gate for MILANO CENTRALE‑RHO FIERA MILANO and issue an immediate stop for any train not yet inside the segment.\",\n          \"Use the nearby Milano Rho Staging Yard to hold the three regional services (REG_2014, REG_2553, REG_33137) for a short, controlled period.\",\n          \"Prioritise the high‑speed train FR_9700 to enter the segment first, granting it a 3‑minute exclusive slot.\",\n          \"Deploy the real‑time traffic‑balancing module to calculate the next two‑train slots based on actual clearance times.\",\n          \"Release REG_2014 and REG_2553 together as a coupled pair into the next slot; if coupling is not possible, release them sequentially in two 2‑minute slots.\",\n          \"Keep REG_33137 in the staging yard until the segment is confirmed empty, then release it in the following slot.\",\n          \"Continuously monitor segment occupancy via the ETCS Level 2 interface; if occupancy exceeds 2 trains for more than 30 seconds, automatically extend the holding time of the next train in the yard.\",\n          \"Communicate updated ETAs to passengers and adjust downstream dwell times to absorb the small delay.\"\n        ],\n        \"expected_outcome\": \"All four trains clear the congested segment without exceeding the hard capacity of two trains, while the high‑speed service experiences minimal delay and regional services incur only a short, coordinated hold.\",\n        \"reasoning\": \"The hybrid draws on the proven emergency‑gate control from the algorithmic approach and the practical use of a nearby staging yard that resolved similar overloads in 2015. By replacing static 5‑minute slots with a real‑time adaptive scheduler, the solution reacts to actual clearance times, reducing idle waiting. Coupling regional trains further frees a capacity slot, delivering a more efficient flow than pure slot‑allocation alone.\",\n        \"safety_score\": 0.750,\n        \"efficiency_score\": 0.750,\n        \"feasibility_score\": 0.840,\n        \"overall_fitness\": 0.804,\n        \"estimated_delay_min\": 5.0,\n        \"affected_trains\": [\"REG_2014\", \"FR_9700\", \"REG_2553\", \"REG_33137\"],\n        \"side_effects\": \"Requires availability of the Milano Rho staging yard and compatible coupling equipment for regional units., Minor passenger inconvenience due to short holding time in the yard., Increased operational complexity for dispatchers during the adaptive slot calculation.\",\n        \"algorithm_type\": \"hybrid\",\n        \"raw_data\": null\n      }\n    },\n    {\n      \"rank\": 3,\n      \"resolution_number\": 2,\n      \"resolution_id\": \"res2\",\n      \"bullet_resolution_actions\": {\n        \"actions\": [\n          \"Immediately halt entry of all trains to the segment.\",\n          \"Grant the first slot exclusively to the high‑speed train FR_9700, allowing it to enter the segment.\",\n          \"Hold the remaining three regional trains (REG_2014, REG_2553, REG_33137) at Milano Centrale.\",\n          \"Apply a 15‑minute delay to the held regional services before releasing them in successive slots.\",\n          \"Activate a slot‑based control system to prevent simultaneous entry of more than two trains thereafter.\"\n        ]\n      },\n      \"overall_score\": 76,\n      \"safety_rating\": 8.0,\n      \"efficiency_rating\": 7.0,\n      \"feasibility_rating\": 8.6,\n      \"robustness_rating\": 6.5,\n      \"justification\": \"Prioritizing the high‑speed service protects its punctuality and respects capacity limits, though it imposes longer holds on regional trains. The approach is feasible but less flexible than adaptive alternatives.\",\n      \"full_resolution\": {\n        \"resolution_id\": \"res2\",\n        \"source_agent\": \"Agent 1\",\n        \"strategy_name\": \"Priority‑Based Rescheduling (High‑Speed First)\",\n        \"actions\": [\n          \"Immediately halt entry of all trains to the segment.\",\n          \"Grant the first slot exclusively to the high‑speed train FR_9700, allowing it to enter the segment.\",\n          \"Hold the remaining three regional trains (REG_2014, REG_2553, REG_33137) at Milano Centrale.\",\n          \"Apply a 15‑minute delay to the held regional services before releasing them in successive slots.\",\n          \"Activate a slot‑based control system to prevent simultaneous entry of more than two trains thereafter.\"\n        ],\n        \"expected_outcome\": \"High‑speed service proceeds without delay, while regional services are staggered, keeping the segment within its capacity and avoiding a cascade of later delays.\",\n        \"reasoning\": \"The synthetic example “synthetic_edge_overflow_milano_pavia” deals with the same corridor and uses a priority rule that lets the fastest service continue while delaying others. Applying the same rule to the current four‑train set resolves the overflow efficiently.\",\n        \"safety_score\": 0.800,\n        \"efficiency_score\": 0.700,\n        \"feasibility_score\": 0.860,\n        \"overall_fitness\": 0.821,\n        \"estimated_delay_min\": 10.0,\n        \"affected_trains\": [\"REG_2014\", \"FR_9700\", \"REG_2553\", \"REG_33137\"],\n        \"side_effects\": \"None\",\n        \"algorithm_type\": \"algorithm\",\n        \"raw_data\": null\n      }\n    }\n  ]\n}",
+    "error": null
+  }
+}

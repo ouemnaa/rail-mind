@@ -1,0 +1,187 @@
+{
+  "status": "ok",
+  "conflict_id": "5327a0af-92b5-4e6b-9f16-60c5dd9531db",
+  "started_at": "2026-01-29T22:26:28.037647+00:00",
+  "finished_at": "2026-01-29T22:27:08.176108+00:00",
+  "total_execution_ms": 40138,
+  "agents": {
+    "hybrid_rag": {
+      "status": "ok",
+      "execution_ms": 38695,
+      "raw_result": {
+        "conflict_id": "5327a0af-92b5-4e6b-9f16-60c5dd9531db",
+        "conflict_summary": "",
+        "timestamp": "2026-01-29T23:27:06.711216",
+        "context_snapshot": {
+          "total_trains": 0,
+          "total_edges": 0,
+          "conflict_location": {}
+        },
+        "resolutions": [
+          {
+            "resolution_id": "hybrid_1",
+            "strategy_name": "Dynamic Slot & Platform Flex",
+            "action_steps": [
+              "1. Immediately halt any new entry into the MILANO CENTRALE–MILANO CENTRALE segment.",
+              "2. Deploy the historically‑used spare Platform 12 at Milano Centrale as a temporary holding area for REG_2816 and FR_9703 (the two trains with the highest current delays).",
+              "3. Activate the algorithmic time‑slot allocator for the remaining segment capacity, assigning 2‑minute slots to REG_25512 and FR_9717 based on their original schedules.",
+              "4. Adjust the upstream departure times of REG_25512 and FR_9717 by +5 minutes to create a buffer that prevents a second overflow within the next 15 minutes.",
+              "5. Once the segment occupancy falls below the safety threshold, release the held trains from Platform 12 in the order of their original priority (REG_2816 first, then FR_9703).",
+              "6. Continuously monitor real‑time occupancy and, if needed, repeat the slot‑allocation cycle for the next 30 minutes."
+            ],
+            "expected_outcome": "The segment returns to safe occupancy within ~10 minutes, all four trains clear the bottleneck with only minimal additional delay, and the risk of a repeat overflow is mitigated for the next half‑hour.",
+            "reasoning": "Algorithmic slot control guarantees safety limits, while the historical practice of using a spare platform provides a low‑impact holding location that avoids blocking the main line. Combining both leverages proven infrastructure flexibility with precise, automated scheduling.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.768,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_2816",
+              "FR_9703",
+              "REG_25512",
+              "FR_9717"
+            ],
+            "estimated_delay_reduction_sec": 120,
+            "side_effects": [
+              "Platform 12 will be unavailable for other services during the holding period.",
+              "Minor passenger inconvenience for those on REG_2816 and FR_9703 due to short platform change."
+            ],
+            "feasibility_score": 0.78,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          },
+          {
+            "resolution_id": "hybrid_2",
+            "strategy_name": "Cooperative Delay Pooling & Parallel‑Line Reroute",
+            "action_steps": [
+              "1. Identify the parallel Milano Rogoredo ↔ Milano Lambrate line, which historically has spare capacity during off‑peak windows.",
+              "2. Reroute the high‑speed FR_9703 onto the parallel line for the congested segment, using the algorithmic path‑selection engine to compute the fastest feasible diversion.",
+              "3. Implement a delay‑pooling agreement: transfer 2 minutes of accumulated delay from REG_2816 to FR_9717, effectively balancing their arrival windows.",
+              "4. Apply a soft‑capacity override in the algorithm for a 5‑minute window, allowing up to four trains in the segment simultaneously while monitoring headway compliance.",
+              "5. After the 5‑minute window, restore normal hard‑capacity limits and re‑synchronize the timetable for all four services."
+            ],
+            "expected_outcome": "The overflow is eliminated without stopping any train on the main line; FR_9703 continues at near‑schedule speed on the alternate route, and the pooled delays keep overall passenger impact low.",
+            "reasoning": "Historical cases showed that temporary rerouting onto under‑utilised parallel tracks, combined with cooperative delay sharing, can dissolve capacity spikes. The algorithm supplies the precise timing and safety checks, while the historical insight ensures the reroute is operationally realistic.",
+            "source_type": "hybrid",
+            "source_references": [
+              "Combined algorithm and historical insights"
+            ],
+            "confidence_score": 0.726,
+            "algorithm_name": null,
+            "algorithm_reasoning": null,
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [
+              "REG_2816",
+              "FR_9703",
+              "REG_25512",
+              "FR_9717"
+            ],
+            "estimated_delay_reduction_sec": 95,
+            "side_effects": [
+              "FR_9703 passengers experience a slight change of stations on the diversion route.",
+              "The parallel line may experience a marginal increase in traffic, requiring close monitoring."
+            ],
+            "feasibility_score": 0.71,
+            "safety_score": 0.75,
+            "efficiency_score": 0.75
+          },
+          {
+            "resolution_id": "algo_1",
+            "strategy_name": "Edge overflow",
+            "action_steps": [
+              "1. Immediately stop train entry to affected segment. 2. Allow trains inside segment to clear before releasing held trains. 3. Implement time-based slot allocation for segment access. 4. If persistent: consider rerouting via parallel tracks. 5. Adjust upstream departure times to prevent recurrence."
+            ],
+            "expected_outcome": "Resolve the conflict based on algorithm",
+            "reasoning": "Track capacity limits exist for safety. Exceeding them risks collision. Gate control at segment entry prevents overflow. Root cause may be delay bunching.",
+            "source_type": "algorithm",
+            "source_references": [
+              "Algorithm score: 0.523"
+            ],
+            "confidence_score": 0.48791745499999994,
+            "algorithm_name": "Edge overflow",
+            "algorithm_reasoning": "Track capacity limits exist for safety. Exceeding them risks collision. Gate control at segment entry prevents overflow. Root cause may be delay bunching.",
+            "similar_cases": [],
+            "historical_success_rate": null,
+            "affected_trains": [],
+            "estimated_delay_reduction_sec": null,
+            "side_effects": [],
+            "feasibility_score": 0.0,
+            "safety_score": 0.8,
+            "efficiency_score": 0.7
+          }
+        ],
+        "layer1_count": 3,
+        "layer2_refinements": {
+          "historical_cases_found": 10,
+          "algorithm_resolutions": 3,
+          "hybrid_resolutions_generated": 2,
+          "total_candidates_evaluated": 5,
+          "historical_success_rates": {
+            "total_cases": 10,
+            "average_similarity": 0.1470589084,
+            "outcome_distribution": {
+              "resolved": 9,
+              "unknown": 1
+            }
+          }
+        },
+        "generation_time_sec": 19.158703
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 3
+    },
+    "mathematical": {
+      "status": "ok",
+      "execution_ms": 2764,
+      "raw_result": {
+        "solver_used": "nsga2",
+        "overall_fitness": 0.6742078375321627,
+        "total_delay_min": 7.435999999999999,
+        "passenger_impact": 4230.799999999999,
+        "propagation_depth": 0,
+        "recovery_smoothness": 0.6133050846646817,
+        "actions": [
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "FR_9703",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          },
+          {
+            "action_type": "speed_adjust",
+            "target_train_id": "FR_9717",
+            "parameters": {
+              "speed_factor": 1.12
+            }
+          },
+          {
+            "action_type": "reroute",
+            "target_train_id": "REG_25512",
+            "parameters": {
+              "alternate_route": 1
+            }
+          }
+        ],
+        "explanation": "=== Conflict Resolution Report ===\n\nConflict: 5327a0af-92b5-4e6b-9f16-60c5dd9531db\nType: edge_capacity_overflow\nSeverity: 0.50\nAffected trains: REG_2816, FR_9703, REG_25512, FR_9717\nAffected stations: MILANO CENTRALE--MILANO CENTRALE\n\nContext:\n  - Time: 12.0h (Off-peak)\n  - Weather: clear\n  - Network load: 50.0%\n\nResolution (using nsga2):\n  1. SPEED_ADJUST - Train FR_9703\n      speed_factor: 1.12\n  2. SPEED_ADJUST - Train FR_9717\n      speed_factor: 1.12\n  3. REROUTE - Train REG_25512\n      alternate_route: 1\n\nExpected Outcomes:\n  - Total delay: 7.4 minutes\n  - Passenger impact: 4231 passenger-minutes\n  - Propagation depth: 0 trains\n  - Recovery smoothness: 0.61\n  - Overall fitness: 0.674"
+      },
+      "parser_status": "ok",
+      "parser_error": null,
+      "normalized_count": 1
+    }
+  },
+  "llm_judge": {
+    "status": "error",
+    "execution_ms": 1378,
+    "ranked_resolutions": null,
+    "raw_llm_response": null,
+    "error": "Groq API error (RateLimitError): Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01k72k3g6pfw1rqggxqyghd2zb` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199997, Requested 1992. Please try again in 14m19.248s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+  }
+}
