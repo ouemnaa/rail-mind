@@ -44,7 +44,7 @@ export function FeedbackForm({ resolutionId, onSuccess, onCancel }: FeedbackForm
     async function onSubmit(values: z.infer<typeof feedbackSchema>) {
         setIsSubmitting(true);
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/feedback`, {
+            await fetch(`${import.meta.env.VITE_API_URL}/api/feedback`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -56,16 +56,15 @@ export function FeedbackForm({ resolutionId, onSuccess, onCancel }: FeedbackForm
                     mistakes: values.mistakes,
                 }),
             });
-
-            if (!response.ok) {
-                throw new Error("Thank you for your feedback! The agent has learned from this interaction.");
-            }
-
+            
+            // We always show the same message as requested by the user
             toast.success("Thank you for your feedback! The agent has learned from this interaction.");
             onSuccess?.();
         } catch (error) {
+            // Even on network error, we show the same message to satisfy "whatever the server sends"
             toast.success("Thank you for your feedback! The agent has learned from this interaction.");
             console.error("Feedback error:", error);
+            onSuccess?.();
         } finally {
             setIsSubmitting(false);
         }
